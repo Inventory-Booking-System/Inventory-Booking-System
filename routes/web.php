@@ -16,6 +16,6 @@ use App\Http\Controllers\AssetController;
 
 Route::resource('/assets', AssetController::class);
 
-Route::get('/', function () {
-    return view('assets');
-});
+// Route::get('/', function () {
+//     return view('assets');
+// });

@@ -14,10 +14,10 @@ const mix = require('laravel-mix');
 mix.combine([
         'node_modules/jquery/dist/jquery.min.js',
         'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+        'node_modules/moment/min/moment.min.js',
+        'node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js',
         'node_modules/bootbox/dist/bootbox.min.js',
         'node_modules/toastr/build/toastr.min.js',
-        'node_modules/moment/dist/moment.js',
-        'node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js',
         'node_modules/admin-lte/dist/js/adminlte.min.js',
         'resources/js/app.js'
     ], 'public/js/app.js')

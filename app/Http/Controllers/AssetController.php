@@ -13,7 +13,11 @@ class AssetController extends Controller
      */
     public function index()
     {
-        return view('assets');
+        $addModal = view('asset.modals.add');
+
+        return view('asset.assets', [
+            'addModal' => $addModal
+        ]);
     }
 
     /**
@@ -34,7 +38,15 @@ class AssetController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //https://www.positronx.io/laravel-ajax-example-tutorial/
+
+        $data = $request->validate([
+            'name' => 'required|string',
+            'tag' => 'required|numeric',
+            'description' => 'string',
+            'cost' => 'required',
+            'bookable' => 'boolean'
+        ]);
     }
 
     /**

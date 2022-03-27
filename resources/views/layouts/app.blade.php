@@ -12,7 +12,7 @@
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 
         <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}" defer></script>
+        <script src="{{ asset('js/app.js') }}"></script>
     </head>
 
     <!-- Navbar -->
@@ -24,7 +24,24 @@
             <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
-            @yield('navItems')
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Loans</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Setups</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Assets</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Accounts</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Vandalism</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Asset History</a>
+            </li>
         </ul>
 
         <!-- Right navbar links -->
@@ -47,34 +64,11 @@
             <div class="sidebar">
 
             <!-- Sidebar Menu -->
+
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-                    with font-awesome or any other icon font library -->
-                <li class="nav-item">
-                    <a id="addAsset" href="#" class="nav-link">
-                    <i class="nav-icon fas fa-plus"></i>
-                    <p>
-                        Add Asset
-                    </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a id="deleteAsset" href="#" class="nav-link">
-                    <i class="nav-icon fas fa-trash-alt"></i>
-                    <p>
-                        Delete Asset
-                    </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a id="modifyAsset" href="#" class="nav-link">
-                    <i class="nav-icon fas fa-undo-alt"></i>
-                    <p>
-                        Modify Asset
-                    </p>
-                    </a>
-                </li>
+                    <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+                    @yield('navItems')
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->
@@ -110,5 +104,7 @@
             <!-- /.content -->
             </div>
             <!-- /.content-wrapper -->
+
+            @yield('scripts')
     </body>
 </html>
