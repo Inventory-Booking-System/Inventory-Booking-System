@@ -6,12 +6,27 @@ const mix = require('laravel-mix');
  |--------------------------------------------------------------------------
  |
  | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel applications. By default, we are compiling the CSS
+ | for your Laravel application. By default, we are compiling the Sass
  | file for the application as well as bundling up all the JS files.
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+mix.combine([
+        'node_modules/jquery/dist/jquery.min.js',
+        'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+        'node_modules/bootbox/dist/bootbox.min.js',
+        'node_modules/toastr/build/toastr.min.js',
+        'node_modules/moment/dist/moment.js',
+        'node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js',
+        'node_modules/admin-lte/dist/js/adminlte.min.js',
+        'resources/js/app.js'
+    ], 'public/js/app.js')
+    .styles([
+        'node_modules/bootstrap/dist/css/bootstrap.min.css',
+        'node_modules/@fortawesome/fontawesome-free/css/all.min.css',
+        'node_modules/tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.min.css',
+        'node_modules/toastr/build/toastr.min.css',
+        'node_modules/admin-lte/dist/css/adminlte.min.css',
+        'resources/css/app.css'
+    ], 'public/css/app.css')
+    .sourceMaps();
