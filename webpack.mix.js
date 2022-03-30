@@ -19,6 +19,7 @@ mix.combine([
         'node_modules/bootbox/dist/bootbox.min.js',
         'node_modules/toastr/build/toastr.min.js',
         'node_modules/admin-lte/dist/js/adminlte.min.js',
+        'node_modules/datatables/media/js/jquery.dataTables.min.js',
         'resources/js/app.js'
     ], 'public/js/app.js')
     .styles([
@@ -27,6 +28,7 @@ mix.combine([
         'node_modules/tempusdominus-bootstrap-4/build/css/tempusdominus-bootstrap-4.min.css',
         'node_modules/toastr/build/toastr.min.css',
         'node_modules/admin-lte/dist/css/adminlte.min.css',
+        'node_modules/datatables/media/css/jquery.dataTables.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
     .sourceMaps();

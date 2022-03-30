@@ -27,12 +27,59 @@
     </li>
 @endsection
 
+@section('mainContent')
+    <div id="assetTable" class="card-body">
+        <table id='assetsTable' class='table yajra-datatable'>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Asset Tag</th>
+                    <th>Description</th>
+                    <th>Cost</th>
+                    <th>Bookable</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+@endsection
+
 @include('asset.modals.add')
+@include('asset.modals.delete')
 
 @section('scripts')
 <script type="text/javascript">
+    //Populate Asset table on page load using Datables plugin
+    $("document").ready(function(){
+        $('#assetsTable').DataTable( {
+            "processing": true,
+            "serverSide": true,
+            "ajax": "assets",
+            columns: [
+                {
+                    data: 'name',
+                    name: 'name',
+                    render: function(data, type, full, meta){
+                        return "<a href='#'>" + data + "</a>";
+                    }
+                },
+                {data: 'tag', name: 'tag'},
+                {data: 'description', name: 'description'},
+                {data: 'cost', name: 'cost'},
+                {data: 'bookable', name: 'bookable'},
+                {data: 'action', name: 'action', orderable: false, searchable: false}
+            ]
+        });
+    });
+
     //Add new asset to database
     $('#addAsset').on('click', function (e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         var modal = bootbox.dialog({
             message: $(".addAsset").html(),
             size: "large",
@@ -42,60 +89,40 @@
                 label: "Save",
                 className: "btn btn-primary pull-right",
                 callback: function(result) {
-                    //Get the data that was input into each field
-                    var assetName = $('#assetName', '.bootbox').val();
-                    var assetDescription = $('#assetDescription', '.bootbox').val();
-                    var assetTag = $('#assetTag', '.bootbox').val();
-                    var assetLocation = $('#assetLocation','.bootbox').val();
-                    var assetCost = $('#assetCost','.bootbox').val();
-                    var assetBookable = $('#assetBookable','.bootbox').prop('checked');
                     var validationError = true;
 
                     //Send ajax request to the server to save to database and then update the table on the website accordingly
                     jQuery.ajax({
                         type: "POST",
-                        url: "asset",
+                        url: "assets",
                         async: false,
-                        data: {assetName: assetName, assetDescription: assetDescription, assetTag: assetTag, assetLocation: assetLocation, assetCost: assetCost, assetBookable: assetBookable},
-                        success: function(message) {
-                            //If message returned is "success" then insert new asset into table and add to other dropdowns
-                            if(message == "Success"){
-                                validationError = false;
-                                toastr.success(assetName + ' has been created');
-
-                                //We need to get the ID of the asset we have just created
-                                jQuery.ajax({
-                                    type: "POST",
-                                    url: "index.php/manageassets/getAssetID",
-                                    data: {assetTag: assetTag},
-                                    success: function(assetID) {
-                                        var obj = JSON.parse(assetID);
-                                        $("#assetsTable > tbody").append("<tr id='" + obj.AssetID + "'><td>" + assetName + "</td><td>" + assetDescription + "</td><td>" + assetTag + "</td><td>" + assetLocation + "</td></tr>");
-
-                                        //Add to the delete asset dropdown
-                                        $("<option id='Delete-" + obj.AssetID + "'>" + assetName + " (" + assetTag + ")</option>").appendTo("#assetToDelete");
-                                        $("<option id='Modify-" + obj.AssetID + "'>" + assetName + " (" + assetTag + ")</option>").appendTo("#assetToModify");
-                                    }
-                                });
-
-                                //Update Table
-                                jQuery.ajax({
-                                    type: "POST",
-                                    url: "index.php/manageassets/getListOfAssets",
-                                    success: function(message){
-                                        $("#assetsTable").html(message);
-                                        modal.modal("hide");
-                                    }
-                                });
-
-                            }else{
-                                $('#errorText','.bootbox').html(message + "<br>");
-                            }
+                        dataType: 'json',
+                        data: {
+                            name: $('#assetName', '.bootbox').val(),
+                            description: $('#assetDescription', '.bootbox').val(),
+                            tag: $('#assetTag', '.bootbox').val(),
+                            cost: $('#assetCost','.bootbox').val(),
+                            bookable: $('#assetBookable','.bootbox').is(':checked') ? 1 : 0
                         },
+                        success: function(data) {
+                            //Allows the form to close
+                            validationError = false;
+
+                            //Popup to tell the user the action has completed successfully
+                            toastr.success(data['name'] + ' has been created');
+
+                            //Append the newly created row to the table
+                            $("#assetsTable > tbody").append("<tr data-id='" + data['id'] + "'><td>" + data['name'] + "</td><td>" + data['description'] + "</td><td>" + data['tag'] + "</td><td>" + data['cost'] + "</td><td>" + data['bookable'] + "</td><td><a id='deleteAsset' data-id='" + data['id'] + "'>Delete</a></td></tr>");
+                        },
+                        error: function(data){
+                            $.each(data['responseJSON']['errors'], function(key, data){
+                                OutputDataEntryError(key, data);
+                            })
+                        }
                     });
 
                     if(validationError == true){
-                        return false;
+                         return false;
                     }
                 }
             },
@@ -113,7 +140,10 @@
     });
 
     //Delete asset from database
-    $('#deleteAsset').on('click', function (e) {
+    $("#assetTable").on('click', '.deleteAsset', function() {
+        //Get the id of the asset we are deleting
+        var id = $(this).closest("tr").attr("id");
+
         var modal = bootbox.dialog({
             message: $(".deleteAsset").html(),
             size: "large",
@@ -279,5 +309,19 @@
         });
 
     });
+
+    //This function will update the corresponding label on the form control to let the user
+    //know they have inputted data incorrectly into this field
+    function OutputDataEntryError(id,message){
+        //Get the current text of the label
+        var labelText = $('#' + id + "Label").text() + "<br>";
+
+        //Update the label to include the error message
+        $('#' + id + "Label",'.bootbox').html(labelText + message + "<br>");
+
+        //Set label colour to red to indicate an error
+        $('#' + id + "Label",'.bootbox').css("color","red");
+    }
+
 </script>
 @endsection

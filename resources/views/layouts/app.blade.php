@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<meta name="description" content="Inventory Booking System">
 		<meta name="author" content="Ryan Coombes 2018-2022">
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
 		<link rel="icon" href="favicon.ico">
 		<title>{{ config('app.name', 'Inventory Booking System') }}</title>
 
@@ -91,9 +92,7 @@
                 <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
-                    <div id="assetsTable" class="card-body table-responsive p-0">
-
-                    </div>
+                        @yield('mainContent')
                     </div>
                 </div>
                 <!-- /.col-md-6 -->

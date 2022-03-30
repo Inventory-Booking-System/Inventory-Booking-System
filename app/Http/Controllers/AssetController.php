@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Response;
+use App\Models\Asset;
+use DataTables;
 
 class AssetController extends Controller
 {
@@ -11,13 +14,21 @@ class AssetController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $addModal = view('asset.modals.add');
+        //Populate data in table
+        if($request->ajax()){
+            $assets = Asset::latest()->get();
+            return Datatables::of($assets)
+                ->setRowId('id')
+                ->addColumn('action', function ($asset){
+                    return '<button class="deleteAsset btn btn-primary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Add"><i class="fa fa-table"></i></button>';
+                })
+                ->make(true);
+        }
 
-        return view('asset.assets', [
-            'addModal' => $addModal
-        ]);
+        //Render rest of the page
+        return view('asset.assets');
     }
 
     /**
@@ -47,6 +58,10 @@ class AssetController extends Controller
             'cost' => 'required',
             'bookable' => 'boolean'
         ]);
+
+        $asset = Asset::create($data);
+
+        return Response::json($asset);
     }
 
     /**
@@ -57,7 +72,7 @@ class AssetController extends Controller
      */
     public function show($id)
     {
-        //
+
     }
 
     /**

@@ -20,6 +20,7 @@ class CreateAssetsTable extends Migration
             $table->text('description');
             $table->decimal('cost');
             $table->boolean("bookable");
+            $table->timestamps();
         });
     }
 

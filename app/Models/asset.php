@@ -9,7 +9,5 @@ class asset extends Model
 {
     use HasFactory;
 
-    protected $timestamps = false;
-
     protected $fillable = ['name', 'tag', 'description', 'cost', 'bookable'];
 }
