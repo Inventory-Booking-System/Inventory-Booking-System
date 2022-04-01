@@ -31,4 +31,5 @@ mix.combine([
         'node_modules/datatables/media/css/jquery.dataTables.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
+    .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .sourceMaps();

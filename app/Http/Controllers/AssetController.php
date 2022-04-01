@@ -22,7 +22,8 @@ class AssetController extends Controller
             return Datatables::of($assets)
                 ->setRowId('id')
                 ->addColumn('action', function ($asset){
-                    return '<button class="deleteAsset btn btn-primary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Add"><i class="fa fa-table"></i></button>';
+                    return '<button class="modifyAsset btn btn-warning btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Modify"><i class="fa fa-pen-to-square"></i></button>
+                            <button class="deleteAsset btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>';
                 })
                 ->make(true);
         }
@@ -53,9 +54,9 @@ class AssetController extends Controller
 
         $data = $request->validate([
             'name' => 'required|string',
-            'tag' => 'required|numeric',
+            'tag' => 'required|numeric|unique:assets',
             'description' => 'string',
-            'cost' => 'required',
+            'cost' => 'required|numeric',
             'bookable' => 'boolean'
         ]);
 
@@ -106,6 +107,8 @@ class AssetController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $asset = Asset::find($id)->delete($id);
+
+        return Response::json($asset);
     }
 }

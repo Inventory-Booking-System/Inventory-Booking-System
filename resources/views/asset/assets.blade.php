@@ -9,27 +9,11 @@
         </p>
         </a>
     </li>
-    <li class="nav-item">
-        <a id="deleteAsset" href="#" class="nav-link">
-        <i class="nav-icon fas fa-trash-alt"></i>
-        <p>
-            Delete Asset
-        </p>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a id="modifyAsset" href="#" class="nav-link">
-        <i class="nav-icon fas fa-undo-alt"></i>
-        <p>
-            Modify Asset
-        </p>
-        </a>
-    </li>
 @endsection
 
 @section('mainContent')
     <div id="assetTable" class="card-body">
-        <table id='assetsTable' class='table yajra-datatable'>
+        <table id='assetsTable' class='table yajra-datatable' width="100%">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -50,8 +34,9 @@
 @section('scripts')
 <script type="text/javascript">
     //Populate Asset table on page load using Datables plugin
+    var assetTable;
     $("document").ready(function(){
-        $('#assetsTable').DataTable( {
+        assetTable = $('#assetsTable').DataTable( {
             "processing": true,
             "serverSide": true,
             "ajax": "assets",
@@ -59,9 +44,9 @@
                 {
                     data: 'name',
                     name: 'name',
-                    render: function(data, type, full, meta){
-                        return "<a href='#'>" + data + "</a>";
-                    }
+                    // render: function(data, type, full, meta){
+                    //     return "<a href='#'>" + data + "</a>";
+                    // }
                 },
                 {data: 'tag', name: 'tag'},
                 {data: 'description', name: 'description'},
@@ -111,10 +96,15 @@
                             //Popup to tell the user the action has completed successfully
                             toastr.success(data['name'] + ' has been created');
 
-                            //Append the newly created row to the table
-                            $("#assetsTable > tbody").append("<tr data-id='" + data['id'] + "'><td>" + data['name'] + "</td><td>" + data['description'] + "</td><td>" + data['tag'] + "</td><td>" + data['cost'] + "</td><td>" + data['bookable'] + "</td><td><a id='deleteAsset' data-id='" + data['id'] + "'>Delete</a></td></tr>");
+                            //Re-populate the table
+                            assetTable.ajax.reload();
                         },
                         error: function(data){
+                            //Clear all errors currently being displayed
+                            $('.inputError').each(function(i, obj) {
+                                $(this).html("");
+                            });
+
                             $.each(data['responseJSON']['errors'], function(key, data){
                                 OutputDataEntryError(key, data);
                             })
@@ -141,6 +131,12 @@
 
     //Delete asset from database
     $("#assetTable").on('click', '.deleteAsset', function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        
         //Get the id of the asset we are deleting
         var id = $(this).closest("tr").attr("id");
 
@@ -150,60 +146,38 @@
             title: "Delete Asset",
             buttons: [
             {
-                label: "Save",
-                className: "btn btn-primary pull-right",
+                label: "Delete",
+                className: "btn btn-danger pull-right",
                 callback: function(result) {
-                    //Get the data that was input into each field
-                    var assetName = $(".modal-body #assetToDelete").val();
-                    console.log(assetName);
+                    //Send ajax request to the server to save to database and then update the table on the website accordingly
+                    jQuery.ajax({
+                        type: "DELETE",
+                        url: "assets/"+id,
+                        dataType: 'json',
+                        success: function(data) {
+                            //Allows the form to close
+                            validationError = false;
 
-                    if(assetName != null){
-                        var assetID = $(".modal-body #assetToDelete").children(":selected").attr("id").split("-")[1];
-                        //Send ajax request to the server to save to database and then update the table on the website accordingly
-                        jQuery.ajax({
-                            type: "POST",
-                            url: "index.php/manageassets/deleteAsset",
-                            data: {assetID: assetID},
-                            success: function(message) {
-                                //If message returned is "success" then insert new asset into table
-                                if(message == "Success"){
-                                    //Remove asset from the table that was just deleted
-                                    $("#" + assetID).remove();
+                            //Popup to tell the user the action has completed successfully
+                            toastr.success(data['name'] + ' has been deleted');
 
-                                    //Remove asset from ModifyAsset List
-                                    $("#Modify-" + assetID).remove();
-                                    $("#Delete-" + assetID).remove();
-
-                                    //Update Table
-                                    jQuery.ajax({
-                                        type: "POST",
-                                        url: "index.php/manageassets/getListOfAssets",
-                                        success: function(message){
-                                            $("#assetsTable").html(message);
-                                        }
-                                    });
-
-                                    toastr.success(assetName + " has been deleted");
-                                }else{
-                                    toastr.error(message);
-                                    $('#errorTextDelete','.bootbox').html(message + "<br>");
-                                }
-                            }
-                        });
-                    }else{
-                        $('#errorTextDelete','.bootbox').html("Select an asset to delete<br>");
-                        return false;
-                    }
+                            //Re-populate the table
+                            assetTable.ajax.reload();
+                        },
+                        error: function(data){
+                            toastr.error(data['name'] + ' could not be deleted');
+                        }
+                    }); 
                 }
             },
             {
                 label: "Cancel",
-                className: "btn btn-danger pull-right",
+                className: "btn btn-success pull-right",
             }
             ],
             show: false,
             onEscape: function() {
-            modal.modal("hide");
+                modal.modal("hide");
             }
         });
         modal.modal("show");
@@ -317,10 +291,10 @@
         var labelText = $('#' + id + "Label").text() + "<br>";
 
         //Update the label to include the error message
-        $('#' + id + "Label",'.bootbox').html(labelText + message + "<br>");
+        $('#' + id + "Error",'.bootbox').html(labelText + message + "<br>");
 
         //Set label colour to red to indicate an error
-        $('#' + id + "Label",'.bootbox').css("color","red");
+        $('#' + id + "Error",'.bootbox').css("color","red");
     }
 
 </script>
