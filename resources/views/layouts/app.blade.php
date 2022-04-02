@@ -14,6 +14,7 @@
 
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}"></script>
+        @stack('scripts')
     </head>
 
     <!-- Navbar -->
@@ -103,7 +104,5 @@
             <!-- /.content -->
             </div>
             <!-- /.content-wrapper -->
-
-            @yield('scripts')
     </body>
 </html>

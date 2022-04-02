@@ -22,6 +22,7 @@ mix.combine([
         'node_modules/datatables/media/js/jquery.dataTables.min.js',
         'resources/js/app.js'
     ], 'public/js/app.js')
+    .js('resources/js/assets.js', 'public/js/assets.js')
     .styles([
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
         'node_modules/@fortawesome/fontawesome-free/css/all.min.css',

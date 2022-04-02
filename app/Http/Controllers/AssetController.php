@@ -23,7 +23,7 @@ class AssetController extends Controller
                 ->setRowId('id')
                 ->addColumn('action', function ($asset){
                     return '<button class="modifyAsset btn btn-warning btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Modify"><i class="fa fa-pen-to-square"></i></button>
-                            <button class="deleteAsset btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>';
+                            <button class="deleteAsset btn btn-danger btn-sm rounded-0" type="button" data-assetname="' . $asset->name . '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>';
                 })
                 ->make(true);
         }
@@ -71,9 +71,16 @@ class AssetController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
+        //When mdifying an asset
+        if($request->ajax()){
+            $asset = Asset::find($id);
+            return Response::json($asset);
+        }
 
+        //When displaying the seperate asset page
+        return view('asset.assets');
     }
 
     /**
@@ -96,7 +103,23 @@ class AssetController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string',
+            'tag' => 'required|numeric|unique:assets,tag,'.$id,
+            'description' => 'string',
+            'cost' => 'required|numeric',
+            'bookable' => 'boolean'
+        ]);
+
+        $asset = Asset::where('id', $id)->update([
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'tag' => $request->input('tag'),
+            'cost' => $request->input('cost'),
+            'bookable' => $request->input('bookable')
+        ]);
+
+        return Response::json(Asset::find($id));
     }
 
     /**
@@ -107,7 +130,9 @@ class AssetController extends Controller
      */
     public function destroy($id)
     {
-        $asset = Asset::find($id)->delete($id);
+        $asset = Asset::find($id);
+
+        $asset->delete();
 
         return Response::json($asset);
     }

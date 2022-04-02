@@ -199,4 +199,15 @@ _fnFilterColumn:xb,_fnFilter:wb,_fnFilterCreateSearch:Pa,_fnEscapeRegex:Qa,_fnFi
 _fnSortFlatten:X,_fnSort:mb,_fnSortAria:Ib,_fnSortListener:Va,_fnSortAttachListener:Ma,_fnSortingClasses:wa,_fnSortData:Hb,_fnSaveState:xa,_fnLoadState:Jb,_fnSettingsFromNode:ya,_fnLog:K,_fnMap:F,_fnBindAction:Wa,_fnCallbackReg:z,_fnCallbackFire:r,_fnLengthOverflow:Sa,_fnRenderer:Na,_fnDataSource:y,_fnRowAttributes:La,_fnExtend:Xa,_fnCalculateEnd:function(){}});h.fn.dataTable=n;n.$=h;h.fn.dataTableSettings=n.settings;h.fn.dataTableExt=n.ext;h.fn.DataTable=function(a){return h(this).dataTable(a).api()};
 h.each(n,function(a,b){h.fn.DataTable[a]=b});return h.fn.dataTable});
 
+//This function will update the corresponding label on the form control to let the user
+//know they have inputted data incorrectly into this field
+function OutputDataEntryError(id,message){
+    //Get the current text of the label
+    var labelText = $('#' + id + "Label").text() + "<br>";
 
+    //Update the label to include the error message
+    $('#' + id + "Error",'.bootbox').html(labelText + message + "<br>");
+
+    //Set label colour to red to indicate an error
+    $('#' + id + "Error",'.bootbox').css("color","red");
+}
