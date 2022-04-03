@@ -23,6 +23,7 @@ mix.combine([
         'resources/js/app.js'
     ], 'public/js/app.js')
     .js('resources/js/assets.js', 'public/js/assets.js')
+    .js('resources/js/loans.js', 'public/js/loans.js')
     .styles([
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
         'node_modules/@fortawesome/fontawesome-free/css/all.min.css',

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Response;
+use App\Models\Loan;
+use App\Models\User;
+use DataTables;
 
 class LoanController extends Controller
 {
@@ -11,9 +15,28 @@ class LoanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        //Populate data in table
+        if($request->ajax()){
+            $loans = Loan::latest()->get();
+
+            return Datatables::of($loans)
+                ->setRowId('id')
+                ->addColumn('action', function ($loan){
+                    return '<button class="modifyAsset btn btn-warning btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Modify"><i class="fa fa-pen-to-square"></i></button>
+                            <button class="deleteAsset btn btn-danger btn-sm rounded-0" type="button" data-assetname="' . $loan->id . '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>';
+                })
+                ->make(true);
+        }
+
+        //Get list of users
+        $users = User::latest()->get();
+
+        //Render rest of the page
+        return view('loan.loans',[
+            'users' => $users
+        ]);
     }
 
     /**

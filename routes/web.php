@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\LoanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,10 @@ use App\Http\Controllers\AssetController;
 |
 */
 
+Route::resource('/loans', LoanController::class);
+
 Route::resource('/assets', AssetController::class);
+
 
 // Route::get('/', function () {
 //     return view('assets');
