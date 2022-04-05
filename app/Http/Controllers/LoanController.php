@@ -113,5 +113,9 @@ class LoanController extends Controller
      */
     public function getBookableEquipment()
     {
+        //Check for single day or multi day booking
+            //Single day booking
+                //Select from assets where
+            //Multi day booking
     }
 }
