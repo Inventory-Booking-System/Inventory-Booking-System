@@ -10,4 +10,12 @@ class loan extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'status_id', 'start_date', 'end_date', 'start_time', 'end_time', 'details'];
+
+    /**
+     * Get the assets for the loan.
+     */
+    public function assets()
+    {
+        return $this->hasMany(LoanAssets::class);
+    }
 }
