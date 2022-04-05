@@ -378,8 +378,8 @@
         //Return a list of equipement that is avaliable for booking
         function getEquipment(){
             jQuery.ajax({
-                type: "POST",
-                url: "assets/getEquipment",
+                type: "GET",
+                url: "assets/getBookableEquipment",
                 async: false,
                 dataType: 'json',
                 data: {

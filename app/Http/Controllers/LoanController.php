@@ -104,4 +104,14 @@ class LoanController extends Controller
     {
         //
     }
+
+    /**
+     * Fetches a list of equipment avaliable for the current selected input values.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getBookableEquipment()
+    {
+    }
 }

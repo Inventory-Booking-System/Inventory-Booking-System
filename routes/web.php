@@ -16,6 +16,7 @@ use App\Http\Controllers\LoanController;
 */
 
 Route::resource('/loans', LoanController::class);
+Route::get('/loans/getBookableEquipment', [LoanController::class, 'getBookableEquipment']);
 
 Route::resource('/assets', AssetController::class);
 
