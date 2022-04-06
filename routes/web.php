@@ -15,12 +15,9 @@ use App\Http\Controllers\LoanController;
 |
 */
 
-Route::resource('/loans', LoanController::class);
-Route::get('/loans/getBookableEquipment', [LoanController::class, 'getBookableEquipment']);
+//Loans
+Route::get('loans/getBookableEquipment', [LoanController::class, 'getBookableEquipment']);
+Route::resource('loans', LoanController::class);
 
+//Assets
 Route::resource('/assets', AssetController::class);
-
-
-// Route::get('/', function () {
-//     return view('assets');
-// });

@@ -39,8 +39,10 @@
 
     <script>
         var equipmentCart = [];
+        var equipmentTable;
 
         $("document").ready(function(){
+
         //Populate Asset table on page load using Datables plugin
         loanTable = $('#loansTable').DataTable( {
             "processing": true,
@@ -55,6 +57,16 @@
                 {data: 'details', name: 'details'},
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ]
+        });
+
+        //This table is used to display the list of equipment currently in the shopping cart
+        equipmentTable = $('#equipmentTable').DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            language: {
+              emptyTable: "Shopping cart is empty"
+            }
         });
 
         //Add new loan to database
@@ -379,7 +391,7 @@
         function getEquipment(){
             jQuery.ajax({
                 type: "GET",
-                url: "assets/getBookableEquipment",
+                url: "loans/getBookableEquipment",
                 async: false,
                 dataType: 'json',
                 data: {
@@ -393,13 +405,33 @@
                     equipmentCart: equipmentCart
                 },
                 success: function(data) {
-
+                    populateEquipmentDropdown("equipmentSelected", data);
                 },
                 error: function(data){
 
                 }
             });
         }
+
+        //List all the avaliable equipment for booking on the bootbox form
+        function populateEquipmentDropdown(name, data){
+            var dropdown = $('#' + name, '.bootbox');
+            $(dropdown).empty();
+            $.each(data, function() {
+                $("<option />", {
+                    val: this.id,
+                    text: this.name
+                }).appendTo(dropdown);
+            });
+        }
+
+        //Add selected equipment to the shopping cart
+        $(document).on('change',"#equipmentSelected",function (e) {
+            equipmentTable.row.add( [
+                $(this).text(),
+                "Delete"
+            ] ).draw( true );
+        });
     });
     </script>
 @endpush

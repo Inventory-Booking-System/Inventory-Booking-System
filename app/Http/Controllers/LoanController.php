@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Response;
 use App\Models\Loan;
 use App\Models\User;
+use App\Models\Asset;
 use DataTables;
 
 class LoanController extends Controller
@@ -113,6 +114,7 @@ class LoanController extends Controller
      */
     public function getBookableEquipment()
     {
+        return Response::json(Asset::latest()->get());
         //Check for single day or multi day booking
             //Single day booking
                 //Select from assets where
