@@ -59,16 +59,6 @@
             ]
         });
 
-        //This table is used to display the list of equipment currently in the shopping cart
-        equipmentTable = $('#equipmentTable').DataTable({
-            paging: false,
-            searching: false,
-            info: false,
-            language: {
-              emptyTable: "Shopping cart is empty"
-            }
-        });
-
         //Add new loan to database
         $('#addLoan').on('click', function (e) {
             $.ajaxSetup({
@@ -203,6 +193,16 @@
             });
             $(".datetimepicker8").on("show.datetimepicker", function (e) {
                 $('.datetimepicker7').datetimepicker('maxDate', e.date);
+            });
+
+            //This table is used to display the list of equipment currently in the shopping cart
+            equipmentTable = $('#equipmentTable', '.bootbox').DataTable({
+                paging: false,
+                searching: false,
+                info: false,
+                language: {
+                emptyTable: "Shopping cart is empty"
+                }
             });
         });
 
@@ -417,6 +417,7 @@
         function populateEquipmentDropdown(name, data){
             var dropdown = $('#' + name, '.bootbox');
             $(dropdown).empty();
+            dropdown.append("<option selected disabled>Choose here</option>");
             $.each(data, function() {
                 $("<option />", {
                     val: this.id,
@@ -426,11 +427,29 @@
         }
 
         //Add selected equipment to the shopping cart
-        $(document).on('change',"#equipmentSelected",function (e) {
+        $(document).on('change','#equipmentSelected',function (e) {
+            //Add to datatable
+            var assetName = $('#equipmentSelected :selected', '.bootbox').text();
             equipmentTable.row.add( [
-                $(this).text(),
-                "Delete"
-            ] ).draw( true );
+                assetName,
+                '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
+            ] ).draw();
+
+            //Remove from the dropdown menu
+            $('#equipmentSelected :selected', '.bootbox').remove();
+        });
+
+        //Delete item in shopping cart
+        $(document).on('click', '.removeFromCart', function(e) {
+            var dropdown = $('#equipmentSelected', '.bootbox');
+            //Re-add to equipment dropdown
+            $("<option />", {
+                val: this.dataset.assetid,
+                text: this.dataset.assetname
+            }).appendTo(dropdown);
+
+            //Remove from table
+            equipmentTable.row($(this).parents('tr')).remove().draw();
         });
     });
     </script>
