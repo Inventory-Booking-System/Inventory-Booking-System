@@ -58,7 +58,21 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'loanType' => 'required|string',
+            'loanDate' => 'required_if:loanType,single|date',
+            'loanStartTime' => 'required_if:loanType,single|date|date_format:H:i',
+            'loanEndTime' => 'required_if:loanType,single|date|date_format:H:i',
+            'loanStartDate' => 'required_if:loanType,multi|date|before:loanEndDate',
+            'loanEndDate' => 'required_if:loanType,multi|date|after:loanStartDate',
+            'equipment' => 'required|array',
+            'additionalDetails' => 'string',
+            'reservation' => 'boolean'
+        ]);
+
+        $loan = Loan::create($data);
+
+        return Response::json($loan);
     }
 
     /**

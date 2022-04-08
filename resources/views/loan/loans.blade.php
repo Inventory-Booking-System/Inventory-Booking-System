@@ -43,7 +43,7 @@
 
         $("document").ready(function(){
 
-        //Populate Asset table on page load using Datables plugin
+        //Populate loans table on page load using Datables plugin
         loanTable = $('#loansTable').DataTable( {
             "processing": true,
             "serverSide": true,
@@ -83,21 +83,23 @@
                             async: false,
                             dataType: 'json',
                             data: {
-                                name: $('#assetName', '.bootbox').val(),
-                                description: $('#assetDescription', '.bootbox').val(),
-                                tag: $('#assetTag', '.bootbox').val(),
-                                cost: $('#assetCost','.bootbox').val(),
-                                bookable: $('#assetBookable','.bootbox').is(':checked') ? 1 : 0
+                                loanType: $("#formAddLoan input[type='radio']:checked", '.bootbox').val(),
+                                loanDate: $('#loanDate', '.bootbox').val(),
+                                loanStartTime: $('#loanStartTime', '.bootbox').val(),
+                                loanEndTime: $('#loanEndTime','.bootbox').val(),
+                                loanStartDate: $('#loanStartDate','.bootbox').val(),
+                                loanEndDate: $('#loanEndDate','.bootbox').val(),
+                                equipment: equipmentCart,
+                                user: $('#userSelected :selected','.bootbox').text(),
+                                additionalDetails: $('#additionalDetails','.bootbox').val(),
+                                reservation: $('#reservation','.bootbox').is(':checked') ? 1 : 0
                             },
                             success: function(data) {
-                                //Allows the form to close
-                                validationError = false;
-
                                 //Popup to tell the user the action has completed successfully
                                 toastr.success(data['name'] + ' has been created');
 
                                 //Re-populate the table
-                                assetTable.ajax.reload();
+                                loanTable.ajax.reload();
 
                                 //Close the model
                                 modal.modal("hide");
@@ -430,10 +432,15 @@
         $(document).on('change','#equipmentSelected',function (e) {
             //Add to datatable
             var assetName = $('#equipmentSelected :selected', '.bootbox').text();
+            var assetID = $('#equipmentSelected','.bootbox').children(":selected").val();
             equipmentTable.row.add( [
                 assetName,
                 '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
-            ] ).draw();
+            ] ).node().id = assetID;
+            equipmentTable.draw();
+
+            //Add to shopping cart array
+            equipmentCart.push(assetID);
 
             //Remove from the dropdown menu
             $('#equipmentSelected :selected', '.bootbox').remove();
@@ -447,6 +454,12 @@
                 val: this.dataset.assetid,
                 text: this.dataset.assetname
             }).appendTo(dropdown);
+
+            //Remove from shopping cart array
+            const index = equipmentCart.indexOf($(this).attr('data-assetid'));
+            if (index > -1) {
+                equipmentCart.splice(index, 1);
+            }
 
             //Remove from table
             equipmentTable.row($(this).parents('tr')).remove().draw();

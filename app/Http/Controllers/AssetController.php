@@ -40,8 +40,6 @@ class AssetController extends Controller
      */
     public function store(Request $request)
     {
-        //https://www.positronx.io/laravel-ajax-example-tutorial/
-
         $data = $request->validate([
             'name' => 'required|string',
             'tag' => 'required|numeric|unique:assets',
