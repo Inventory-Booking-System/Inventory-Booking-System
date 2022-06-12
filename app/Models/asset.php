@@ -10,4 +10,12 @@ class asset extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'tag', 'description', 'cost', 'bookable'];
+
+    /**
+     * Get the loans for the asset.
+     */
+    public function loans()
+    {
+        return $this->belongsToMany(Loan::class)->withPivot('returned');
+    }
 }

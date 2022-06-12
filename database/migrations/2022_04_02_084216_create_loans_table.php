@@ -17,10 +17,8 @@ class CreateLoansTable extends Migration
             $table->increments('id');
             $table->integer("user_id");
             $table->integer('status_id');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->dateTime('start_date_time');
+            $table->dateTime('end_date_time');
             $table->text('details');
             $table->timestamps();
         });

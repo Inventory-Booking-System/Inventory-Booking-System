@@ -9,13 +9,13 @@ class loan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'status_id', 'start_date', 'end_date', 'start_time', 'end_time', 'details'];
+    protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details'];
 
     /**
      * Get the assets for the loan.
      */
     public function assets()
     {
-        return $this->hasMany(LoanAssets::class);
+        return $this->belongsToMany(Asset::class)->withPivot('returned');
     }
 }

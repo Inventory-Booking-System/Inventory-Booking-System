@@ -33,16 +33,16 @@
                 <a class="nav-link" href="">Setups</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Incidents</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a class="nav-link" href="">Consumables</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
                 <a class="nav-link" href="">Assets</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
                 <a class="nav-link" href="">Accounts</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Vandalism</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Asset History</a>
             </li>
         </ul>
 

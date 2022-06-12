@@ -17,6 +17,7 @@ use App\Http\Controllers\LoanController;
 
 //Loans
 Route::get('loans/getBookableEquipment', [LoanController::class, 'getBookableEquipment']);
+Route::patch('loans/completeBooking/{id}', [LoanController::class, 'completeBooking']);
 Route::resource('loans', LoanController::class);
 
 //Assets

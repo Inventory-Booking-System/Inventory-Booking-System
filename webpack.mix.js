@@ -20,6 +20,7 @@ mix.combine([
         'node_modules/toastr/build/toastr.min.js',
         'node_modules/admin-lte/dist/js/adminlte.min.js',
         'node_modules/datatables/media/js/jquery.dataTables.min.js',
+        'node_modules/select2/dist/js/select2.full.min.js',
         'resources/js/app.js'
     ], 'public/js/app.js')
     .js('resources/js/assets.js', 'public/js/assets.js')
@@ -31,6 +32,8 @@ mix.combine([
         'node_modules/toastr/build/toastr.min.css',
         'node_modules/admin-lte/dist/css/adminlte.min.css',
         'node_modules/datatables/media/css/jquery.dataTables.min.css',
+        'node_modules/select2/dist/css/select2.min.css',
+        'node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
     .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
