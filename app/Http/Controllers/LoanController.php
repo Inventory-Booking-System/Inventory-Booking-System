@@ -94,32 +94,30 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
+
         $data = $request->validate([
             'user_id' => 'required|integer',
             'status_id' => 'boolean',
             'start_date' => 'required|date|before:end_date|nullable',
             'end_date' => 'required|date|after:start_date|nullable',
-            'equipmentSelected' => 'required|array',
+            'equipmentSelected' => 'required|string',
             'details' => 'nullable|string',
             'reservation' => 'nullable|string',
         ]);
 
-        if($data->fails()) {
-            return redirect()->back()->withInput();
-        }
-
         $loanId = Loan::create([
             'user_id' => $data['user_id'],
-            'status_id' => $data['status_id'],
+            'status_id' => 1,
             'start_date_time' => carbon::parse($data['start_date']),
             'end_date_time' => carbon::parse($data['end_date']),
             'details' => $data['details'] ?? "",
-            'reservation' => $request->has($data['reservation']) ? 1 : 0,
         ])->id;
 
         $loan = Loan::find($loanId);
 
-        $loan->assets()->sync($request->equipmentSelected);
+        //dd(json_decode($request->equipmentSelected));
+
+        $loan->assets()->sync(json_decode($request->equipmentSelected));
 
         return Response::json($loan);
     }
@@ -169,7 +167,7 @@ class LoanController extends Controller
             'start_date' => 'required_if:loanType,loanTypeMulti|date|before:end_date|nullable',
             'end_date' => 'required_if:loanType,loanTypeMulti|date|after:start_date|nullable',
             'equipmentSelected' => 'required|array',
-            'details' => 'nullable|string',
+            'details2' => 'nullable|string',
             'booked_in_equipment' => 'array',
         ]);
 

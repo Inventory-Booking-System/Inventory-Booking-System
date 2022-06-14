@@ -1,91 +1,99 @@
 @extends('layouts.app')
 
 @section('mainContent')
-    <form action="/loans" method="POST" enctype="multipart/form-data" >
-        @csrf
+    <div class="col-lg-6 offset-lg-3 p-3">
+        <form action="/loans" method="POST" enctype="multipart/form-data" >
+            @csrf
 
-        <!-- Loan Start Date -->
-        <label id="loanStartDateLabel">Start Date</label>
-        @if($errors->has('start_date'))
-            <p class="text-danger">{{ $errors->first('start_date') }}</p>
-        @endif
-        <div class="input-group date dtpStartDateTime" data-target-input="nearest">
-            <input name="start_date" id="loanStartDate" type="text" value="{{ old('start_date') }}" class="form-control datetimepicker-input" data-target=".dtpStartDateTime"/>
-            <div class="input-group-append" data-target=".dtpStartDateTime" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            <!-- Loan Start Date -->
+            <label id="loanStartDateLabel">Start Date</label>
+            @if($errors->has('start_date'))
+                <p class="text-danger">{{ $errors->first('start_date') }}</p>
+            @endif
+            <div class="input-group date dtpStartDateTime" data-target-input="nearest">
+                <input name="start_date" id="loanStartDate" type="text" value="{{ old('start_date') }}" class="form-control datetimepicker-input" data-target=".dtpStartDateTime"/>
+                <div class="input-group-append" data-target=".dtpStartDateTime" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
             </div>
-        </div>
 
-        <!-- Loan End Date -->
-        <label id="loanEndDateLabel">End Date</label>
-        @if($errors->has('end_date'))
-            <p class="text-danger">{{ $errors->first('end_date') }}</p>
-        @endif
-        <div class="input-group date dtpEndDateTime" data-target-input="nearest">
-            <input name="end_date" id="loanEndDate" type="text" value="{{ old('end_date') }}" class="form-control datetimepicker-input" data-target=".dtpEndDateTime"/>
-            <div class="input-group-append" data-target=".dtpEndDateTime" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            <!-- Loan End Date -->
+            <label id="loanEndDateLabel">End Date</label>
+            @if($errors->has('end_date'))
+                <p class="text-danger">{{ $errors->first('end_date') }}</p>
+            @endif
+            <div class="input-group date dtpEndDateTime" data-target-input="nearest">
+                <input name="end_date" id="loanEndDate" type="text" value="{{ old('end_date') }}" class="form-control datetimepicker-input" data-target=".dtpEndDateTime"/>
+                <div class="input-group-append" data-target=".dtpEndDateTime" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
             </div>
-        </div>
 
-        <!-- User Selected -->
-        <label id="userSelectedLabel">User</label>
-        @if($errors->has('user_id'))
-            <p class="text-danger">{{ $errors->first('user_id') }}</p>
-        @endif
-        <select name="user_id" class="form-control" id="userSelected" value="{{ old('user_id') }}">
-            <option>Please select a user...</option>
-            @foreach ($users as $user)
-                <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
-            @endforeach
-        </select>
+            <!-- User Selected -->
+            <label id="userSelectedLabel">User</label>
+            @if($errors->has('user_id'))
+                <p class="text-danger">{{ $errors->first('user_id') }}</p>
+            @endif
+            <select name="user_id" class="form-control" id="userSelected"">
+                <option></option>
+                @foreach ($users as $user)
+                    @if (old('user_id') == $user->id)
+                        <option value="{{ $user->id }}" selected>{{ $user->forename }} {{ $user->surname }}</option>
+                    @else
+                        <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
+                    @endif
+                @endforeach
+            </select>
 
-        <!-- Equipment -->
-        <label id="equipmentTableLabel">Equipment</label>
-        @if($errors->has('equipmentSelected'))
-            <p class="text-danger">{{ $errors->first('equipmentSelected') }}</p>
-        @endif
-        <select class="form-control" id="equipmentSelected">
-        </select>
+            <!-- Equipment -->
+            <label id="equipmentTableLabel">Equipment</label>
+            @if($errors->has('equipmentSelected'))
+                <p class="text-danger">{{ $errors->first('equipmentSelected') }}</p>
+            @endif
+            <select class="form-control" id="equipmentSelected">
+            </select>
 
-        <div id="equipmentList">
-            <table class="table" id="equipmentTable">
-                <thead>
-                    <tr>
-                        <th scope="col">Item</th>
-                        <th scope="col">Remove</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <input type="hidden" id="equipmentToSubmit" name="equipmentSelected">
+            <div id="equipmentList">
+                <table class="table" id="equipmentTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Item</th>
+                            <th scope="col">Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <input type="hidden" id="equipmentToSubmit" name="equipmentSelected">
 
-        <!-- Additional Details -->
-        <label>Additional details</label>
-        <span id="additionalDetailsError" class="inputError"></span>
-        <textarea name="details" class="form-control" id="additionalDetails" value="{{ old('details') }}"></textarea>
+            <!-- Additional Details -->
+            <label>Additional details</label>
+            @if($errors->has('details'))
+                <p class="text-danger">{{ $errors->first('details') }}</p>
+            @endif
+            <textarea name="details" class="form-control" id="additionalDetails">{{ old('details') }}</textarea>
 
-        <!-- Reservation -->
-        <hr>
-        <div class="form-check">
-        <input class="form-check-input" type="checkbox" name="reservation" id="reservation" value="{{ old('reservation') }}">
-        <span id="status_idError" class="inputError"></span>
-        <label class="form-check-label" for="defaultCheck1">
-            Reservation
-        </label>
-        </div>
+            <!-- Reservation -->
+            <hr>
+            <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="reservation" id="reservation" value="{{ old('reservation') }}">
+            <span id="status_idError" class="inputError"></span>
+            <label class="form-check-label" for="defaultCheck1">
+                Reservation
+            </label>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Create</button>
-    </form>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
 @endsection
 
 @push('scripts')
     {{-- <script src="{{ asset('js/loans.js') }}"></script> --}}
 
     <script>
-        var equipmentCart = [];
+        var equipmentCart = {};
         var equipmentTable;
 
         $("document").ready(function(){
@@ -95,6 +103,7 @@
 
             $('#userSelected').select2({
                 theme: "bootstrap-5",
+                placeholder: "Select a user",
             });
 
             //Setup the Datetime picker settings
@@ -149,7 +158,7 @@
                 }
             }
 
-            //Return a list of equipement that is avaliable for booking
+            //Return a list of equipment that is avaliable for booking
             function getEquipment(){
                 jQuery.ajax({
                     type: "GET",
@@ -199,10 +208,16 @@
                 equipmentTable.draw();
 
                 //Add to shopping cart array
-                equipmentCart.push({
-                    asset_id: assetID,
-                    returned: 0,
-                });
+                // equipmentCart.push({
+                //     asset_id: assetID,
+                //     returned: 0,
+                // });
+
+                equipmentCart[assetID] = {}
+                equipmentCart[assetID]['returned'] = 0
+
+                console.log(equipmentCart);
+
                 $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
 
                 //Remove from the dropdown menu
