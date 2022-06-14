@@ -350,7 +350,6 @@
 
                         //Add to shopping cart array
                         equipmentCart.push({
-                            asset_id: asset.id,
                             returned: asset.pivot['returned'],
                         });
                     });

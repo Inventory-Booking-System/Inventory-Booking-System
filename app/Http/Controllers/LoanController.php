@@ -97,17 +97,16 @@ class LoanController extends Controller
 
         $data = $request->validate([
             'user_id' => 'required|integer',
-            'status_id' => 'boolean',
             'start_date' => 'required|date|before:end_date|nullable',
             'end_date' => 'required|date|after:start_date|nullable',
-            'equipmentSelected' => 'required|string',
+            'equipmentSelected' => 'required|json',
             'details' => 'nullable|string',
-            'reservation' => 'nullable|string',
+            'status_id' => 'string|in:1',
         ]);
 
         $loanId = Loan::create([
             'user_id' => $data['user_id'],
-            'status_id' => 1,
+            'status_id' => $data['status_id'] ?? "0",
             'start_date_time' => carbon::parse($data['start_date']),
             'end_date_time' => carbon::parse($data['end_date']),
             'details' => $data['details'] ?? "",
@@ -115,11 +114,13 @@ class LoanController extends Controller
 
         $loan = Loan::find($loanId);
 
-        //dd(json_decode($request->equipmentSelected));
+        $equipmentArr = json_decode($request->equipmentSelected,true);
+        unset($equipmentArr['length']);
 
-        $loan->assets()->sync(json_decode($request->equipmentSelected));
+        //Add assets into asset_loan table
+        $loan->assets()->sync($equipmentArr);
 
-        return Response::json($loan);
+        return redirect()->back()->with('success', 'your message here');
     }
 
     /**

@@ -77,8 +77,10 @@
             <!-- Reservation -->
             <hr>
             <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="reservation" id="reservation" value="{{ old('reservation') }}">
-            <span id="status_idError" class="inputError"></span>
+            <input class="form-check-input" type="checkbox" name="status_id" id="status_id" value="1">
+            @if($errors->has('status_id'))
+                <p class="text-danger">{{ $errors->first('status_id') }}</p>
+            @endif
             <label class="form-check-label" for="defaultCheck1">
                 Reservation
             </label>
@@ -101,9 +103,14 @@
             //Fix for missing icons in tempusdominus
             $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, { icons: { time: 'fas fa-clock', date: 'fas fa-calendar', up: 'fas fa-arrow-up', down: 'fas fa-arrow-down', previous: 'far fa-chevron-left', next: 'far fa-chevron-right', today: 'far fa-calendar-check-o', clear: 'far fa-trash', close: 'far fa-times' } });
 
+            //Setup better select boxes
             $('#userSelected').select2({
                 theme: "bootstrap-5",
                 placeholder: "Select a user",
+            });
+            $('#equipmentSelected').select2({
+                theme: "bootstrap-5",
+                placeholder: "Select equipment",
             });
 
             //Setup the Datetime picker settings
@@ -187,7 +194,7 @@
             function populateEquipmentDropdown(name, data){
                 var dropdown = $('#' + name);
                 $(dropdown).empty();
-                dropdown.append("<option selected>Choose here</option>");
+                dropdown.append("<option></option>");
                 $.each(data, function() {
                     $("<option />", {
                         val: this.id,
@@ -198,26 +205,24 @@
 
             //Add selected equipment to the shopping cart
             $(document).on('change','#equipmentSelected',function (e) {
-                //Add to datatable
+                //Find what has just been selected
                 var assetName = $('#equipmentSelected :selected').text();
                 var assetID = $('#equipmentSelected').children(":selected").val();
+
+                //Fill out datatable on form
+                //Must redraw after adding to show user the changes
                 equipmentTable.row.add( [
                     assetName,
                     '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
                 ] ).node().id = assetID;
                 equipmentTable.draw();
 
-                //Add to shopping cart array
-                // equipmentCart.push({
-                //     asset_id: assetID,
-                //     returned: 0,
-                // });
-
+                //Add to the shopping card to pass onto the database for storage
                 equipmentCart[assetID] = {}
                 equipmentCart[assetID]['returned'] = 0
 
-                console.log(equipmentCart);
-
+                //Set the equipment array to a hidden input on the form
+                //Must be sent in json format and not a javascript array
                 $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
 
                 //Remove from the dropdown menu
