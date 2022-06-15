@@ -62,27 +62,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            //trigger exception in a "try" block
-                            try {
-                                echo "HELLO WORLD";
-                                $old = json_decode(session()->getOldInput()['equipmentSelected']);
-
-                                echo var_dump($old);
-                            }
-                            //catch exception
-                            catch(Exception $e) {
-                                echo 'Message: ' .$e->getMessage();
-                            }
-                        @endphp
-
-                        @isset(session()->getOldInput()['equipmentSelected'])
-                            @foreach(json_decode(session()->getOldInput()['equipmentSelected']) as $equipment)
-                                @php
-                                    dd($equipment)
-                                @endphp
-                            @endforeach
-                        @endisset
                     </tbody>
                 </table>
             </div>

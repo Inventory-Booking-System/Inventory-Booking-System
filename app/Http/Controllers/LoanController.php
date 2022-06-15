@@ -94,7 +94,6 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-
         $data = $request->validate([
             'user_id' => 'required|integer',
             'start_date' => 'required|date|before:end_date|nullable',
@@ -120,7 +119,7 @@ class LoanController extends Controller
         //Add assets into asset_loan table
         $loan->assets()->sync($equipmentArr);
 
-        return redirect()->back()->with('success', 'your message here');
+        return redirect()->route('loans.index');
     }
 
     /**
@@ -150,7 +149,13 @@ class LoanController extends Controller
      */
     public function edit($id)
     {
-        //
+        //Get list of users
+        $users = User::latest()->get();
+
+        //Render rest of the page
+        return view('loan.edit',[
+            'users' => $users
+        ]);
     }
 
     /**
