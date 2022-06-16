@@ -94,7 +94,8 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        //Check the data that we have recieved is as we expect
+        $validator = Validator::make($request->all(),[
             'user_id' => 'required|integer',
             'start_date' => 'required|date|before:end_date|nullable',
             'end_date' => 'required|date|after:start_date|nullable',
@@ -103,12 +104,39 @@ class LoanController extends Controller
             'status_id' => 'string|in:1',
         ]);
 
+        if($validator->fails()){
+            //
+
+
+            return redirect('loans/create')
+                        ->withErrors($validator)
+                        ->withInput(Input::except('equipmentSelected'));
+        }
+
+        //Retrieve the validated input
+        $validated = $validator->validated();
+
+
+
+
+
+        // $data = $request->validate([
+        //     'user_id' => 'required|integer',
+        //     'start_date' => 'required|date|before:end_date|nullable',
+        //     'end_date' => 'required|date|after:start_date|nullable',
+        //     'equipmentSelected' => 'required|json',
+        //     'details' => 'nullable|string',
+        //     'status_id' => 'string|in:1',
+        // ]);
+
+
+
         $loanId = Loan::create([
-            'user_id' => $data['user_id'],
-            'status_id' => $data['status_id'] ?? "0",
-            'start_date_time' => carbon::parse($data['start_date']),
-            'end_date_time' => carbon::parse($data['end_date']),
-            'details' => $data['details'] ?? "",
+            'user_id' => $validator['user_id'],
+            'status_id' => $validator['status_id'] ?? "0",
+            'start_date_time' => carbon::parse($validator['start_date']),
+            'end_date_time' => carbon::parse($validator['end_date']),
+            'details' => $validator['details'] ?? "",
         ])->id;
 
         $loan = Loan::find($loanId);
