@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Validator;
+use Redirect;
 use Response;
 use App\Models\Loan;
 use App\Models\User;
@@ -105,12 +107,32 @@ class LoanController extends Controller
         ]);
 
         if($validator->fails()){
-            //
+            //If the selected equipment field is not erroring we should
+            //return the data as an array for display
+            if(!($validator->errors()->has('equipmentSelected'))){
+                //Change Json to array which can be then be intrepeted by blade php
+                $equipmentArr = json_decode($request->input('equipmentSelected'),true);
+                unset($equipmentArr['length']);
 
+                $request->merge(['equipmentSelected' => $equipmentArr]);
 
-            return redirect('loans/create')
+                //Get other assets still avaliable for booking to repopulate
+                if(!($validator->errors()->has('start_date')) and !($validator->errors()->has('end_date'))){
+                    $bookableEquipment = $this->getBookableEquipment($request);
+
+                    $request->merge(['bookableEquipment' => $bookableEquipment->getData()]);
+                }
+
+            }else{
+                //dd();
+            }
+
+            $test = redirect('loans/create')
                         ->withErrors($validator)
-                        ->withInput(Input::except('equipmentSelected'));
+                        ->withInput();
+
+            return $test;
+            //dd($test);
         }
 
         //Retrieve the validated input
