@@ -62,12 +62,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @isset(session()->getOldInput()['equipmentSelected'])
-                            @foreach(old('equipmentSelected') as $i => $equipment)
-                                {{ $i }}
-                                @php
-                                    var_dump($equipment);
-                                @endphp
+                        @isset(session()->getOldInput()['bookableEquipment'])
+                            @foreach(old('bookableEquipment') as $key=>$equipment)
+                                @isset($equipment->selected)
+                                    
+                                    @if($equipment->selected == true)
+                                    
+                                    <script>
+                                        //Fill out datatable on form
+                                        //Must redraw after adding to show user the changes
+                                        equipmentTable.row.add( [
+                                            '{!! $equipment->name !!}',
+                                            '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + {!! $equipment->id !!} + '" data-assetid="' + {!! $equipment->id !!} + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
+                                        ] ).node().id = {{ $equipment->id }};
+                                        equipmentTable.draw();
+                                    </script>    
+                                    @endif 
+                                @endisset    
                             @endforeach
                         @endisset
                     </tbody>

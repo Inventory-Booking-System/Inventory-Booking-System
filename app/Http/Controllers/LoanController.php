@@ -96,7 +96,9 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        //Check the data that we have recieved is as we expect
+        //Perform the first step of validation on the data. At this stage we are
+        //just checking that data has arrived in the expected format for further
+        //processing afterwards
         $validator = Validator::make($request->all(),[
             'user_id' => 'required|integer',
             'start_date' => 'required|date|before:end_date|nullable',
@@ -106,27 +108,53 @@ class LoanController extends Controller
             'status_id' => 'string|in:1',
         ]);
 
-        if($validator->fails()){
-            //If the selected equipment field is not erroring we should
-            //return the data as an array for display
-            if(!($validator->errors()->has('equipmentSelected'))){
-                //Change Json to array which can be then be intrepeted by blade php
-                $equipmentArr = json_decode($request->input('equipmentSelected'),true);
-                unset($equipmentArr['length']);
+        //We now need to verify the equipment the user has booked is actually bookable still.
+        //This can fail for two reasons
+        //The user has modified the array used to store equipment they are allowed to book client side. We should never trust this data.
+        //Another user has booked the equipment after this user had opened the create loan form but had not selected submit yet.
+        if(!($validator->errors()->has('equipmentSelected'))){
+            //Blade php works much better with an arrays rather than JSON so lets convert 
+            $equipmentArr = json_decode($request->input('equipmentSelected'),true);
+            //For some reason the JSON is returning length as part of the array so lets remove
+            unset($equipmentArr['length']);
 
-                $request->merge(['equipmentSelected' => $equipmentArr]);
+            $request->merge(['equipmentSelected' => $equipmentArr]);
 
-                //Get other assets still avaliable for booking to repopulate
-                if(!($validator->errors()->has('start_date')) and !($validator->errors()->has('end_date'))){
-                    $bookableEquipment = $this->getBookableEquipment($request);
+            //This is used to re-populate the dropdown of assets that are avaliable to book
+            //We need to make sure the start and end dates have passed validation before 
+            //fetching this information from the database
+            if(!($validator->errors()->has('start_date')) and !($validator->errors()->has('end_date'))){
+                //This gives us all the equipment avaliable to be booked between the two dates
+                $bookableEquipment = $this->getBookableEquipment($request)->getData();
 
-                    $request->merge(['bookableEquipment' => $bookableEquipment->getData()]);
+                //We then need to mark the equipment the user has booked so we can add it back to the
+                //shopping cart and not to the equipment dropdown menu
+                foreach($equipmentArr as $id => $value){
+                    $idFound = false;
+                    //dd($bookableEquipment->getData());
+                    foreach($bookableEquipment as &$equipment){
+                        if($id == $equipment->id){
+                            //We have found the ID is list of bookable equipment
+                            $idFound = true;
+                            $equipment->selected = true;
+                        } 
+                    }
+
+                    if($idFound == false){
+                        //User has tried to book assets that are no longer avaliable
+
+                    }
                 }
 
-            }else{
-                //dd();
+                //Merge the bookable equipment back into the oldInput array which is passed back to the view
+                //This is used to re-populate both the equipment dropdown menu and the shopping cart table
+                $request->merge(['bookableEquipment' => $bookableEquipment]);
             }
 
+        }
+
+        //Return any errors during the validation
+        if($validator->fails()){
             $test = redirect('loans/create')
                         ->withErrors($validator)
                         ->withInput();
@@ -153,23 +181,23 @@ class LoanController extends Controller
 
 
 
-        $loanId = Loan::create([
-            'user_id' => $validator['user_id'],
-            'status_id' => $validator['status_id'] ?? "0",
-            'start_date_time' => carbon::parse($validator['start_date']),
-            'end_date_time' => carbon::parse($validator['end_date']),
-            'details' => $validator['details'] ?? "",
-        ])->id;
+        // $loanId = Loan::create([
+        //     'user_id' => $validator['user_id'],
+        //     'status_id' => $validator['status_id'] ?? "0",
+        //     'start_date_time' => carbon::parse($validator['start_date']),
+        //     'end_date_time' => carbon::parse($validator['end_date']),
+        //     'details' => $validator['details'] ?? "",
+        // ])->id;
 
-        $loan = Loan::find($loanId);
+        // $loan = Loan::find($loanId);
 
-        $equipmentArr = json_decode($request->equipmentSelected,true);
-        unset($equipmentArr['length']);
+        // $equipmentArr = json_decode($request->equipmentSelected,true);
+        // unset($equipmentArr['length']);
 
-        //Add assets into asset_loan table
-        $loan->assets()->sync($equipmentArr);
+        // //Add assets into asset_loan table
+        // $loan->assets()->sync($equipmentArr);
 
-        return redirect()->route('loans.index');
+        // return redirect()->route('loans.index');
     }
 
     /**
