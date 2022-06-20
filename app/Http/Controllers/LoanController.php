@@ -113,15 +113,16 @@ class LoanController extends Controller
         //The user has modified the array used to store equipment they are allowed to book client side. We should never trust this data.
         //Another user has booked the equipment after this user had opened the create loan form but had not selected submit yet.
         if(!($validator->errors()->has('equipmentSelected'))){
-            //Blade php works much better with an arrays rather than JSON so lets convert 
+            //Blade php works much better with an arrays rather than JSON so lets convert
             $equipmentArr = json_decode($request->input('equipmentSelected'),true);
             //For some reason the JSON is returning length as part of the array so lets remove
             unset($equipmentArr['length']);
 
-            $request->merge(['equipmentSelected' => $equipmentArr]);
+            $newEquipmentArr = [];
+
 
             //This is used to re-populate the dropdown of assets that are avaliable to book
-            //We need to make sure the start and end dates have passed validation before 
+            //We need to make sure the start and end dates have passed validation before
             //fetching this information from the database
             if(!($validator->errors()->has('start_date')) and !($validator->errors()->has('end_date'))){
                 //This gives us all the equipment avaliable to be booked between the two dates
@@ -131,24 +132,24 @@ class LoanController extends Controller
                 //shopping cart and not to the equipment dropdown menu
                 foreach($equipmentArr as $id => $value){
                     $idFound = false;
-                    //dd($bookableEquipment->getData());
                     foreach($bookableEquipment as &$equipment){
                         if($id == $equipment->id){
                             //We have found the ID is list of bookable equipment
                             $idFound = true;
                             $equipment->selected = true;
-                        } 
+                        }
                     }
 
                     if($idFound == false){
                         //User has tried to book assets that are no longer avaliable
-
                     }
                 }
 
                 //Merge the bookable equipment back into the oldInput array which is passed back to the view
                 //This is used to re-populate both the equipment dropdown menu and the shopping cart table
                 $request->merge(['bookableEquipment' => $bookableEquipment]);
+
+                //dd($bookableEquipment);
             }
 
         }
