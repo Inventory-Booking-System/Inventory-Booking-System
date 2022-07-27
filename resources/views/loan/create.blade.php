@@ -66,9 +66,9 @@
                             @foreach (old('bookableEquipment') as $equipment)
                                 @isset($equipment->selected)
                                     @if($equipment->selected)
-                                        <tr>
+                                        <tr id="{{ $equipment->id }}">
                                             <td>{{ $equipment->name }}</td>
-                                            <td><button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }}" data-assetid="{{ $equipment->tag }}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button></td>
+                                            <td><button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }}" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button></td>
                                         </tr>
                                     @endif
                                 @endisset
@@ -89,6 +89,7 @@
             <!-- Reservation -->
             <hr>
             <div class="form-check">
+            <input type="hidden" name="status_id" value="1" @if(is_array(old('status_id')) && in_array(1,old('status_id'))) checked @endif/> <!-- This allows us to send a value if the checkbox is not selected -->
             <input class="form-check-input" type="checkbox" name="status_id" id="status_id" value="1">
             @if($errors->has('status_id'))
                 <p class="text-danger">{{ $errors->first('status_id') }}</p>
@@ -159,6 +160,26 @@
                 }
             });
 
+            //Get any equipment already in the equipment table. For example if formed was filled out incorrectly
+            //we need to repopulate any equipment returned back into the shopping cart
+            if(equipmentTable.data().any()){
+                equipmentTable.rows().every(function(index, element){
+                    var assetID = this.node().id;
+                    var assetName = this.data()[0];
+
+                    //Add to the shopping card to pass onto the database for storage
+                    equipmentCart[assetID] = {}
+                    equipmentCart[assetID]['returned'] = 0
+
+                    //Set the equipment array to a hidden input on the form
+                    //Must be sent in json format and not a javascript array
+                    $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+                });
+
+                //Populate dropdown
+                getEquipment();
+            }
+
             //Check that each input is filled out with data
             function checkInputFieldsForData(inputs, type){
                 var dataMissing = false;
@@ -185,13 +206,10 @@
                     async: false,
                     dataType: 'json',
                     data: {
-                        user_id: $('#userSelected :selected').val(),
-                        status_id: $('#reservation').is(':checked') ? 1 : 0,
                         loanType: $("#formAddLoan input[type='radio']:checked").attr('id'),
                         start_date: $('#loanStartDate').val(),
                         end_date: $('#loanEndDate').val(),
                         equipmentSelected: equipmentCart,
-                        details: $('#additionalDetails').val(),
                     },
                     success: function(data) {
                         populateEquipmentDropdown("equipmentSelected", data);
@@ -251,10 +269,11 @@
                 }).appendTo(dropdown);
 
                 //Remove from shopping cart array
-                var index = equipmentCart.findIndex((obj => obj.asset_id == this.dataset.assetid));
-                if (index > -1) {
-                    equipmentCart.splice(index, 1);
-                }
+                console.log(this.dataset.assetid);
+                delete equipmentCart[this.dataset.assetid];
+
+                console.log(equipmentCart);
+
                 $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
 
                 //Remove from table
@@ -262,27 +281,27 @@
             });
 
             //Book in individual item from the shopping cart
-            $(document).on('click', '.bookFromCart', function(e) {
-                //Send ajax request to update database and send email
+            // $(document).on('click', '.bookFromCart', function(e) {
+            //     //Send ajax request to update database and send email
 
-                var dropdown = $('#equipmentSelected');
-                //Re-add to equipment dropdown
-                $("<option />", {
-                    val: this.dataset.assetid,
-                    text: this.dataset.assetname
-                }).appendTo(dropdown);
+            //     var dropdown = $('#equipmentSelected');
+            //     //Re-add to equipment dropdown
+            //     $("<option />", {
+            //         val: this.dataset.assetid,
+            //         text: this.dataset.assetname
+            //     }).appendTo(dropdown);
 
-                console.log(equipmentCart);
+            //     console.log(equipmentCart);
 
-                //Marked as returned in the shopping cart
-                var objIndex = equipmentCart.findIndex((obj => obj.asset_id == this.dataset.assetid));
-                console.log(objIndex)
+            //     //Marked as returned in the shopping cart
+            //     var objIndex = equipmentCart.findIndex((obj => obj.asset_id == this.dataset.assetid));
+            //     console.log(objIndex)
 
-                equipmentCart[objIndex].returned = 1;
+            //     equipmentCart[objIndex].returned = 1;
 
-                //Remove from table
-                equipmentTable.row($(this).parents('tr')).remove().draw();
-            });
+            //     //Remove from table
+            //     equipmentTable.row($(this).parents('tr')).remove().draw();
+            // });
         });
     </script>
 @endpush

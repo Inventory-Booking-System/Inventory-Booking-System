@@ -105,7 +105,7 @@ class LoanController extends Controller
             'end_date' => 'required|date|after:start_date|nullable',
             'equipmentSelected' => 'required|json',
             'details' => 'nullable|string',
-            'status_id' => 'string|in:1',
+            'status_id' => 'string|in:0,1',
         ]);
 
         //We now need to verify the equipment the user has booked is actually bookable still.
@@ -167,8 +167,7 @@ class LoanController extends Controller
         //Retrieve the validated input
         $validated = $validator->validated();
 
-
-
+        echo dd($validated);
 
 
         // $data = $request->validate([
@@ -198,7 +197,7 @@ class LoanController extends Controller
         // //Add assets into asset_loan table
         // $loan->assets()->sync($equipmentArr);
 
-        // return redirect()->route('loans.index');
+        return redirect()->route('loans.index');
     }
 
     /**
@@ -299,7 +298,13 @@ class LoanController extends Controller
         $data = $request->validate([
             'start_date' => 'required_if:loanType,loanTypeMulti|date|before:end_date|nullable',
             'end_date' => 'required_if:loanType,loanTypeMulti|date|after:start_date|nullable',
+            'equipmentSelected' => 'required',
         ]);
+
+        $ignoredIds = [];
+        foreach ((array)$data['equipmentSelected'] as $key => $value) {
+            array_push($ignoredIds, $key);
+        }
 
         $validatedDate =[
             'start_date_time' => carbon::parse($data['start_date']),
@@ -325,6 +330,7 @@ class LoanController extends Controller
                                         })
                                         ->orWhereDoesntHave('loans');
                                     })
+                                    ->whereNotIn('assets.id', $ignoredIds)
                                     ->get());
     }
 
