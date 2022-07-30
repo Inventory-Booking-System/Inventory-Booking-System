@@ -13,7 +13,8 @@ class BookingController extends Controller
      */
     public function index()
     {
-        //
+        //Render rest of the page
+        return view('booking.bookings');
     }
 
     /**
@@ -23,7 +24,7 @@ class BookingController extends Controller
      */
     public function create()
     {
-        //
+        return view('booking.create');
     }
 
     /**
@@ -45,7 +46,7 @@ class BookingController extends Controller
      */
     public function show($id)
     {
-        //
+
     }
 
     /**
@@ -56,7 +57,7 @@ class BookingController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('booking.edit');
     }
 
     /**

@@ -5,7 +5,7 @@
         <a id="addAsset" href="#" class="nav-link">
         <i class="nav-icon fas fa-plus"></i>
         <p>
-            Add Asset
+            New Asset
         </p>
         </a>
     </li>

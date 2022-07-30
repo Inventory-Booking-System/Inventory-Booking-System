@@ -13,7 +13,8 @@ class IncidentController extends Controller
      */
     public function index()
     {
-        //
+        //Render rest of the page
+        return view('incident.incidents');
     }
 
     /**
@@ -23,7 +24,7 @@ class IncidentController extends Controller
      */
     public function create()
     {
-        //
+        return view('incident.create');
     }
 
     /**
@@ -56,7 +57,7 @@ class IncidentController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('incident.edit');
     }
 
     /**

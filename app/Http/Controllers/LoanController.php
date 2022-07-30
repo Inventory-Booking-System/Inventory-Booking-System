@@ -297,7 +297,7 @@ class LoanController extends Controller
 
         return Response::json(Asset::with('loans')
                                     ->where('bookable',true)
-                                    ->whereNotIn('assets.id', $ignoredIds)
+                                    //->whereNotIn('assets.id', $ignoredIds)
                                     ->where(function($query) use($validatedDate){
                                         $query->whereNotIn('assets.id', function($query) use($validatedDate){
                                             $query->select('asset_loan.asset_id')

@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\IncidentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +24,13 @@ Route::patch('loans/completeBooking/{id}', [LoanController::class, 'completeBook
 Route::resource('loans', LoanController::class);
 
 //Assets
-Route::resource('/assets', AssetController::class);
+Route::resource('assets', AssetController::class);
+
+//Bookings
+Route::resource('bookings', BookingController::class);
+
+//Accounts
+Route::resource('users', UserController::class);
+
+//Incidents
+Route::resource('incidents', IncidentController::class);

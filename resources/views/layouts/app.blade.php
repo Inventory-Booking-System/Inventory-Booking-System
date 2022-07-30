@@ -30,7 +30,7 @@
                 <a class="nav-link" href="/loans">Loans</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="/setups">Setups</a>
+                <a class="nav-link" href="/bookings">Setups</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
                 <a class="nav-link" href="/incidents">Incidents</a>
@@ -39,7 +39,7 @@
                 <a class="nav-link" href="/assets">Assets</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="/accounts">Accounts</a>
+                <a class="nav-link" href="/users">Accounts</a>
             </li>
         </ul>
 
