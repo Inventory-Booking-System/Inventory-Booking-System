@@ -105,7 +105,7 @@ class LoanController extends Controller
             'end_date' => 'required|date|after:start_date|nullable',
             'equipmentSelected' => 'required|json',
             'details' => 'nullable|string',
-            'status_id' => 'string|in:0,1',
+            'status_id' => 'required|string|in:0,1',
         ]);
 
         //We now need to verify the equipment the user has booked is actually bookable still.
@@ -161,41 +161,29 @@ class LoanController extends Controller
                         ->withInput();
 
             return $test;
-            //dd($test);
         }
 
         //Retrieve the validated input
         $validated = $validator->validated();
 
-        echo dd($validated);
+        //echo dd($validated);
 
 
-        // $data = $request->validate([
-        //     'user_id' => 'required|integer',
-        //     'start_date' => 'required|date|before:end_date|nullable',
-        //     'end_date' => 'required|date|after:start_date|nullable',
-        //     'equipmentSelected' => 'required|json',
-        //     'details' => 'nullable|string',
-        //     'status_id' => 'string|in:1',
-        // ]);
+        $loanId = Loan::create([
+            'user_id' => $validated['user_id'],
+            'status_id' => $validated['status_id'] ?? "0",
+            'start_date_time' => carbon::parse($validated['start_date']),
+            'end_date_time' => carbon::parse($validated['end_date']),
+            'details' => $validated['details'] ?? "",
+        ])->id;
 
+        $loan = Loan::find($loanId);
 
+        $equipmentArr = json_decode($request->equipmentSelected,true);
+        unset($equipmentArr['length']);
 
-        // $loanId = Loan::create([
-        //     'user_id' => $validator['user_id'],
-        //     'status_id' => $validator['status_id'] ?? "0",
-        //     'start_date_time' => carbon::parse($validator['start_date']),
-        //     'end_date_time' => carbon::parse($validator['end_date']),
-        //     'details' => $validator['details'] ?? "",
-        // ])->id;
-
-        // $loan = Loan::find($loanId);
-
-        // $equipmentArr = json_decode($request->equipmentSelected,true);
-        // unset($equipmentArr['length']);
-
-        // //Add assets into asset_loan table
-        // $loan->assets()->sync($equipmentArr);
+        //Add assets into asset_loan table
+        $loan->assets()->sync($equipmentArr);
 
         return redirect()->route('loans.index');
     }
@@ -208,15 +196,8 @@ class LoanController extends Controller
      */
     public function show(Request $request, $id)
     {
-        //When modifying an asset
-        if($request->ajax()){
-            $loan = Loan::with('assets')->find($id);
-
-            return Response::json($loan);
-        }
-
-        //When displaying the seperate asset page
-        return view('asset.assets');
+        $loan = Loan::with('assets')->find($id);
+        return Response::json($loan);
     }
 
     /**
@@ -311,8 +292,12 @@ class LoanController extends Controller
             'end_date_time' => carbon::parse($data['end_date']),
         ];
 
+        //echo $validatedDate['start_date_time'];
+        //echo $validatedDate['end_date_time'];
+
         return Response::json(Asset::with('loans')
                                     ->where('bookable',true)
+                                    ->whereNotIn('assets.id', $ignoredIds)
                                     ->where(function($query) use($validatedDate){
                                         $query->whereNotIn('assets.id', function($query) use($validatedDate){
                                             $query->select('asset_loan.asset_id')
@@ -330,7 +315,6 @@ class LoanController extends Controller
                                         })
                                         ->orWhereDoesntHave('loans');
                                     })
-                                    ->whereNotIn('assets.id', $ignoredIds)
                                     ->get());
     }
 

@@ -27,22 +27,19 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Loans</a>
+                <a class="nav-link" href="/loans">Loans</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Setups</a>
+                <a class="nav-link" href="/setups">Setups</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Incidents</a>
+                <a class="nav-link" href="/incidents">Incidents</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Consumables</a>
+                <a class="nav-link" href="/assets">Assets</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Assets</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="">Accounts</a>
+                <a class="nav-link" href="/accounts">Accounts</a>
             </li>
         </ul>
 
