@@ -250,12 +250,44 @@
                 var dropdown = $('#' + name);
                 $(dropdown).empty();
                 dropdown.append("<option></option>");
+
+                //Populate dropdown options
+                console.log(data);
                 $.each(data, function() {
-                    $("<option />", {
-                        val: this.id,
-                        text: this.name + " (" + this.tag + ")"
-                    }).appendTo(dropdown);
+                    //Make sure item is not already in the shopping cart
+                    if(!(this.id in equipmentCart)){
+                        $("<option />", {
+                            val: this.id,
+                            text: this.name + " (" + this.tag + ")"
+                        }).appendTo(dropdown);
+                    }
                 });
+
+                //Check if any items are in the shopping cart that shouldn't be
+                //This can happen when the user changes the start/end date and
+                //asset is no longer avalaible to book.
+                if(equipmentTable.data().any()){
+                    equipmentTable.rows().every(function(index, element){
+                        var assetID = this.node().id;
+                        var assetName = this.data()[0];
+
+                        var found = false;
+                        $.each(data, function() {
+                            if(this.id == assetID){
+                                found = true;
+                            }
+                        });
+
+                        if(found == false){
+                            delete equipmentCart[assetID];
+
+                            $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+
+                            //Remove from table
+                            equipmentTable.row($(this)).remove().draw();
+                        }
+                    });
+                }
 
                 //If you select the equipment too quickly it returns blank so disable for one second
                 //TODO: figure out why this is?
