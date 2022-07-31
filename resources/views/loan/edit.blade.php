@@ -1,8 +1,15 @@
 @extends('layouts.app')
 
 @section('mainContent')
-    <form action="/loans" method="PATCH" enctype="multipart/form-data" >
+    <style>
+        .addStrike {
+            text-decoration: line-through;
+        }
+    </style>
+
+    <form action="/loans/{{ $loan->id }}" method="POST" enctype="multipart/form-data" >
         @csrf
+        @method('PUT')
 
         <div class="row">
             <!-- Start Date/Time, User, Equipment Selection, Additional Details, Reservation -->
@@ -15,7 +22,7 @@
                             <span class="text-danger">{{ $errors->first('start_date') }}</span>
                         @endif
                         <div class="input-group date dtpStartDateTime" data-target-input="nearest">
-                            <input name="start_date" id="loanStartDate" type="text" value="{{ old('start_date') }}" class="form-control datetimepicker-input" data-target=".dtpStartDateTime"/>
+                            <input name="start_date" id="loanStartDate" type="text" value="{{ old('start_date', $loan->start_date_time) }}" class="form-control datetimepicker-input" data-target=".dtpStartDateTime"/>
                             <div class="input-group-append" data-target=".dtpStartDateTime" data-toggle="datetimepicker">
                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                             </div>
@@ -29,7 +36,7 @@
                             <span class="text-danger">{{ $errors->first('end_date') }}</span>
                         @endif
                         <div class="input-group date dtpEndDateTime" data-target-input="nearest">
-                            <input name="end_date" id="loanEndDate" type="text" value="{{ old('end_date') }}" class="form-control datetimepicker-input" data-target=".dtpEndDateTime"/>
+                            <input name="end_date" id="loanEndDate" type="text" value="{{ old('end_date', $loan->end_date_time) }}" class="form-control datetimepicker-input" data-target=".dtpEndDateTime"/>
                             <div class="input-group-append" data-target=".dtpEndDateTime" data-toggle="datetimepicker">
                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                             </div>
@@ -45,7 +52,7 @@
                 <select name="user_id" class="form-control" id="userSelected"">
                     <option></option>
                     @foreach ($users as $user)
-                        @if (old('user_id') == $user->id)
+                        @if (old('user_id', $loan->user->id) == $user->id)
                             <option value="{{ $user->id }}" selected>{{ $user->forename }} {{ $user->surname }}</option>
                         @else
                             <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
@@ -66,7 +73,7 @@
                 @if($errors->has('details'))
                     <p class="text-danger">{{ $errors->first('details') }}</p>
                 @endif
-                <textarea rows="8" name="details" class="form-control" id="additionalDetails">{{ old('details') }}</textarea>
+                <textarea rows="8" name="details" class="form-control" id="additionalDetails">{{ old('details', $loan->details) }}</textarea>
 
                 <!-- Reservation -->
                 <label class="mt-3">Reservation</label>
@@ -76,14 +83,14 @@
                 <br>
                 <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
                     <label class="btn btn-success">
-                      <input type="radio" name="status_id" value="1" id="option1" @if(old('status_id') == "1") checked @endif> Yes
+                      <input type="radio" name="status_id" value="1" id="option1" @if(old('status_id', $loan->status_id) == "1") checked @endif> Yes
                     </label>
                     <label class="btn btn-success">
-                      <input type="radio" name="status_id" value="0" id="option2" @if(old('status_id') == "0") checked @endif> No
+                      <input type="radio" name="status_id" value="0" id="option2" @if(old('status_id') == $loan->status_id) checked @endif> No
                     </label>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Create Loan</button>
+                <button type="submit" class="btn btn-primary btn-block">Modify Loan</button>
             </div>
 
             <!-- Shopping Cart -->
@@ -94,6 +101,7 @@
                             <tr>
                                 <th scope="col">Item</th>
                                 <th scope="col">Remove</th>
+                                <th scope="col">Book In</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -104,9 +112,19 @@
                                             <tr id="{{ $equipment->id }}">
                                                 <td>{{ $equipment->name }} ({{ $equipment->tag }})</td>
                                                 <td><button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button></td>
+                                                <td><button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button></td>
                                             </tr>
                                         @endif
                                     @endisset
+                                @endforeach
+                            @else
+                                <!-- Get posted equipment data -->
+                                @foreach($loan->assets as $equipment)
+                                    <tr id="{{ $equipment->id }}">
+                                        <td>{{ $equipment->name }} ({{ $equipment->tag }})</td>
+                                        <td><button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button></td>
+                                        <td><button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button></td>
+                                    </tr>
                                 @endforeach
                             @endif
                         </tbody>
@@ -119,185 +137,5 @@
 @endsection
 
 @push('scripts')
-    {{-- <script src="{{ asset('js/loans.js') }}"></script> --}}
-
-    <script>
-        var equipmentCart = {};
-        var equipmentTable;
-
-        $("document").ready(function(){
-
-            //Fix for missing icons in tempusdominus
-            $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, { icons: { time: 'fas fa-clock', date: 'fas fa-calendar', up: 'fas fa-arrow-up', down: 'fas fa-arrow-down', previous: 'far fa-chevron-left', next: 'far fa-chevron-right', today: 'far fa-calendar-check-o', clear: 'far fa-trash', close: 'far fa-times' } });
-
-            //Setup better select boxes
-            $('#userSelected').select2({
-                theme: "bootstrap-5",
-                placeholder: "Select a user",
-            });
-            $('#equipmentSelected').select2({
-                theme: "bootstrap-5",
-                placeholder: "Select equipment",
-            });
-
-            //Setup the Datetime picker settings
-            var currentDate = new Date();
-
-            //Single Day Booking
-            //Loan Date
-            $('.dtpStartDateTime').datetimepicker({
-                useCurrent: true,
-                format: "yyyy-MM-DD HH:mm",
-            });
-
-            $('.dtpEndDateTime').datetimepicker({
-                format: "yyyy-MM-DD HH:mm",
-            });
-
-            $(document).on('input', '#loanStartDate, #loanEndDate', function(e) {
-                var allInputsHaveData = false;
-                allInputsHaveData = checkInputFieldsForData(["loanStartDate","loanEndDate"]);
-
-                if(allInputsHaveData){
-                    getEquipment();
-                }
-            });
-
-            //This table is used to display the list of equipment currently in the shopping cart
-            equipmentCart.length = 0;
-            equipmentTable = $('#equipmentTable').DataTable({
-                paging: false,
-                searching: false,
-                info: false,
-                language: {
-                emptyTable: "Shopping cart is empty"
-                }
-            });
-
-            //Check that each input is filled out with data
-            function checkInputFieldsForData(inputs, type){
-                var dataMissing = false;
-                inputs.forEach((input) => {
-                    if(!($("#" + input).val())){
-                        console.log(input + " missing");
-                        dataMissing = true;
-                        return false;
-                    }
-                });
-
-                if(dataMissing){
-                    return false;
-                }else{
-                    return true;
-                }
-            }
-
-            //Return a list of equipment that is avaliable for booking
-            function getEquipment(){
-                jQuery.ajax({
-                    type: "GET",
-                    url: "getBookableEquipment",
-                    async: false,
-                    dataType: 'json',
-                    data: {
-                        user_id: $('#userSelected :selected').val(),
-                        status_id: $('#reservation').is(':checked') ? 1 : 0,
-                        loanType: $("#formAddLoan input[type='radio']:checked").attr('id'),
-                        start_date: $('#loanStartDate').val(),
-                        end_date: $('#loanEndDate').val(),
-                        equipmentSelected: equipmentCart,
-                        details: $('#additionalDetails').val(),
-                    },
-                    success: function(data) {
-                        populateEquipmentDropdown("equipmentSelected", data);
-                    },
-                    error: function(data){
-
-                    }
-                });
-            }
-
-            //List all the avaliable equipment for booking on the form
-            function populateEquipmentDropdown(name, data){
-                var dropdown = $('#' + name);
-                $(dropdown).empty();
-                dropdown.append("<option></option>");
-                $.each(data, function() {
-                    $("<option />", {
-                        val: this.id,
-                        text: this.name
-                    }).appendTo(dropdown);
-                });
-            }
-
-            //Add selected equipment to the shopping cart
-            $(document).on('change','#equipmentSelected',function (e) {
-                //Find what has just been selected
-                var assetName = $('#equipmentSelected :selected').text();
-                var assetID = $('#equipmentSelected').children(":selected").val();
-
-                //Fill out datatable on form
-                //Must redraw after adding to show user the changes
-                equipmentTable.row.add( [
-                    assetName,
-                    '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
-                ] ).node().id = assetID;
-                equipmentTable.draw();
-
-                //Add to the shopping card to pass onto the database for storage
-                equipmentCart[assetID] = {}
-                equipmentCart[assetID]['returned'] = 0
-
-                //Set the equipment array to a hidden input on the form
-                //Must be sent in json format and not a javascript array
-                $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
-
-                //Remove from the dropdown menu
-                $('#equipmentSelected :selected').remove();
-            });
-
-            //Delete item in shopping cart
-            $(document).on('click', '.removeFromCart', function(e) {
-                var dropdown = $('#equipmentSelected');
-                //Re-add to equipment dropdown
-                $("<option />", {
-                    val: this.dataset.assetid,
-                    text: this.dataset.assetname
-                }).appendTo(dropdown);
-
-                //Remove from shopping cart array
-                var index = equipmentCart.findIndex((obj => obj.asset_id == this.dataset.assetid));
-                if (index > -1) {
-                    equipmentCart.splice(index, 1);
-                }
-                $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
-
-                //Remove from table
-                equipmentTable.row($(this).parents('tr')).remove().draw();
-            });
-
-            //Book in individual item from the shopping cart
-            $(document).on('click', '.bookFromCart', function(e) {
-                //Send ajax request to update database and send email
-
-                var dropdown = $('#equipmentSelected');
-                //Re-add to equipment dropdown
-                $("<option />", {
-                    val: this.dataset.assetid,
-                    text: this.dataset.assetname
-                }).appendTo(dropdown);
-
-                console.log(equipmentCart);
-
-                //Marked as returned in the shopping cart
-                var objIndex = equipmentCart.findIndex((obj => obj.asset_id == this.dataset.assetid));
-                console.log(objIndex)
-
-                equipmentCart[objIndex].returned = 1;
-
-                //Remove from table
-                equipmentTable.row($(this).parents('tr')).remove().draw();
-            });
-        });
-    </script>
+    <script src="{{ asset('js/loans.js') }}"></script>
 @endpush

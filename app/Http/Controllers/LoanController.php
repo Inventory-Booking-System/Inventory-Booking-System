@@ -24,9 +24,7 @@ class LoanController extends Controller
     {
         //Populate data in table
         if($request->ajax()){
-            $loans = Loan::latest()->where('status_id', '<', '4')->with('assets')->get();
-
-            //dd($loans);
+            $loans = Loan::latest()->where('status_id', '<', '4')->with('assets')->with('user')->get();
 
             return Datatables::of($loans)
                 ->setRowId('id')
@@ -166,9 +164,6 @@ class LoanController extends Controller
         //Retrieve the validated input
         $validated = $validator->validated();
 
-        //echo dd($validated);
-
-
         $loanId = Loan::create([
             'user_id' => $validated['user_id'],
             'status_id' => $validated['status_id'] ?? "0",
@@ -197,6 +192,7 @@ class LoanController extends Controller
     public function show(Request $request, $id)
     {
         $loan = Loan::with('assets')->find($id);
+
         return Response::json($loan);
     }
 
@@ -210,9 +206,11 @@ class LoanController extends Controller
     {
         //Get list of users
         $users = User::latest()->get();
+        $loan = Loan::with('assets')->with('user')->find($id);
 
         //Render rest of the page
         return view('loan.edit',[
+            'loan' => $loan,
             'users' => $users
         ]);
     }
@@ -226,31 +224,99 @@ class LoanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = $request->validate([
+        $actualId = $id;
+
+        //Perform the first step of validation on the data. At this stage we are
+        //just checking that data has arrived in the expected format for further
+        //processing afterwards
+        $validator = Validator::make($request->all(),[
             'user_id' => 'required|integer',
-            'status_id' => 'boolean',
-            'start_date' => 'required_if:loanType,loanTypeMulti|date|before:end_date|nullable',
-            'end_date' => 'required_if:loanType,loanTypeMulti|date|after:start_date|nullable',
-            'equipmentSelected' => 'required|array',
-            'details2' => 'nullable|string',
-            'booked_in_equipment' => 'array',
+            'start_date' => 'required|date|before:end_date|nullable',
+            'end_date' => 'required|date|after:start_date|nullable',
+            'equipmentSelected' => 'required|json',
+            'details' => 'nullable|string',
+            'status_id' => 'required|string|in:0,1',
         ]);
 
-        Loan::where('id', $id)->update([
-            'user_id' => $data['user_id'],
-            'status_id' => $data['status_id'],
-            'start_date_time' => carbon::parse($data['start_date']),
-            'end_date_time' => carbon::parse($data['end_date']),
-            'details' => $data['details'] ?? "",
+        //We now need to verify the equipment the user has booked is actually bookable still.
+        //This can fail for two reasons
+        //The user has modified the array used to store equipment they are allowed to book client side. We should never trust this data.
+        //Another user has booked the equipment after this user had opened the create loan form but had not selected submit yet.
+        if(!($validator->errors()->has('equipmentSelected'))){
+            //Blade php works much better with an arrays rather than JSON so lets convert
+            $equipmentArr = json_decode($request->input('equipmentSelected'),true);
+            //For some reason the JSON is returning length as part of the array so lets remove
+            unset($equipmentArr['length']);
+
+            $newEquipmentArr = [];
+
+
+            //This is used to re-populate the dropdown of assets that are avaliable to book
+            //We need to make sure the start and end dates have passed validation before
+            //fetching this information from the database
+            if(!($validator->errors()->has('start_date')) and !($validator->errors()->has('end_date'))){
+                //This gives us all the equipment avaliable to be booked between the two dates
+                $bookableEquipment = $this->getBookableEquipment($request)->getData();
+
+                //We then need to mark the equipment the user has booked so we can add it back to the
+                //shopping cart and not to the equipment dropdown menu
+                foreach($equipmentArr as $id => $value){
+                    $idFound = false;
+                    foreach($bookableEquipment as &$equipment){
+                        if($id == $equipment->id){
+                            //We have found the ID is list of bookable equipment
+                            $idFound = true;
+                            $equipment->selected = true;
+                        }
+                    }
+
+                    if($idFound == false){
+                        //User has tried to book assets that are no longer avaliable
+                    }
+                }
+
+                //Merge the bookable equipment back into the oldInput array which is passed back to the view
+                //This is used to re-populate both the equipment dropdown menu and the shopping cart table
+                $request->merge(['bookableEquipment' => $bookableEquipment]);
+
+                //dd($bookableEquipment);
+            }
+
+        }
+
+        //Return any errors during the validation
+        if($validator->fails()){
+            $test = redirect('loans/create')
+                        ->withErrors($validator)
+                        ->withInput();
+
+            return $test;
+        }
+
+        //Retrieve the validated input
+        $validated = $validator->validated();
+
+        Loan::where('id',$actualId)->update([
+            'user_id' => $validated['user_id'],
+            'status_id' => $validated['status_id'] ?? "0",
+            'start_date_time' => carbon::parse($validated['start_date']),
+            'end_date_time' => carbon::parse($validated['end_date']),
+            'details' => $validated['details'] ?? "",
         ]);
 
-        $loan = Loan::find($id);
+        //dd($request->equipmentSelected);
 
-        //The sync function will remove any corrosponding data from the asset_loan table
-        //when assets are removed from the booking
-        $loan->assets()->sync($request->equipmentSelected);
+        $loan = Loan::with('assets')->find($actualId);
 
-        return Response::json($loan);
+        $equipmentArr = json_decode($request->equipmentSelected,true);
+
+        unset($equipmentArr['length']);
+
+
+        //Add assets into asset_loan table
+        $loan->assets()->sync($equipmentArr);
+
+        return redirect()->route('loans.index');
     }
 
     /**
@@ -280,6 +346,7 @@ class LoanController extends Controller
             'start_date' => 'required_if:loanType,loanTypeMulti|date|before:end_date|nullable',
             'end_date' => 'required_if:loanType,loanTypeMulti|date|after:start_date|nullable',
             'equipmentSelected' => 'required',
+            'id' => 'nullable|integer'
         ]);
 
         $ignoredIds = [];
@@ -290,10 +357,12 @@ class LoanController extends Controller
         $validatedDate =[
             'start_date_time' => carbon::parse($data['start_date']),
             'end_date_time' => carbon::parse($data['end_date']),
+            'id' =>  $data['id'] ?? -1
         ];
 
         //echo $validatedDate['start_date_time'];
         //echo $validatedDate['end_date_time'];
+        //echo intval($validatedDate['id']);
 
         return Response::json(Asset::with('loans')
                                     ->where('bookable',true)
@@ -304,12 +373,15 @@ class LoanController extends Controller
                                                   ->from('loans')
                                                   ->join('asset_loan','loans.id','asset_loan.loan_id')
                                                   ->whereRaw('`assets`.`id` = `asset_loan`.`asset_id`')
+                                                  ->where('loans.id', '!=', $validatedDate['id'])
                                                   ->where(function($query2) use($validatedDate){
                                                         $query2->where('loans.start_date_time', '>=', $validatedDate['start_date_time'])
-                                                                ->where('loans.start_date_time', '<=', $validatedDate['end_date_time']);
+                                                                ->where('loans.start_date_time', '<=', $validatedDate['end_date_time'])
+                                                                ->where('loans.id', '!=', $validatedDate['id']);
                                                     })->orWhere(function($query2) use($validatedDate){
                                                         $query2->where('loans.end_date_time', '>=', $validatedDate['start_date_time'])
-                                                            ->where('loans.end_date_time', '<=', $validatedDate['end_date_time']);
+                                                            ->where('loans.end_date_time', '<=', $validatedDate['end_date_time'])
+                                                            ->where('loans.id', '!=', $validatedDate['id']);
                                                     })
                                                    ->where('asset_loan.returned','=',0);
                                         })
@@ -328,6 +400,21 @@ class LoanController extends Controller
     {
         $loan = Loan::where('id', $request->id)->update([
             'status_id' => 4
+        ]);
+
+        return Response::json(Loan::find($id));
+    }
+
+    /**
+     * Change booking from a reservation to booked out
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function bookOutBooking(Request $request, $id)
+    {
+        $loan = Loan::where('id', $request->id)->update([
+            'status_id' => 0
         ]);
 
         return Response::json(Loan::find($id));

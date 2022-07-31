@@ -1,32 +1,262 @@
-/*
- * ATTENTION: An "eval-source-map" devtool has been used.
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
+var equipmentCart = {};
+var equipmentTable;
 
-/***/ "./resources/js/loans.js":
-/*!*******************************!*\
-  !*** ./resources/js/loans.js ***!
-  \*******************************/
-/***/ (() => {
+$("document").ready(function(){
 
-eval("var loanTable;\n$(\"document\").ready(function () {\n  //Populate Asset table on page load using Datables plugin\n  loanTable = $('#loansTable').DataTable({\n    \"processing\": true,\n    \"serverSide\": true,\n    \"ajax\": \"loans\",\n    columns: [{\n      data: 'id',\n      name: 'id'\n    }, {\n      data: 'start_date',\n      name: 'start_date'\n    }, {\n      data: 'end_date',\n      name: 'end_date'\n    }, {\n      data: 'start_time',\n      name: 'start_time'\n    }, {\n      data: 'end_time',\n      name: 'end_time'\n    }, {\n      data: 'details',\n      name: 'details'\n    }, {\n      data: 'action',\n      name: 'action',\n      orderable: false,\n      searchable: false\n    }]\n  }); //Add new loan to database\n\n  $('#addLoan').on('click', function (e) {\n    $.ajaxSetup({\n      headers: {\n        'X-CSRF-TOKEN': jQuery('meta[name=\"csrf-token\"]').attr('content')\n      }\n    });\n    var modal = bootbox.dialog({\n      message: $(\".addLoan\").html(),\n      size: \"large\",\n      title: \"Create New Loan\",\n      buttons: [{\n        label: \"Save\",\n        className: \"btn btn-primary pull-right\",\n        callback: function callback(result) {\n          //Send ajax request to the server to save to database and then update the table on the website accordingly\n          jQuery.ajax({\n            type: \"POST\",\n            url: \"loans\",\n            async: false,\n            dataType: 'json',\n            data: {\n              name: $('#assetName', '.bootbox').val(),\n              description: $('#assetDescription', '.bootbox').val(),\n              tag: $('#assetTag', '.bootbox').val(),\n              cost: $('#assetCost', '.bootbox').val(),\n              bookable: $('#assetBookable', '.bootbox').is(':checked') ? 1 : 0\n            },\n            success: function success(data) {\n              //Allows the form to close\n              validationError = false; //Popup to tell the user the action has completed successfully\n\n              toastr.success(data['name'] + ' has been created'); //Re-populate the table\n\n              assetTable.ajax.reload(); //Close the model\n\n              modal.modal(\"hide\");\n            },\n            error: function error(data) {\n              //Clear all errors currently being displayed\n              $('.inputError').each(function (i, obj) {\n                $(this).html(\"\");\n              });\n              $.each(data['responseJSON']['errors'], function (key, data) {\n                OutputDataEntryError(key, data);\n              });\n            }\n          });\n          return false;\n        }\n      }, {\n        label: \"Cancel\",\n        className: \"btn btn-danger pull-right\"\n      }],\n      onEscape: function onEscape() {\n        modal.modal(\"hide\");\n      }\n    });\n  }); //Delete asset from database\n\n  $(\"#assetTable\").on('click', '.deleteAsset', function () {\n    $.ajaxSetup({\n      headers: {\n        'X-CSRF-TOKEN': jQuery('meta[name=\"csrf-token\"]').attr('content')\n      }\n    }); //Get the id of the asset we are deleting\n\n    var id = $(this).closest(\"tr\").attr(\"id\");\n    var modal = bootbox.dialog({\n      message: $(\".deleteAsset\").html(),\n      size: \"large\",\n      title: \"Delete Asset\",\n      buttons: [{\n        label: \"Delete\",\n        className: \"btn btn-danger pull-right\",\n        callback: function callback(result) {\n          //Send ajax request to the server to save to database and then update the table on the website accordingly\n          jQuery.ajax({\n            type: \"DELETE\",\n            url: \"assets/\" + id,\n            dataType: 'json',\n            success: function success(data) {\n              //Popup to tell the user the action has completed successfully\n              toastr.success(data['name'] + ' has been deleted'); //Re-populate the table\n\n              assetTable.ajax.reload();\n            },\n            error: function error(data) {\n              toastr.error('Asset could not be deleted');\n            }\n          });\n        }\n      }, {\n        label: \"Cancel\",\n        className: \"btn btn-success pull-right\"\n      }],\n      onEscape: function onEscape() {\n        modal.modal(\"hide\");\n      }\n    });\n  }); //Modify asset in database\n\n  $(\"#assetTable\").on('click', '.modifyAsset', function () {\n    $.ajaxSetup({\n      headers: {\n        'X-CSRF-TOKEN': jQuery('meta[name=\"csrf-token\"]').attr('content')\n      }\n    }); //Get the id of the asset we are deleting\n\n    var id = $(this).closest(\"tr\").attr(\"id\"); //Get data to populate the model\n\n    jQuery.ajax({\n      type: \"GET\",\n      url: \"assets/\" + id,\n      dataType: 'json',\n      success: function success(data) {\n        $('#assetName', '.bootbox').val(data.name), $('#assetDescription', '.bootbox').val(data.description), $('#assetTag', '.bootbox').val(data.tag), $('#assetCost', '.bootbox').val(data.cost), $('#assetBookable', '.bootbox').prop('checked', data.bookable ? true : false);\n      },\n      error: function error(data) {}\n    }); //Show model and handle saving data back to database\n\n    var modal = bootbox.dialog({\n      message: $(\".addAsset\").html(),\n      size: \"large\",\n      title: \"Modify Asset\",\n      buttons: [{\n        label: \"Save\",\n        className: \"btn btn-primary pull-right\",\n        callback: function callback(result) {\n          //Send ajax request to the server to save to database and then update the table on the website accordingly\n          jQuery.ajax({\n            type: \"PATCH\",\n            url: \"assets/\" + id,\n            dataType: 'json',\n            async: false,\n            data: {\n              name: $('#assetName', '.bootbox').val(),\n              description: $('#assetDescription', '.bootbox').val(),\n              tag: $('#assetTag', '.bootbox').val(),\n              cost: $('#assetCost', '.bootbox').val(),\n              bookable: $('#assetBookable', '.bootbox').is(':checked') ? 1 : 0\n            },\n            success: function success(data) {\n              //Popup to tell the user the action has completed successfully\n              toastr.success(data['name'] + ' has been modified'); //Re-populate the table\n\n              assetTable.ajax.reload(); //Close the model\n\n              modal.modal(\"hide\");\n            },\n            error: function error(data) {\n              //Clear all errors currently being displayed\n              $('.inputError').each(function (i, obj) {\n                $(this).html(\"\");\n              });\n              $.each(data['responseJSON']['errors'], function (key, data) {\n                OutputDataEntryError(key, data);\n              });\n            }\n          });\n          return false;\n        }\n      }, {\n        label: \"Cancel\",\n        className: \"btn btn-danger pull-right\"\n      }],\n      onEscape: function onEscape() {\n        modal.modal(\"hide\");\n      }\n    });\n  }); //Show Multi-Day Booking\n\n  $('#formAddLoan').on('change', '#loanTypeMulti', function () {\n    //$('#equipmentTable tbody > tr').remove();\n    //$('#equipmentSelected option').remove();\n    $(\"#singleDayBooking\", '.bootbox').hide();\n    $(\"#multiDayBooking\", '.bootbox').show();\n\n    if ($(this).is(':checked')) {\n      alert(\"2\"); //loanType = \"multi\";\n    }\n  }); //Show Single Day Booking\n\n  $('#formAddLoan').on('change', '#loanTypeSingle', function () {\n    $(\"#multiDayBooking\", '.bootbox').hide(); //$('#equipmentTable tbody > tr').remove();\n    //$('#equipmentSelected option').remove();\n\n    if ($(this).is(':checked')) {\n      $(\"#singleDayBooking\", '.bootbox').show(); //loanType = \"single\";\n    }\n  });\n});//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9yZXNvdXJjZXMvanMvbG9hbnMuanM/ZGNkYSJdLCJuYW1lcyI6WyJsb2FuVGFibGUiLCIkIiwicmVhZHkiLCJEYXRhVGFibGUiLCJjb2x1bW5zIiwiZGF0YSIsIm5hbWUiLCJvcmRlcmFibGUiLCJzZWFyY2hhYmxlIiwib24iLCJlIiwiYWpheFNldHVwIiwiaGVhZGVycyIsImpRdWVyeSIsImF0dHIiLCJtb2RhbCIsImJvb3Rib3giLCJkaWFsb2ciLCJtZXNzYWdlIiwiaHRtbCIsInNpemUiLCJ0aXRsZSIsImJ1dHRvbnMiLCJsYWJlbCIsImNsYXNzTmFtZSIsImNhbGxiYWNrIiwicmVzdWx0IiwiYWpheCIsInR5cGUiLCJ1cmwiLCJhc3luYyIsImRhdGFUeXBlIiwidmFsIiwiZGVzY3JpcHRpb24iLCJ0YWciLCJjb3N0IiwiYm9va2FibGUiLCJpcyIsInN1Y2Nlc3MiLCJ2YWxpZGF0aW9uRXJyb3IiLCJ0b2FzdHIiLCJhc3NldFRhYmxlIiwicmVsb2FkIiwiZXJyb3IiLCJlYWNoIiwiaSIsIm9iaiIsImtleSIsIk91dHB1dERhdGFFbnRyeUVycm9yIiwib25Fc2NhcGUiLCJpZCIsImNsb3Nlc3QiLCJwcm9wIiwiaGlkZSIsInNob3ciLCJhbGVydCJdLCJtYXBwaW5ncyI6IkFBQUEsSUFBSUEsU0FBSjtBQUVBQyxDQUFDLENBQUMsVUFBRCxDQUFELENBQWNDLEtBQWQsQ0FBb0IsWUFBVTtBQUMxQjtBQUNBRixFQUFBQSxTQUFTLEdBQUdDLENBQUMsQ0FBQyxhQUFELENBQUQsQ0FBaUJFLFNBQWpCLENBQTRCO0FBQ3BDLGtCQUFjLElBRHNCO0FBRXBDLGtCQUFjLElBRnNCO0FBR3BDLFlBQVEsT0FINEI7QUFJcENDLElBQUFBLE9BQU8sRUFBRSxDQUNMO0FBQUNDLE1BQUFBLElBQUksRUFBRSxJQUFQO0FBQVlDLE1BQUFBLElBQUksRUFBRTtBQUFsQixLQURLLEVBRUw7QUFBQ0QsTUFBQUEsSUFBSSxFQUFFLFlBQVA7QUFBcUJDLE1B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Q0g7QUF0RHNCLEtBQWYsQ0FBWjtBQXdESCxHQW5GRCxFQXhJMEIsQ0E2TjFCOztBQUNBZCxFQUFBQSxDQUFDLENBQUMsY0FBRCxDQUFELENBQWtCUSxFQUFsQixDQUFxQixRQUFyQixFQUErQixnQkFBL0IsRUFBaUQsWUFBVztBQUN4RDtBQUNBO0FBQ0FSLElBQUFBLENBQUMsQ0FBQyxtQkFBRCxFQUFxQixVQUFyQixDQUFELENBQWtDb0QsSUFBbEM7QUFDQXBELElBQUFBLENBQUMsQ0FBQyxrQkFBRCxFQUFvQixVQUFwQixDQUFELENBQWlDcUQsSUFBakM7O0FBR0EsUUFBR3JELENBQUMsQ0FBQyxJQUFELENBQUQsQ0FBUW9DLEVBQVIsQ0FBVyxVQUFYLENBQUgsRUFBMEI7QUFDdEJrQixNQUFBQSxLQUFLLENBQUMsR0FBRCxDQUFMLENBRHNCLENBRXRCO0FBQ0g7QUFDSixHQVhELEVBOU4wQixDQTJPMUI7O0FBQ0F0RCxFQUFBQSxDQUFDLENBQUMsY0FBRCxDQUFELENBQWtCUSxFQUFsQixDQUFxQixRQUFyQixFQUErQixpQkFBL0IsRUFBa0QsWUFBVztBQUN6RFIsSUFBQUEsQ0FBQyxDQUFDLGtCQUFELEVBQW9CLFVBQXBCLENBQUQsQ0FBaUNvRCxJQUFqQyxHQUR5RCxDQUd6RDtBQUNBOztBQUNBLFFBQUdwRCxDQUFDLENBQUMsSUFBRCxDQUFELENBQVFvQyxFQUFSLENBQVcsVUFBWCxDQUFILEVBQTBCO0FBQ3RCcEMsTUFBQUEsQ0FBQyxDQUFDLG1CQUFELEVBQXFCLFVBQXJCLENBQUQsQ0FBa0NxRCxJQUFsQyxHQURzQixDQUV0QjtBQUNIO0FBQ0osR0FURDtBQVVILENBdFBEIiwic291cmNlc0NvbnRlbnQiOlsidmFyIGxvYW5UYWJsZTtcblxuJChcImRvY3VtZW50XCIpLnJlYWR5KGZ1bmN0aW9uKCl7XG4gICAgLy9Qb3B1bGF0ZSBBc3NldCB0YWJsZSBvbiBwYWdlIGxvYWQgdXNpbmcgRGF0YWJsZXMgcGx1Z2luXG4gICAgbG9hblRhYmxlID0gJCgnI2xvYW5zVGFibGUnKS5EYXRhVGFibGUoIHtcbiAgICAgICAgXCJwcm9jZXNzaW5nXCI6IHRydWUsXG4gICAgICAgIFwic2VydmVyU2lkZVwiOiB0cnVlLFxuICAgICAgICBcImFqYXhcIjogXCJsb2Fuc1wiLFxuICAgICAgICBjb2x1bW5zOiBbXG4gICAgICAgICAgICB7ZGF0YTogJ2lkJyxuYW1lOiAnaWQnfSxcbiAgICAgICAgICAgIHtkYXRhOiAnc3RhcnRfZGF0ZScsIG5hbWU6ICdzdGFydF9kYXRlJ30sXG4gICAgICAgICAgICB7ZGF0YTogJ2VuZF9kYXRlJywgbmFtZTogJ2VuZF9kYXRlJ30sXG4gICAgICAgICAgICB7ZGF0YTogJ3N0YXJ0X3RpbWUnLCBuYW1lOiAnc3RhcnRfdGltZSd9LFxuICAgICAgICAgICAge2RhdGE6ICdlbmRfdGltZScsIG5hbWU6ICdlbmRfdGltZSd9LFxuICAgICAgICAgICAge2RhdGE6ICdkZXRhaWxzJywgbmFtZTogJ2RldGFpbHMnfSxcbiAgICAgICAgICAgIHtkYXRhOiAnYWN0aW9uJywgbmFtZTogJ2FjdGlvbicsIG9yZGVyYWJsZTogZmFsc2UsIHNlYXJjaGFibGU6IGZhbHNlfVxuICAgICAgICBdXG4gICAgfSk7XG5cbiAgICAvL0FkZCBuZXcgbG9hbiB0byBkYXRhYmFzZVxuICAgICQoJyNhZGRMb2FuJykub24oJ2NsaWNrJywgZnVuY3Rpb24gKGUpIHtcbiAgICAgICAgJC5hamF4U2V0dXAoe1xuICAgICAgICAgICAgaGVhZGVyczoge1xuICAgICAgICAgICAgICAgICdYLUNTUkYtVE9LRU4nOiBqUXVlcnkoJ21ldGFbbmFtZT1cImNzcmYtdG9rZW5cIl0nKS5hdHRyKCdjb250ZW50JylcbiAgICAgICAgICAgIH1cbiAgICAgICAgfSk7XG5cbiAgICAgICAgdmFyIG1vZGFsID0gYm9vdGJveC5kaWFsb2coe1xuICAgICAgICAgICAgbWVzc2FnZTogJChcIi5hZGRMb2FuXCIpLmh0bWwoKSxcbiAgICAgICAgICAgIHNpemU6IFwibGFyZ2VcIixcbiAgICAgICAgICAgIHRpdGxlOiBcIkNyZWF0ZSBOZXcgTG9hblwiLFxuICAgICAgICAgICAgYnV0dG9uczogW1xuICAgICAgICAgICAge1xuICAgICAgICAgICAgICAgIGxhYmVsOiBcIlNhdmVcIixcbiAgICAgICAgICAgICAgICBjbGFzc05hbWU6IFwiYnRuIGJ0bi1wcmltYXJ5IHB1bGwtcmlnaHRcIixcbiAgICAgICAgICAgICAgICBjYWxsYmFjazogZnVuY3Rpb24ocmVzdWx0KSB7XG4gICAgICAgICAgICAgICAgICAgIC8vU2VuZCBhamF4IHJlcXVlc3QgdG8gdGhlIHNlcnZlciB0byBzYXZlIHRvIGRhdGFiYXNlIGFuZCB0aGVuIHVwZGF0ZSB0aGUgdGFibGUgb24gdGhlIHdlYnNpdGUgYWNjb3JkaW5nbHlcbiAgICAgICAgICAgICAgICAgICAgalF1ZXJ5LmFqYXgoe1xuICAgICAgICAgICAgICAgICAgICAgICAgdHlwZTogXCJQT1NUXCIsXG4gICAgICAgICAgICAgICAgICAgICAgICB1cmw6IFwibG9hbnNcIixcbiAgICAgICAgICAgICAgICAgICAgICAgIGFzeW5jOiBmYWxzZSxcbiAgICAgICAgICAgICAgICAgICAgICAgIGRhdGFUeXBlOiAnanNvbicsXG4gICAgICAgICAgICAgICAgICAgICAgICBkYXRhOiB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgbmFtZTogJCgnI2Fzc2V0TmFtZScsICcuYm9vdGJveCcpLnZhbCgpLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uOiAkKCcjYXNzZXREZXNjcmlwdGlvbicsICcuYm9vdGJveCcpLnZhbCgpLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRhZzogJCgnI2Fzc2V0VGFnJywgJy5ib290Ym94JykudmFsKCksXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgY29zdDogJCgnI2Fzc2V0Q29zdCcsJy5ib290Ym94JykudmFsKCksXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgYm9va2FibGU6ICQoJyNhc3NldEJvb2thYmxlJywnLmJvb3Rib3gnKS5pcygnOmNoZWNrZWQnKSA/IDEgOiAwXG4gICAgICAgICAgICAgICAgICAgICAgICB9LFxuICAgICAgICAgICAgICAgICAgICAgICAgc3VjY2VzczogZnVuY3Rpb24oZGF0YSkge1xuICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8vQWxsb3dzIHRoZSBmb3JtIHRvIGNsb3NlXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgdmFsaWRhdGlvbkVycm9yID0gZmFsc2U7XG5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAvL1BvcHVwIHRvIHRlbGwgdGhlIHVzZXIgdGhlIGFjdGlvbiBoYXMgY29tcGxldGVkIHN1Y2Nlc3NmdWxseVxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRvYXN0ci5zdWNjZXNzKGRhdGFbJ25hbWUnXSArICcgaGFzIGJlZW4gY3JlYXRlZCcpO1xuXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgLy9SZS1wb3B1bGF0ZSB0aGUgdGFibGVcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBhc3NldFRhYmxlLmFqYXgucmVsb2FkKCk7XG5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAvL0Nsb3NlIHRoZSBtb2RlbFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1vZGFsLm1vZGFsKFwiaGlkZVwiKTtcbiAgICAgICAgICAgICAgICAgICAgICAgIH0sXG4gICAgICAgICAgICAgICAgICAgICAgICBlcnJvcjogZnVuY3Rpb24oZGF0YSl7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgLy9DbGVhciBhbGwgZXJyb3JzIGN1cnJlbnRseSBiZWluZyBkaXNwbGF5ZWRcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAkKCcuaW5wdXRFcnJvcicpLmVhY2goZnVuY3Rpb24oaSwgb2JqKSB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICQodGhpcykuaHRtbChcIlwiKTtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9KTtcblxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICQuZWFjaChkYXRhWydyZXNwb25zZUpTT04nXVsnZXJyb3JzJ10sIGZ1bmN0aW9uKGtleSwgZGF0YSl7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE91dHB1dERhdGFFbnRyeUVycm9yKGtleSwgZGF0YSk7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgfSlcbiAgICAgICAgICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICAgICAgfSk7XG5cbiAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGZhbHNlO1xuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgIH0sXG4gICAgICAgICAgICB7XG4gICAgICAgICAgICAgICAgbGFiZWw6IFwiQ2FuY2VsXCIsXG4gICAgICAgICAgICAgICAgY2xhc3NOYW1lOiBcImJ0biBidG4tZGFuZ2VyIHB1bGwtcmlnaHRcIixcbiAgICAgICAgICAgIH1cbiAgICAgICAgICAgIF0sXG4gICAgICAgICAgICBvbkVzY2FwZTogZnVuY3Rpb24oKSB7XG4gICAgICAgICAgICAgICAgbW9kYWwubW9kYWwoXCJoaWRlXCIpO1xuICAgICAgICAgICAgfVxuICAgICAgICB9KTtcbiAgICB9KTtcblxuICAgIC8vRGVsZXRlIGFzc2V0IGZyb20gZGF0YWJhc2VcbiAgICAkKFwiI2Fzc2V0VGFibGVcIikub24oJ2NsaWNrJywgJy5kZWxldGVBc3NldCcsIGZ1bmN0aW9uKCkge1xuICAgICAgICAkLmFqYXhTZXR1cCh7XG4gICAgICAgICAgICBoZWFkZXJzOiB7XG4gICAgICAgICAgICAgICAgJ1gtQ1NSRi1UT0tFTic6IGpRdWVyeSgnbWV0YVtuYW1lPVwiY3NyZi10b2tlblwiXScpLmF0dHIoJ2NvbnRlbnQnKVxuICAgICAgICAgICAgfVxuICAgICAgICB9KTtcblxuICAgICAgICAvL0dldCB0aGUgaWQgb2YgdGhlIGFzc2V0IHdlIGFyZSBkZWxldGluZ1xuICAgICAgICB2YXIgaWQgPSAkKHRoaXMpLmNsb3Nlc3QoXCJ0clwiKS5hdHRyKFwiaWRcIik7XG5cbiAgICAgICAgdmFyIG1vZGFsID0gYm9vdGJveC5kaWFsb2coe1xuICAgICAgICAgICAgbWVzc2FnZTogJChcIi5kZWxldGVBc3NldFwiKS5odG1sKCksXG4gICAgICAgICAgICBzaXplOiBcImxhcmdlXCIsXG4gICAgICAgICAgICB0aXRsZTogXCJEZWxldGUgQXNzZXRcIixcbiAgICAgICAgICAgIGJ1dHRvbnM6IFtcbiAgICAgICAgICAgIHtcbiAgICAgICAgICAgICAgICBsYWJlbDogXCJEZWxldGVcIixcbiAgICAgICAgICAgICAgICBjbGFzc05hbWU6IFwiYnRuIGJ0bi1kYW5nZXIgcHVsbC1yaWdodFwiLFxuICAgICAgICAgICAgICAgIGNhbGxiYWNrOiBmdW5jdGlvbihyZXN1bHQpIHtcbiAgICAgICAgICAgICAgICAgICAgLy9TZW5kIGFqYXggcmVxdWVzdCB0byB0aGUgc2VydmVyIHRvIHNhdmUgdG8gZGF0YWJhc2UgYW5kIHRoZW4gdXBkYXRlIHRoZSB0YWJsZSBvbiB0aGUgd2Vic2l0ZSBhY2NvcmRpbmdseVxuICAgICAgICAgICAgICAgICAgICBqUXVlcnkuYWpheCh7XG4gICAgICAgICAgICAgICAgICAgICAgICB0eXBlOiBcIkRFTEVURVwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgdXJsOiBcImFzc2V0cy9cIitpZCxcbiAgICAgICAgICAgICAgICAgICAgICAgIGRhdGFUeXBlOiAnanNvbicsXG4gICAgICAgICAgICAgICAgICAgICAgICBzdWNjZXNzOiBmdW5jdGlvbihkYXRhKSB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgLy9Qb3B1cCB0byB0ZWxsIHRoZSB1c2VyIHRoZSBhY3Rpb24gaGFzIGNvbXBsZXRlZCBzdWNjZXNzZnVsbHlcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICB0b2FzdHIuc3VjY2VzcyhkYXRhWyduYW1lJ10gKyAnIGhhcyBiZWVuIGRlbGV0ZWQnKTtcblxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8vUmUtcG9wdWxhdGUgdGhlIHRhYmxlXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgYXNzZXRUYWJsZS5hamF4LnJlbG9hZCgpO1xuICAgICAgICAgICAgICAgICAgICAgICAgfSxcbiAgICAgICAgICAgICAgICAgICAgICAgIGVycm9yOiBmdW5jdGlvbihkYXRhKXtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICB0b2FzdHIuZXJyb3IoJ0Fzc2V0IGNvdWxkIG5vdCBiZSBkZWxldGVkJyk7XG4gICAgICAgICAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgICAgICAgIH0pO1xuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgIH0sXG4gICAgICAgICAgICB7XG4gICAgICAgICAgICAgICAgbGFiZWw6IFwiQ2FuY2VsXCIsXG4gICAgICAgICAgICAgICAgY2xhc3NOYW1lOiBcImJ0biBidG4tc3VjY2VzcyBwdWxsLXJpZ2h0XCIsXG4gICAgICAgICAgICB9XG4gICAgICAgICAgICBdLFxuICAgICAgICAgICAgb25Fc2NhcGU6IGZ1bmN0aW9uKCkge1xuICAgICAgICAgICAgICAgIG1vZGFsLm1vZGFsKFwiaGlkZVwiKTtcbiAgICAgICAgICAgIH1cbiAgICAgICAgfSk7XG4gICAgfSk7XG5cbiAgICAvL01vZGlmeSBhc3NldCBpbiBkYXRhYmFzZVxuICAgICQoXCIjYXNzZXRUYWJsZVwiKS5vbignY2xpY2snLCAnLm1vZGlmeUFzc2V0JywgZnVuY3Rpb24oKSB7XG4gICAgICAgICQuYWpheFNldHVwKHtcbiAgICAgICAgICAgIGhlYWRlcnM6IHtcbiAgICAgICAgICAgICAgICAnWC1DU1JGLVRPS0VOJzogalF1ZXJ5KCdtZXRhW25hbWU9XCJjc3JmLXRva2VuXCJdJykuYXR0cignY29udGVudCcpXG4gICAgICAgICAgICB9XG4gICAgICAgIH0pO1xuXG4gICAgICAgIC8vR2V0IHRoZSBpZCBvZiB0aGUgYXNzZXQgd2UgYXJlIGRlbGV0aW5nXG4gICAgICAgIHZhciBpZCA9ICQodGhpcykuY2xvc2VzdChcInRyXCIpLmF0dHIoXCJpZFwiKTtcblxuICAgICAgICAvL0dldCBkYXRhIHRvIHBvcHVsYXRlIHRoZSBtb2RlbFxuICAgICAgICBqUXVlcnkuYWpheCh7XG4gICAgICAgICAgICB0eXBlOiBcIkdFVFwiLFxuICAgICAgICAgICAgdXJsOiBcImFzc2V0cy9cIitpZCxcbiAgICAgICAgICAgIGRhdGFUeXBlOiAnanNvbicsXG4gICAgICAgICAgICBzdWNjZXNzOiBmdW5jdGlvbihkYXRhKSB7XG4gICAgICAgICAgICAgICAgJCgnI2Fzc2V0TmFtZScsICcuYm9vdGJveCcpLnZhbChkYXRhLm5hbWUpLFxuICAgICAgICAgICAgICAgICQoJyNhc3NldERlc2NyaXB0aW9uJywgJy5ib290Ym94JykudmFsKGRhdGEuZGVzY3JpcHRpb24pLFxuICAgICAgICAgICAgICAgICQoJyNhc3NldFRhZycsICcuYm9vdGJveCcpLnZhbChkYXRhLnRhZyksXG4gICAgICAgICAgICAgICAgJCgnI2Fzc2V0Q29zdCcsJy5ib290Ym94JykudmFsKGRhdGEuY29zdCksXG4gICAgICAgICAgICAgICAgJCgnI2Fzc2V0Qm9va2FibGUnLCcuYm9vdGJveCcpLnByb3AoJ2NoZWNrZWQnLCBkYXRhLmJvb2thYmxlID8gdHJ1ZSA6IGZhbHNlKVxuICAgICAgICAgICAgfSxcbiAgICAgICAgICAgIGVycm9yOiBmdW5jdGlvbihkYXRhKXtcbiAgICAgICAgICAgIH1cbiAgICAgICAgfSk7XG5cbiAgICAgICAgLy9TaG93IG1vZGVsIGFuZCBoYW5kbGUgc2F2aW5nIGRhdGEgYmFjayB0byBkYXRhYmFzZVxuICAgICAgICB2YXIgbW9kYWwgPSBib290Ym94LmRpYWxvZyh7XG4gICAgICAgICAgICBtZXNzYWdlOiAkKFwiLmFkZEFzc2V0XCIpLmh0bWwoKSxcbiAgICAgICAgICAgIHNpemU6IFwibGFyZ2VcIixcbiAgICAgICAgICAgIHRpdGxlOiBcIk1vZGlmeSBBc3NldFwiLFxuICAgICAgICAgICAgYnV0dG9uczogW1xuICAgICAgICAgICAge1xuICAgICAgICAgICAgICAgIGxhYmVsOiBcIlNhdmVcIixcbiAgICAgICAgICAgICAgICBjbGFzc05hbWU6IFwiYnRuIGJ0bi1wcmltYXJ5IHB1bGwtcmlnaHRcIixcbiAgICAgICAgICAgICAgICBjYWxsYmFjazogZnVuY3Rpb24ocmVzdWx0KSB7XG4gICAgICAgICAgICAgICAgICAgIC8vU2VuZCBhamF4IHJlcXVlc3QgdG8gdGhlIHNlcnZlciB0byBzYXZlIHRvIGRhdGFiYXNlIGFuZCB0aGVuIHVwZGF0ZSB0aGUgdGFibGUgb24gdGhlIHdlYnNpdGUgYWNjb3JkaW5nbHlcbiAgICAgICAgICAgICAgICAgICAgalF1ZXJ5LmFqYXgoe1xuICAgICAgICAgICAgICAgICAgICAgICAgdHlwZTogXCJQQVRDSFwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgdXJsOiBcImFzc2V0cy9cIitpZCxcbiAgICAgICAgICAgICAgICAgICAgICAgIGRhdGFUeXBlOiAnanNvbicsXG4gICAgICAgICAgICAgICAgICAgICAgICBhc3luYzogZmFsc2UsXG4gICAgICAgICAgICAgICAgICAgICAgICBkYXRhOiB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgbmFtZTogJCgnI2Fzc2V0TmFtZScsICcuYm9vdGJveCcpLnZhbCgpLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uOiAkKCcjYXNzZXREZXNjcmlwdGlvbicsICcuYm9vdGJveCcpLnZhbCgpLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRhZzogJCgnI2Fzc2V0VGFnJywgJy5ib290Ym94JykudmFsKCksXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgY29zdDogJCgnI2Fzc2V0Q29zdCcsJy5ib290Ym94JykudmFsKCksXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgYm9va2FibGU6ICQoJyNhc3NldEJvb2thYmxlJywnLmJvb3Rib3gnKS5pcygnOmNoZWNrZWQnKSA/IDEgOiAwXG4gICAgICAgICAgICAgICAgICAgICAgICB9LFxuICAgICAgICAgICAgICAgICAgICAgICAgc3VjY2VzczogZnVuY3Rpb24oZGF0YSkge1xuICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8vUG9wdXAgdG8gdGVsbCB0aGUgdXNlciB0aGUgYWN0aW9uIGhhcyBjb21wbGV0ZWQgc3VjY2Vzc2Z1bGx5XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgdG9hc3RyLnN1Y2Nlc3MoZGF0YVsnbmFtZSddICsgJyBoYXMgYmVlbiBtb2RpZmllZCcpO1xuXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgLy9SZS1wb3B1bGF0ZSB0aGUgdGFibGVcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBhc3NldFRhYmxlLmFqYXgucmVsb2FkKCk7XG5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAvL0Nsb3NlIHRoZSBtb2RlbFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1vZGFsLm1vZGFsKFwiaGlkZVwiKTtcbiAgICAgICAgICAgICAgICAgICAgICAgIH0sXG4gICAgICAgICAgICAgICAgICAgICAgICBlcnJvcjogZnVuY3Rpb24oZGF0YSl7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgLy9DbGVhciBhbGwgZXJyb3JzIGN1cnJlbnRseSBiZWluZyBkaXNwbGF5ZWRcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAkKCcuaW5wdXRFcnJvcicpLmVhY2goZnVuY3Rpb24oaSwgb2JqKSB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICQodGhpcykuaHRtbChcIlwiKTtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9KTtcblxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICQuZWFjaChkYXRhWydyZXNwb25zZUpTT04nXVsnZXJyb3JzJ10sIGZ1bmN0aW9uKGtleSwgZGF0YSl7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE91dHB1dERhdGFFbnRyeUVycm9yKGtleSwgZGF0YSk7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgfSlcbiAgICAgICAgICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICAgICAgfSk7XG5cbiAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGZhbHNlO1xuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgIH0sXG4gICAgICAgICAgICB7XG4gICAgICAgICAgICAgICAgbGFiZWw6IFwiQ2FuY2VsXCIsXG4gICAgICAgICAgICAgICAgY2xhc3NOYW1lOiBcImJ0biBidG4tZGFuZ2VyIHB1bGwtcmlnaHRcIixcbiAgICAgICAgICAgIH1cbiAgICAgICAgICAgIF0sXG4gICAgICAgICAgICBvbkVzY2FwZTogZnVuY3Rpb24oKSB7XG4gICAgICAgICAgICAgICAgbW9kYWwubW9kYWwoXCJoaWRlXCIpO1xuICAgICAgICAgICAgfVxuICAgICAgICB9KTtcbiAgICB9KTtcblxuICAgIC8vU2hvdyBNdWx0aS1EYXkgQm9va2luZ1xuICAgICQoJyNmb3JtQWRkTG9hbicpLm9uKCdjaGFuZ2UnLCAnI2xvYW5UeXBlTXVsdGknLCBmdW5jdGlvbigpIHtcbiAgICAgICAgLy8kKCcjZXF1aXBtZW50VGFibGUgdGJvZHkgPiB0cicpLnJlbW92ZSgpO1xuICAgICAgICAvLyQoJyNlcXVpcG1lbnRTZWxlY3RlZCBvcHRpb24nKS5yZW1vdmUoKTtcbiAgICAgICAgJChcIiNzaW5nbGVEYXlCb29raW5nXCIsJy5ib290Ym94JykuaGlkZSgpO1xuICAgICAgICAkKFwiI211bHRpRGF5Qm9va2luZ1wiLCcuYm9vdGJveCcpLnNob3coKTtcblxuXG4gICAgICAgIGlmKCQodGhpcykuaXMoJzpjaGVja2VkJykpe1xuICAgICAgICAgICAgYWxlcnQoXCIyXCIpO1xuICAgICAgICAgICAgLy9sb2FuVHlwZSA9IFwibXVsdGlcIjtcbiAgICAgICAgfVxuICAgIH0pO1xuXG4gICAgLy9TaG93IFNpbmdsZSBEYXkgQm9va2luZ1xuICAgICQoJyNmb3JtQWRkTG9hbicpLm9uKCdjaGFuZ2UnLCAnI2xvYW5UeXBlU2luZ2xlJywgZnVuY3Rpb24oKSB7XG4gICAgICAgICQoXCIjbXVsdGlEYXlCb29raW5nXCIsJy5ib290Ym94JykuaGlkZSgpO1xuXG4gICAgICAgIC8vJCgnI2VxdWlwbWVudFRhYmxlIHRib2R5ID4gdHInKS5yZW1vdmUoKTtcbiAgICAgICAgLy8kKCcjZXF1aXBtZW50U2VsZWN0ZWQgb3B0aW9uJykucmVtb3ZlKCk7XG4gICAgICAgIGlmKCQodGhpcykuaXMoJzpjaGVja2VkJykpe1xuICAgICAgICAgICAgJChcIiNzaW5nbGVEYXlCb29raW5nXCIsJy5ib290Ym94Jykuc2hvdygpO1xuICAgICAgICAgICAgLy9sb2FuVHlwZSA9IFwic2luZ2xlXCI7XG4gICAgICAgIH1cbiAgICB9KTtcbn0pOyJdLCJmaWxlIjoiLi9yZXNvdXJjZXMvanMvbG9hbnMuanMuanMiLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./resources/js/loans.js\n");
+    //Fix for missing icons in tempusdominus
+    $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, { icons: { time: 'fas fa-clock', date: 'fas fa-calendar', up: 'fas fa-arrow-up', down: 'fas fa-arrow-down', previous: 'far fa-chevron-left', next: 'far fa-chevron-right', today: 'far fa-calendar-check-o', clear: 'far fa-trash', close: 'far fa-times' } });
 
-/***/ })
+    //Setup better select boxes
+    $('#userSelected').select2({
+        theme: "bootstrap-5",
+        placeholder: "Select a user",
+    });
+    $('#equipmentSelected').select2({
+        theme: "bootstrap-5",
+        placeholder: "Select equipment",
+    });
 
-/******/ 	});
-/************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval-source-map devtool is used.
-/******/ 	var __webpack_exports__ = {};
-/******/ 	__webpack_modules__["./resources/js/loans.js"]();
-/******/ 	
-/******/ })()
-;
+    //Setup the Datetime picker settings
+    var currentDate = new Date();
+
+    //Single Day Booking
+    //Loan Date
+    $('.dtpStartDateTime').datetimepicker({
+        useCurrent: true,
+        format: "yyyy-MM-DD HH:mm",
+    });
+
+    $('.dtpEndDateTime').datetimepicker({
+        format: "yyyy-MM-DD HH:mm",
+    });
+
+    $(document).on('input', '#loanStartDate, #loanEndDate', function(e) {
+        var allInputsHaveData = false;
+        allInputsHaveData = checkInputFieldsForData(["loanStartDate","loanEndDate"]);
+
+        if(allInputsHaveData){
+            getEquipment();
+        }
+    });
+
+    //This table is used to display the list of equipment currently in the shopping cart
+    equipmentCart.length = 0;
+    equipmentTable = $('#equipmentTable').DataTable({
+        paging: false,
+        searching: false,
+        info: false,
+        language: {
+        emptyTable: "Shopping cart is empty"
+        },
+        "columns": [
+            { "width": "80%" },
+            { "width": "20%" },
+            null,
+        ]
+    });
+
+    //Get any equipment already in the equipment table. For example if formed was filled out incorrectly
+    //we need to repopulate any equipment returned back into the shopping cart
+    if(equipmentTable.data().any()){
+        equipmentTable.rows().every(function(index, element){
+            var assetID = this.node().id;
+            var assetName = this.data()[0];
+
+            //Add to the shopping card to pass onto the database for storage
+            equipmentCart[assetID] = {}
+            equipmentCart[assetID]['returned'] = 0
+
+            //Set the equipment array to a hidden input on the form
+            //Must be sent in json format and not a javascript array
+            $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+        });
+
+        console.log("HERE");
+        console.log(equipmentCart);
+
+        //Populate dropdown
+        getEquipment();
+    }else{
+        //Check if we have start and loan date filled out so we can fetch all equipment
+        allInputsHaveData = checkInputFieldsForData(["loanStartDate","loanEndDate"]);
+
+        if(allInputsHaveData){
+            getEquipment();
+        }
+    }
+
+    //Check that each input is filled out with data
+    function checkInputFieldsForData(inputs, type){
+        var dataMissing = false;
+        inputs.forEach((input) => {
+            if(!($("#" + input).val())){
+                console.log(input + " missing");
+                dataMissing = true;
+                return false;
+            }
+        });
+
+        if(dataMissing){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    //Return a list of equipment that is avaliable for booking
+    function getEquipment(){
+        //On Modify Booking we need to fetch the id from the url
+        var url = window.location.href;
+        var id = null
+
+        if(url.includes('edit')){
+          console.log("HERE");
+          id = url.split("/")[4];
+          console.log(id);
+        }
+
+        jQuery.ajax({
+            type: "GET",
+            url: "/loans/getBookableEquipment",
+            async: false,
+            dataType: 'json',
+            data: {
+                loanType: $("#formAddLoan input[type='radio']:checked").attr('id'),
+                start_date: $('#loanStartDate').val(),
+                end_date: $('#loanEndDate').val(),
+                equipmentSelected: equipmentCart,
+                id, id
+            },
+            success: function(data) {
+                populateEquipmentDropdown("equipmentSelected", data);
+            },
+            error: function(data){
+
+            }
+        });
+    }
+
+    //List all the avaliable equipment for booking on the form
+    function populateEquipmentDropdown(name, data){
+        var dropdown = $('#' + name);
+        $(dropdown).empty();
+        dropdown.append("<option></option>");
+
+        //Populate dropdown options
+        console.log(data);
+        $.each(data, function() {
+            //Make sure item is not already in the shopping cart
+            if(!(this.id in equipmentCart)){
+                $("<option />", {
+                    val: this.id,
+                    text: this.name + " (" + this.tag + ")"
+                }).appendTo(dropdown);
+            }
+        });
+
+        //Check if any items are in the shopping cart that shouldn't be
+        //This can happen when the user changes the start/end date and
+        //asset is no longer avalaible to book.
+        if(equipmentTable.data().any()){
+            equipmentTable.rows().every(function(index, element){
+                var assetID = this.node().id;
+                var assetName = this.data()[0];
+
+                var found = false;
+                $.each(data, function() {
+                    if(this.id == assetID){
+                        found = true;
+                    }
+                });
+
+                if(found == false){
+                    console.log(assetName + " needs removing");
+                    delete equipmentCart[assetID];
+
+                    $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+
+                    //Remove from table
+                    document.getElementById(assetID).classList.add('addStrike');
+                }else{
+                    document.getElementById(assetID).classList.remove('addStrike');
+                }
+            });
+        }
+
+        //If you select the equipment too quickly it returns blank so disable for one second
+        //TODO: figure out why this is?
+        $("#equipmentSelected").attr('disabled',true);
+        setTimeout(function() {
+            $("#equipmentSelected").attr('disabled',false);
+        }, 1000);
+    }
+
+    //Add selected equipment to the shopping cart
+    $(document).on('change','#equipmentSelected',function (e) {
+        console.log(e);
+
+        //Find what has just been selected
+        var assetName = $(e.target).find("option:selected").text();
+        var assetID = $(e.target).val();
+
+        //Fill out datatable on form
+        //Must redraw after adding to show user the changes
+        equipmentTable.row.add( [
+            assetName,
+            '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
+        ] ).node().id = assetID;
+        equipmentTable.draw();
+
+        //Add to the shopping card to pass onto the database for storage
+        equipmentCart[assetID] = {}
+        equipmentCart[assetID]['returned'] = 0
+
+        //Set the equipment array to a hidden input on the form
+        //Must be sent in json format and not a javascript array
+        $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+
+        //Remove from the dropdown menu
+        $('#equipmentSelected :selected').remove();
+    });
+
+    //Delete item in shopping cart
+    $(document).on('click', '.removeFromCart', function(e) {
+        var dropdown = $('#equipmentSelected');
+        //Re-add to equipment dropdown
+        $("<option />", {
+            val: this.dataset.assetid,
+            text: this.dataset.assetname
+        }).appendTo(dropdown);
+
+        //Remove from shopping cart array
+        delete equipmentCart[this.dataset.assetid];
+
+        $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+
+        //Remove from table
+        equipmentTable.row($(this).parents('tr')).remove().draw();
+    });
+
+    //Book in individual item from the shopping cart
+    $(document).on('click', '.bookFromCart', function(e) {
+        //Send ajax request to update database and send email
+
+        var dropdown = $('#equipmentSelected');
+        //Re-add to equipment dropdown
+        $("<option />", {
+            val: this.dataset.assetid,
+            text: this.dataset.assetname
+        }).appendTo(dropdown);
+
+        console.log(equipmentCart);
+
+        //Marked as returned in the shopping cart
+        equipmentCart[this.dataset.assetid] = {}
+        equipmentCart[this.dataset.assetid]['returned'] = 1
+
+        console.log(equipmentCart);
+
+        //Remove from table
+        equipmentTable.row($(this).parents('tr')).remove().draw();
+    });
+});

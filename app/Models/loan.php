@@ -18,4 +18,12 @@ class loan extends Model
     {
         return $this->belongsToMany(Asset::class)->withPivot('returned');
     }
+
+    /**
+     * Get the user for the loan.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

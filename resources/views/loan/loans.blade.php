@@ -17,6 +17,7 @@
             <thead>
                 <tr>
                     <th>Id</th>
+                    <th>User</th>
                     <th>Status</th>
                     <th>Start Date</th>
                     <th>End Date</th>
@@ -36,9 +37,6 @@
     {{-- <script src="{{ asset('js/loans.js') }}"></script> --}}
 
     <script>
-        var equipmentCart = [];
-        var equipmentTable;
-
         $("document").ready(function(){
 
         //Fix for missing icons in tempusdominus
@@ -49,8 +47,15 @@
             "processing": true,
             "serverSide": true,
             "ajax": "loans",
+            "pageLength": 25,
             columns: [
                 {data: 'id',name: 'id'},
+                {
+                    data: function (row) {
+                        return row.user.forename + " " + row.user.surname;
+                    },
+                    name: 'users.name'
+                },
                 {data: 'status_id',name: 'status_id'},
                 {data: 'start_date_time', name: 'start_date_time'},
                 {data: 'end_date_time', name: 'end_date_time'},
@@ -124,6 +129,55 @@
             });
         });
 
+        //Book Out asset from database
+        $("#loansTable").on('click', '.bookOutLoan', function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            //Get the id of the asset we are deleting
+            var id = $(this).closest("tr").attr("id");
+
+            var modal = bootbox.dialog({
+                message: $(".bookOutLoan ").html(),
+                size: "large",
+                title: "Book Out Loan",
+                buttons: [
+                {
+                    label: "Book Out",
+                    className: "btn btn-danger pull-right",
+                    callback: function(result) {
+                        //Send ajax request to the server to save to database and then update the table on the website accordingly
+                        jQuery.ajax({
+                            type: "PATCH",
+                            url: "loans/bookOutBooking/"+id,
+                            dataType: 'json',
+                            success: function(data) {
+                                //Popup to tell the user the action has completed successfully
+                                toastr.success('Booking #' + data['id'] + ' has been booked out');
+
+                                //Re-populate the table
+                                loanTable.ajax.reload();
+                            },
+                            error: function(data){
+                                toastr.error('Loan could not be booked out');
+                            }
+                        });
+                    }
+                },
+                {
+                    label: "Cancel",
+                    className: "btn btn-success pull-right",
+                }
+                ],
+                onEscape: function() {
+                    modal.modal("hide");
+                }
+            });
+        });
+
         //Delete asset from database
         $("#loansTable").on('click', '.deleteLoan', function() {
             $.ajaxSetup({
@@ -178,125 +232,6 @@
             //Get the id of the asset we are modifying and redirect
             var id = $(this).closest("tr").attr("id");
             window.location = "/loans/" + id + "/edit"
-        });
-
-        //Check that each input is filled out with data
-        function checkInputFieldsForData(inputs, type){
-            var dataMissing = false;
-            inputs.forEach((input) => {
-                if(!($("#" + input, '.bootbox').val())){
-                    console.log(input + " missing");
-                    dataMissing = true;
-                    return false;
-                }
-            });
-
-            if(dataMissing){
-                return false;
-            }else{
-                return true;
-            }
-        }
-
-        //Return a list of equipement that is avaliable for booking
-        function getEquipment(){
-            jQuery.ajax({
-                type: "GET",
-                url: "loans/getBookableEquipment",
-                async: false,
-                dataType: 'json',
-                data: {
-                    user_id: $('#userSelected :selected','.bootbox').val(),
-                    status_id: $('#reservation','.bootbox').is(':checked') ? 1 : 0,
-                    loanType: $("#formAddLoan input[type='radio']:checked", '.bootbox').attr('id'),
-                    start_date: $('#loanStartDate','.bootbox').val(),
-                    end_date: $('#loanEndDate','.bootbox').val(),
-                    equipmentSelected: equipmentCart,
-                    details: $('#additionalDetails','.bootbox').val(),
-                },
-                success: function(data) {
-                    populateEquipmentDropdown("equipmentSelected", data);
-                },
-                error: function(data){
-
-                }
-            });
-        }
-
-        //List all the avaliable equipment for booking on the bootbox form
-        function populateEquipmentDropdown(name, data){
-            var dropdown = $('#' + name, '.bootbox');
-            $(dropdown).empty();
-            dropdown.append("<option selected>Choose here</option>");
-            $.each(data, function() {
-                $("<option />", {
-                    val: this.id,
-                    text: this.name
-                }).appendTo(dropdown);
-            });
-        }
-
-        //Add selected equipment to the shopping cart
-        $(document).on('change','#equipmentSelected',function (e) {
-            //Add to datatable
-            var assetName = $('#equipmentSelected :selected', '.bootbox').text();
-            var assetID = $('#equipmentSelected','.bootbox').children(":selected").val();
-            equipmentTable.row.add( [
-                assetName,
-                '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
-            ] ).node().id = assetID;
-            equipmentTable.draw();
-
-            //Add to shopping cart array
-            equipmentCart.push({
-                asset_id: assetID,
-                returned: 0,
-            });
-
-            //Remove from the dropdown menu
-            $('#equipmentSelected :selected', '.bootbox').remove();
-        });
-
-        //Delete item in shopping cart
-        $(document).on('click', '.removeFromCart', function(e) {
-            var dropdown = $('#equipmentSelected', '.bootbox');
-            //Re-add to equipment dropdown
-            $("<option />", {
-                val: this.dataset.assetid,
-                text: this.dataset.assetname
-            }).appendTo(dropdown);
-
-            //Remove from shopping cart array
-            var index = equipmentCart.findIndex((obj => obj.asset_id == this.dataset.assetid));
-            if (index > -1) {
-                equipmentCart.splice(index, 1);
-            }
-
-            //Remove from table
-            equipmentTable.row($(this).parents('tr')).remove().draw();
-        });
-
-        //Book in individual item from the shopping cart
-        $(document).on('click', '.bookFromCart', function(e) {
-            //Send ajax request to update database and send email
-
-            var dropdown = $('#equipmentSelected', '.bootbox');
-            //Re-add to equipment dropdown
-            $("<option />", {
-                val: this.dataset.assetid,
-                text: this.dataset.assetname
-            }).appendTo(dropdown);
-
-            console.log(equipmentCart);
-
-            //Marked as returned in the shopping cart
-            var objIndex = equipmentCart.findIndex((obj => obj.asset_id == this.dataset.assetid));
-            console.log(objIndex)
-
-            equipmentCart[objIndex].returned = 1;
-
-            //Remove from table
-            equipmentTable.row($(this).parents('tr')).remove().draw();
         });
     });
     </script>

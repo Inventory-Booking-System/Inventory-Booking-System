@@ -21,6 +21,7 @@ use App\Http\Controllers\IncidentController;
 //Loans
 Route::get('loans/getBookableEquipment', [LoanController::class, 'getBookableEquipment']);
 Route::patch('loans/completeBooking/{id}', [LoanController::class, 'completeBooking']);
+Route::patch('loans/bookOutBooking/{id}', [LoanController::class, 'bookOutBooking']);
 Route::resource('loans', LoanController::class);
 
 //Assets
