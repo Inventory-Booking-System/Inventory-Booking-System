@@ -191,9 +191,11 @@ class LoanController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $loan = Loan::with('assets')->find($id);
+        $loan = Loan::with('assets')->with('user')->find($id);
 
-        return Response::json($loan);
+        return view('loan.show',[
+            'loan' => $loan,
+        ]);
     }
 
     /**
@@ -312,6 +314,7 @@ class LoanController extends Controller
 
         unset($equipmentArr['length']);
 
+        //dd($equipmentArr);
 
         //Add assets into asset_loan table
         $loan->assets()->sync($equipmentArr);

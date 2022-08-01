@@ -40,20 +40,40 @@ $("document").ready(function(){
     });
 
     //This table is used to display the list of equipment currently in the shopping cart
+    //equipmentCart.length = 0;
+    var colCount = document.getElementsByTagName('th').length;
+    console.log(colCount);
     equipmentCart.length = 0;
-    equipmentTable = $('#equipmentTable').DataTable({
-        paging: false,
-        searching: false,
-        info: false,
-        language: {
-        emptyTable: "Shopping cart is empty"
-        },
-        "columns": [
-            { "width": "80%" },
-            { "width": "20%" },
-            null,
-        ]
-    });
+    if(colCount == 2){
+        console.log("Datables setup with 2 cols");
+        equipmentTable = $('#equipmentTable').DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            language: {
+            emptyTable: "Shopping cart is empty"
+            },
+            "columns": [
+                { "width": "80%" },
+                { "width": "20%" },
+            ]
+        });
+    }else if(colCount == 3){
+        console.log("Datables setup with 3 cols");
+        equipmentTable = $('#equipmentTable').DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            language: {
+            emptyTable: "Shopping cart is empty"
+            },
+            "columns": [
+                { "width": "80%" },
+                { "width": "20%" },
+                null,
+            ]
+        });
+    }
 
     //Get any equipment already in the equipment table. For example if formed was filled out incorrectly
     //we need to repopulate any equipment returned back into the shopping cart
@@ -201,10 +221,21 @@ $("document").ready(function(){
 
         //Fill out datatable on form
         //Must redraw after adding to show user the changes
-        equipmentTable.row.add( [
-            assetName,
-            '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
-        ] ).node().id = assetID;
+        if(colCount == 2){
+            equipmentTable.row.add( [
+                assetName,
+                '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
+            ] ).node().id = assetID;
+        }else if(colCount == 3){
+            equipmentTable.row.add( [
+                assetName,
+                '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>',
+                '<button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="' + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button>',
+            ] ).node().id = assetID;
+        }
+
+
+
         equipmentTable.draw();
 
         //Add to the shopping card to pass onto the database for storage
@@ -254,7 +285,9 @@ $("document").ready(function(){
         equipmentCart[this.dataset.assetid] = {}
         equipmentCart[this.dataset.assetid]['returned'] = 1
 
-        console.log(equipmentCart);
+        //console.log(this.dataset.assetid);
+
+        $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
 
         //Remove from table
         equipmentTable.row($(this).parents('tr')).remove().draw();

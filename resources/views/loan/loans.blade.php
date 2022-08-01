@@ -49,31 +49,34 @@
             "ajax": "loans",
             "pageLength": 25,
             columns: [
-                {data: 'id',name: 'id'},
+                {
+                    data: function(row){
+                        return '<a href="/loans/' + row.id + '">#' + row.id + '</a>';
+                    },
+                    name: 'id'},
                 {
                     data: function (row) {
-                        return row.user.forename + " " + row.user.surname;
+                        return '<a href="/users/' + row.user.id + '">' + row.user.forename + ' ' + row.user.surname + '</a>';
                     },
                     name: 'users.name'
                 },
                 {data: 'status_id',name: 'status_id'},
                 {data: 'start_date_time', name: 'start_date_time'},
                 {data: 'end_date_time', name: 'end_date_time'},
-                {data: 'details', name: 'details'},
+                {data: 'details', name: 'details', width: '20%'},
                 {
                     data: function (row) {
-                        console.log(row);
                         let assetsNames= [];
                         $(row.assets).each(function (index, asset) {
                             if(asset.pivot['returned'] == 1){
-                                assetsNames.push("<del>" + asset.name + " (" + asset.tag + ")</del>");
+                                assetsNames.push('<a href="/assets/' + asset.id + '"><del>' + asset.name + ' (' + asset.tag + ')</del></a>');
                             }else{
-                                assetsNames.push(asset.name + " (" + asset.tag + ")");
+                                assetsNames.push('<a href="/assets/' + asset.id + '">' + asset.name + ' (' + asset.tag + ')</a>');
                             }
                         });
                         return assetsNames.join("<br>")
                     },
-                    name: 'assets.name'
+                    name: 'assets.name',
                 },
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ]

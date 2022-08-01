@@ -33,6 +33,16 @@ class AssetController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('asset.create');
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -62,14 +72,24 @@ class AssetController extends Controller
      */
     public function show($id, Request $request)
     {
-        //When mdifying an asset
-        if($request->ajax()){
-            $asset = Asset::find($id);
-            return Response::json($asset);
-        }
+        return view('asset.show');
+    }
 
-        //When displaying the seperate asset page
-        return view('asset.assets');
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //Get list of users
+        $asset = Asset::find($id);
+
+        //Render rest of the page
+        return view('asset.edit',[
+            'asset' => $asset
+        ]);
     }
 
     /**

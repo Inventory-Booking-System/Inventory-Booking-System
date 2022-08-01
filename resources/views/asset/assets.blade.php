@@ -2,7 +2,7 @@
 
 @section('navItems')
     <li class="nav-item">
-        <a id="addAsset" href="#" class="nav-link">
+        <a id="addAsset" href="/assets/create" class="nav-link">
         <i class="nav-icon fas fa-plus"></i>
         <p>
             New Asset
