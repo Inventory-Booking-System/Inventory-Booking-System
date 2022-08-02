@@ -368,7 +368,7 @@ class LoanController extends Controller
         //echo intval($validatedDate['id']);
 
         return Response::json(Asset::with('loans')
-                                    ->where('bookable',true)
+                                    //->where('bookable',true)
                                     //->whereNotIn('assets.id', $ignoredIds)
                                     ->where(function($query) use($validatedDate){
                                         $query->whereNotIn('assets.id', function($query) use($validatedDate){

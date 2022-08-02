@@ -16,8 +16,6 @@ $("document").ready(function(){
             },
             {data: 'tag', name: 'tag'},
             {data: 'description', name: 'description'},
-            {data: 'cost', name: 'cost'},
-            {data: 'bookable', name: 'bookable'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]
     });

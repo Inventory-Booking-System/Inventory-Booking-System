@@ -19,8 +19,6 @@
                     <th>Name</th>
                     <th>Asset Tag</th>
                     <th>Description</th>
-                    <th>Cost</th>
-                    <th>Bookable</th>
                     <th>Actions</th>
                 </tr>
             </thead>

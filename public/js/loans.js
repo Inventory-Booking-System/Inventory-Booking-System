@@ -42,10 +42,8 @@ $("document").ready(function(){
     //This table is used to display the list of equipment currently in the shopping cart
     //equipmentCart.length = 0;
     var colCount = document.getElementsByTagName('th').length;
-    console.log(colCount);
     equipmentCart.length = 0;
     if(colCount == 2){
-        console.log("Datables setup with 2 cols");
         equipmentTable = $('#equipmentTable').DataTable({
             paging: false,
             searching: false,
@@ -59,7 +57,6 @@ $("document").ready(function(){
             ]
         });
     }else if(colCount == 3){
-        console.log("Datables setup with 3 cols");
         equipmentTable = $('#equipmentTable').DataTable({
             paging: false,
             searching: false,
@@ -71,7 +68,14 @@ $("document").ready(function(){
                 { "width": "80%" },
                 { "width": "20%" },
                 null,
-            ]
+            ],
+            createdRow: function (row, data, dataIndex) {
+                if(row.dataset.returned == 1){
+                    $(row).addClass('addStrike');
+                }else if(row.dataset.returned == null){
+                    $(row).attr('data-returned', 0);
+                }
+            },
         });
     }
 
@@ -81,10 +85,11 @@ $("document").ready(function(){
         equipmentTable.rows().every(function(index, element){
             var assetID = this.node().id;
             var assetName = this.data()[0];
+            var returned = this.node().dataset.returned;
 
             //Add to the shopping card to pass onto the database for storage
             equipmentCart[assetID] = {}
-            equipmentCart[assetID]['returned'] = 0
+            equipmentCart[assetID]['returned'] = returned;
 
             //Set the equipment array to a hidden input on the form
             //Must be sent in json format and not a javascript array
@@ -181,6 +186,7 @@ $("document").ready(function(){
             equipmentTable.rows().every(function(index, element){
                 var assetID = this.node().id;
                 var assetName = this.data()[0];
+                var returned = this.node().dataset.returned;
 
                 var found = false;
                 $.each(data, function() {
@@ -197,7 +203,7 @@ $("document").ready(function(){
 
                     //Remove from table
                     document.getElementById(assetID).classList.add('addStrike');
-                }else{
+                }else if(returned == 0){
                     document.getElementById(assetID).classList.remove('addStrike');
                 }
             });

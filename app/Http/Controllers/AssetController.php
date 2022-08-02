@@ -54,13 +54,11 @@ class AssetController extends Controller
             'name' => 'required|string',
             'tag' => 'required|numeric|unique:assets',
             'description' => 'string',
-            'cost' => 'required|numeric',
-            'bookable' => 'boolean'
         ]);
 
         $asset = Asset::create($data);
 
-        return Response::json($asset);
+        return redirect()->route('assets.index');
     }
 
     /**

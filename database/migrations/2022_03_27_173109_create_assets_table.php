@@ -18,8 +18,6 @@ class CreateAssetsTable extends Migration
             $table->string("name", 100);
             $table->unsignedInteger("tag");
             $table->text('description');
-            $table->decimal('cost');
-            $table->boolean("bookable");
             $table->timestamps();
         });
     }

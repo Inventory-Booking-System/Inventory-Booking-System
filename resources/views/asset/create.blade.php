@@ -12,7 +12,7 @@
                 @if($errors->has('name'))
                     <span class="text-danger">{{ $errors->first('name') }}</span>
                 @endif
-                <input type="text" name="name" class="form-control" id="assetName"{{ old('name') }}>
+                <input type="text" name="name" class="form-control" id="assetName" value="{{ old('name') }}">
 
                 <!-- Asset Description -->
                 <label id="assetDescriptionLabel">Description</label>
@@ -26,7 +26,7 @@
                 @if($errors->has('tag'))
                     <span class="text-danger">{{ $errors->first('tag') }}</span>
                 @endif
-                <input type="text" name="tag" class="form-control" id="assetTag"{{ old('tag') }}>
+                <input type="text" name="tag" class="form-control" id="assetTag" value="{{ old('tag') }}">
 
                 <button type="submit" class="btn btn-primary btn-block mt-3">Create Asset</button>
             </div>

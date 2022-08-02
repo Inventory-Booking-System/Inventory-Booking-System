@@ -109,10 +109,14 @@
                                 @foreach (old('bookableEquipment') as $equipment)
                                     @isset($equipment->selected)
                                         @if($equipment->selected)
-                                            <tr id="{{ $equipment->id }}">
+                                            <tr id="{{ $equipment->id }}" data-returned="{{ $equipment->pivot->returned }}">
                                                 <td>{{ $equipment->name }} ({{ $equipment->tag }})</td>
                                                 <td><button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button></td>
-                                                <td><button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button></td>
+                                                <td>
+                                                    @if($equipment->pivot->returned == 0)
+                                                        <button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button>
+                                                    @endif
+                                                </td>
                                             </tr>
                                         @endif
                                     @endisset
@@ -120,10 +124,14 @@
                             @else
                                 <!-- Get posted equipment data -->
                                 @foreach($loan->assets as $equipment)
-                                    <tr id="{{ $equipment->id }}">
+                                    <tr id="{{ $equipment->id }}" data-returned="{{ $equipment->pivot->returned }}">
                                         <td>{{ $equipment->name }} ({{ $equipment->tag }})</td>
                                         <td><button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button></td>
-                                        <td><button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button></td>
+                                        <td>
+                                            @if($equipment->pivot->returned == 0)
+                                                <button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="{{ $equipment->name }} ({{ $equipment->tag }})" data-assetid="{{ $equipment->id }}" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
