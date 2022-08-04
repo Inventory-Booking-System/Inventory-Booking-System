@@ -22,7 +22,7 @@ class AssetController extends Controller
             return Datatables::of($assets)
                 ->setRowId('id')
                 ->addColumn('action', function ($asset){
-                    return '<button class="modifyAsset btn btn-warning btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Modify"><i class="fa fa-pen-to-square"></i></button>
+                    return '<button class="modifyAsset btn btn-warning btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Modify" onclick="location.href=\'/assets/' . $asset->id . '/edit\';"><i class="fa fa-pen-to-square"></i></button>
                             <button class="deleteAsset btn btn-danger btn-sm rounded-0" type="button" data-assetname="' . $asset->name . '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>';
                 })
                 ->make(true);
@@ -70,7 +70,11 @@ class AssetController extends Controller
      */
     public function show($id, Request $request)
     {
-        return view('asset.show');
+        $asset = Asset::find($id);
+
+        return view('asset.show',[
+            'asset' => $asset
+        ]);
     }
 
     /**
@@ -103,19 +107,16 @@ class AssetController extends Controller
             'name' => 'required|string',
             'tag' => 'required|numeric|unique:assets,tag,'.$id,
             'description' => 'string',
-            'cost' => 'required|numeric',
-            'bookable' => 'boolean'
         ]);
 
         $asset = Asset::where('id', $id)->update([
             'name' => $request->input('name'),
             'description' => $request->input('description'),
             'tag' => $request->input('tag'),
-            'cost' => $request->input('cost'),
-            'bookable' => $request->input('bookable')
         ]);
 
-        return Response::json(Asset::find($id));
+
+        return redirect()->route('assets.index');
     }
 
     /**

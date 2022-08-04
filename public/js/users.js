@@ -1,27 +1,32 @@
-var assetTable;
+var userTable;
 
 $("document").ready(function(){
-    //Populate Asset table on page load using Datables plugin
-    assetTable = $('#assetsTable').DataTable( {
+    //Populate User table on page load using Datables plugin
+    userTable = $('#usersTable').DataTable( {
         "processing": true,
         "serverSide": true,
-        "ajax": "assets",
+        "ajax": "users",
         "pageLength": 25,
         columns: [
             {
                 data: function (row) {
-                    return '<a href="/assets/' + row.id + '">' + row.name + '</a>';
+                    return '<a href="/users/' + row.id + '">' + row.forename + '</a>';
                 },
-                name: 'name'
+                name: 'forename'
             },
-            {data: 'tag', name: 'tag'},
-            {data: 'description', name: 'description'},
+            {
+                data: function (row) {
+                    return '<a href="/users/' + row.id + '">' + row.surname + '</a>';
+                },
+                name: 'surname'
+            },
+            {data: 'email', name: 'email'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]
     });
 
     //Delete asset from database
-    $("#assetTable").on('click', '.deleteAsset', function() {
+    $("#userTable").on('click', '.archiveUser', function() {
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -32,28 +37,28 @@ $("document").ready(function(){
         var id = $(this).closest("tr").attr("id");
 
         var modal = bootbox.dialog({
-            message: $(".deleteAsset").html(),
+            message: $(".archiveUser").html(),
             size: "large",
-            title: "Delete Asset",
+            title: "Archive User",
             buttons: [
             {
-                label: "Delete",
+                label: "Archive",
                 className: "btn btn-danger pull-right",
                 callback: function(result) {
                     //Send ajax request to the server to save to database and then update the table on the website accordingly
                     jQuery.ajax({
                         type: "DELETE",
-                        url: "assets/"+id,
+                        url: "users/"+id,
                         dataType: 'json',
                         success: function(data) {
                             //Popup to tell the user the action has completed successfully
-                            toastr.success(data['name'] + ' has been deleted');
+                            toastr.success(data['name'] + ' has been archived');
 
                             //Re-populate the table
                             assetTable.ajax.reload();
                         },
                         error: function(data){
-                            toastr.error('Asset could not be deleted');
+                            toastr.error('User could not be archived');
                         }
                     });
                 }
@@ -69,4 +74,3 @@ $("document").ready(function(){
         });
     });
 });
-

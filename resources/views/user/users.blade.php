@@ -12,19 +12,20 @@
 @endsection
 
 @section('mainContent')
-    <div id="assetTable" class="card-body">
-        <table id='loansTable' class='table yajra-datatable' width="100%">
+    <div id="userTable" class="card-body">
+        <table id='usersTable' class='table yajra-datatable' width="100%">
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>Status</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Details</th>
-                    <th>Assets</th>
+                    <th>Forename</th>
+                    <th>Surname</th>
+                    <th>Email</th>
                     <th>Actions</th>
                 </tr>
             </thead>
         </table>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/users.js') }}"></script>
+@endpush

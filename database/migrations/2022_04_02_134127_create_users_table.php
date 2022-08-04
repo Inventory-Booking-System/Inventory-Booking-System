@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('forename');
             $table->string('surname');
             $table->string('email');
+            $table->boolean('archived');
             $table->timestamps();
         });
     }

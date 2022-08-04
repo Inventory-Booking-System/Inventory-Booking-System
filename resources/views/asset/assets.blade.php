@@ -26,7 +26,6 @@
     </div>
 @endsection
 
-@include('asset.modals.add')
 @include('asset.modals.delete')
 
 @push('scripts')
