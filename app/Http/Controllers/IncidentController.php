@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Location;
 
 class IncidentController extends Controller
 {
@@ -24,7 +25,13 @@ class IncidentController extends Controller
      */
     public function create()
     {
-        return view('incident.create');
+        //Get list of users
+        $locations = Location::latest()->get();
+
+        //Render rest of the page
+        return view('incident.create',[
+            'locations' => $locations
+        ]);
     }
 
     /**

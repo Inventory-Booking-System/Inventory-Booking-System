@@ -12,7 +12,7 @@ class loan extends Model
     protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details'];
 
     /**
-     * Get the assets for the loan.
+     * An asset can belong to many loan
      */
     public function assets()
     {

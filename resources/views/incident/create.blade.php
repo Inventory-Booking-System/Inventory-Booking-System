@@ -5,7 +5,6 @@
         @csrf
 
         <div class="row">
-            <!-- Start Date/Time, User, Equipment Selection, Additional Details, Reservation -->
             <div class="col-lg-5 offset-lg-2 p-3">
                 <!-- Date -->
                 <label id="loanStartDateLabel">Date</label>
@@ -26,6 +25,22 @@
                 @endif
                 <select name="user_id" class="form-control" id="userSelected"">
                     <option></option>
+                </select>
+
+                <!-- Location -->
+                <label id="locationSelectedLabel">Location</label>
+                @if($errors->has('location_id'))
+                    <span class="text-danger">{{ $errors->first('location_id') }}</span>
+                @endif
+                <select name="location_id" class="form-control" id="locationSelected"">
+                    <option></option>
+                    @foreach ($locations as $location)
+                        @if (old('location_id') == $location->id)
+                            <option value="{{ $location->id }}" selected>{{ $location->name }}</option>
+                        @else
+                            <option value="{{ $location->id }}">{{ $location->name }}</option>
+                        @endif
+                    @endforeach
                 </select>
 
                 <!-- Equipment -->
@@ -101,6 +116,10 @@
             $('#userSelected').select2({
                 theme: "bootstrap-5",
                 placeholder: "Select a user",
+            });
+            $('#locationSelected').select2({
+                theme: "bootstrap-5",
+                placeholder: "Select a location",
             });
             $('#equipmentSelected').select2({
                 theme: "bootstrap-5",

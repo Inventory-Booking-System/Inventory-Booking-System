@@ -11,8 +11,19 @@ class user extends Model
 
     protected $fillable = ['forename', 'surname', 'email'];
 
+    /**
+     * A user can have many loans.
+     */
     public function loans()
     {
         return $this->hasMany(Loans::class);
+    }
+
+    /**
+     * A user can belongs to multiple distribution groups.
+     */
+    public function distributionGroups()
+    {
+        return $this->belongsToMany(DistributionGroup::class);
     }
 }

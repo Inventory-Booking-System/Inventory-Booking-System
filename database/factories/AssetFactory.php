@@ -17,9 +17,9 @@ class AssetFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'required|string',
-            'tag' => 'required|numeric|unique:assets,tag,'.$id,
-            'description' => 'string',
+            'name' => $this->faker->randomElement(['Ranmore Loan Laptop', 'HD Stills Camera', 'HD Video Camera', 'Bradley Loan Laptop', 'Box of Headphones', 'Student Laptop']),
+            'tag' => $this->faker->unique()->randomNumber(4),
+            'description' => $this->faker->sentence()
         ];
     }
 }
