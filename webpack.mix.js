@@ -21,6 +21,8 @@ mix.combine([
         'node_modules/admin-lte/dist/js/adminlte.min.js',
         'node_modules/datatables/media/js/jquery.dataTables.min.js',
         'node_modules/select2/dist/js/select2.full.min.js',
+        'node_modules/@popperjs/core/dist/umd/popper.min.js',
+        'node_modules/@eonasdan/tempus-dominus/dist/js/tempus-dominus.min.js',
         'resources/js/app.js'
     ], 'public/js/app.js')
     .js('resources/js/assets.js', 'public/js/assets.js')
@@ -36,6 +38,7 @@ mix.combine([
         'node_modules/datatables/media/css/jquery.dataTables.min.css',
         'node_modules/select2/dist/css/select2.min.css',
         'node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css',
+        'node_modules/@eonasdan/tempus-dominus/dist/css/tempus-dominus.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
     .sourceMaps();
