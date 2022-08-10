@@ -1,249 +1,301 @@
-var loanTable;
+var equipmentCart = {};
+var equipmentTable;
 
 $("document").ready(function(){
-    //Populate Asset table on page load using Datables plugin
-    loanTable = $('#loansTable').DataTable( {
-        "processing": true,
-        "serverSide": true,
-        "ajax": "loans",
-        columns: [
-            {data: 'id',name: 'id'},
-            {data: 'start_date', name: 'start_date'},
-            {data: 'end_date', name: 'end_date'},
-            {data: 'start_time', name: 'start_time'},
-            {data: 'end_time', name: 'end_time'},
-            {data: 'details', name: 'details'},
-            {data: 'action', name: 'action', orderable: false, searchable: false}
-        ]
+
+    //Fix for missing icons in tempusdominus
+    $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, { icons: { time: 'fas fa-clock', date: 'fas fa-calendar', up: 'fas fa-arrow-up', down: 'fas fa-arrow-down', previous: 'far fa-chevron-left', next: 'far fa-chevron-right', today: 'far fa-calendar-check-o', clear: 'far fa-trash', close: 'far fa-times' } });
+
+    //Setup better select boxes
+    $('#userSelected').select2({
+        theme: "bootstrap-5",
+        placeholder: "Select a user",
+    });
+    $('#equipmentSelected').select2({
+        theme: "bootstrap-5",
+        placeholder: "Select equipment",
     });
 
-    //Add new loan to database
-    $('#addLoan').on('click', function (e) {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
-            }
+    //Setup the Datetime picker settings
+    var currentDate = new Date();
+
+    //Single Day Booking
+    //Loan Date
+    $('.dtpStartDateTime').datetimepicker({
+        useCurrent: true,
+        format: "yyyy-MM-DD HH:mm",
+    });
+
+    $('.dtpEndDateTime').datetimepicker({
+        format: "yyyy-MM-DD HH:mm",
+    });
+
+    $(document).on('input', '#loanStartDate, #loanEndDate', function(e) {
+        var allInputsHaveData = false;
+        allInputsHaveData = checkInputFieldsForData(["loanStartDate","loanEndDate"]);
+
+        if(allInputsHaveData){
+            getEquipment();
+        }
+    });
+
+    //This table is used to display the list of equipment currently in the shopping cart
+    //equipmentCart.length = 0;
+    var colCount = document.getElementsByTagName('th').length;
+    equipmentCart.length = 0;
+    if(colCount == 2){
+        equipmentTable = $('#equipmentTable').DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            language: {
+            emptyTable: "Shopping cart is empty"
+            },
+            "columns": [
+                { "width": "80%" },
+                { "width": "20%" },
+            ]
         });
-
-        var modal = bootbox.dialog({
-            message: $(".addLoan").html(),
-            size: "large",
-            title: "Create New Loan",
-            buttons: [
-            {
-                label: "Save",
-                className: "btn btn-primary pull-right",
-                callback: function(result) {
-                    //Send ajax request to the server to save to database and then update the table on the website accordingly
-                    jQuery.ajax({
-                        type: "POST",
-                        url: "loans",
-                        async: false,
-                        dataType: 'json',
-                        data: {
-                            name: $('#assetName', '.bootbox').val(),
-                            description: $('#assetDescription', '.bootbox').val(),
-                            tag: $('#assetTag', '.bootbox').val(),
-                            cost: $('#assetCost','.bootbox').val(),
-                            bookable: $('#assetBookable','.bootbox').is(':checked') ? 1 : 0
-                        },
-                        success: function(data) {
-                            //Allows the form to close
-                            validationError = false;
-
-                            //Popup to tell the user the action has completed successfully
-                            toastr.success(data['name'] + ' has been created');
-
-                            //Re-populate the table
-                            assetTable.ajax.reload();
-
-                            //Close the model
-                            modal.modal("hide");
-                        },
-                        error: function(data){
-                            //Clear all errors currently being displayed
-                            $('.inputError').each(function(i, obj) {
-                                $(this).html("");
-                            });
-
-                            $.each(data['responseJSON']['errors'], function(key, data){
-                                OutputDataEntryError(key, data);
-                            })
-                        }
-                    });
-
-                    return false;
+    }else if(colCount == 3){
+        equipmentTable = $('#equipmentTable').DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            language: {
+            emptyTable: "Shopping cart is empty"
+            },
+            "columns": [
+                { "width": "80%" },
+                { "width": "20%" },
+                null,
+            ],
+            createdRow: function (row, data, dataIndex) {
+                if(row.dataset.returned == 1){
+                    $(row).addClass('addStrike');
+                }else if(row.dataset.returned == null){
+                    $(row).attr('data-returned', 0);
                 }
             },
-            {
-                label: "Cancel",
-                className: "btn btn-danger pull-right",
-            }
-            ],
-            onEscape: function() {
-                modal.modal("hide");
-            }
         });
-    });
+    }
 
-    //Delete asset from database
-    $("#assetTable").on('click', '.deleteAsset', function() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
-            }
+    //Get any equipment already in the equipment table. For example if formed was filled out incorrectly
+    //we need to repopulate any equipment returned back into the shopping cart
+    if(equipmentTable.data().any()){
+        equipmentTable.rows().every(function(index, element){
+            var assetID = this.node().id;
+            var assetName = this.data()[0];
+            var returned = this.node().dataset.returned;
+
+            //Add to the shopping card to pass onto the database for storage
+            equipmentCart[assetID] = {}
+            equipmentCart[assetID]['returned'] = returned;
+
+            //Set the equipment array to a hidden input on the form
+            //Must be sent in json format and not a javascript array
+            $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
         });
 
-        //Get the id of the asset we are deleting
-        var id = $(this).closest("tr").attr("id");
+        console.log("HERE");
+        console.log(equipmentCart);
 
-        var modal = bootbox.dialog({
-            message: $(".deleteAsset").html(),
-            size: "large",
-            title: "Delete Asset",
-            buttons: [
-            {
-                label: "Delete",
-                className: "btn btn-danger pull-right",
-                callback: function(result) {
-                    //Send ajax request to the server to save to database and then update the table on the website accordingly
-                    jQuery.ajax({
-                        type: "DELETE",
-                        url: "assets/"+id,
-                        dataType: 'json',
-                        success: function(data) {
-                            //Popup to tell the user the action has completed successfully
-                            toastr.success(data['name'] + ' has been deleted');
+        //Populate dropdown
+        getEquipment();
+    }else{
+        //Check if we have start and loan date filled out so we can fetch all equipment
+        allInputsHaveData = checkInputFieldsForData(["loanStartDate","loanEndDate"]);
 
-                            //Re-populate the table
-                            assetTable.ajax.reload();
-                        },
-                        error: function(data){
-                            toastr.error('Asset could not be deleted');
-                        }
-                    });
-                }
-            },
-            {
-                label: "Cancel",
-                className: "btn btn-success pull-right",
-            }
-            ],
-            onEscape: function() {
-                modal.modal("hide");
-            }
-        });
-    });
+        if(allInputsHaveData){
+            getEquipment();
+        }
+    }
 
-    //Modify asset in database
-    $("#assetTable").on('click', '.modifyAsset', function() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+    //Check that each input is filled out with data
+    function checkInputFieldsForData(inputs, type){
+        var dataMissing = false;
+        inputs.forEach((input) => {
+            if(!($("#" + input).val())){
+                console.log(input + " missing");
+                dataMissing = true;
+                return false;
             }
         });
 
-        //Get the id of the asset we are deleting
-        var id = $(this).closest("tr").attr("id");
+        if(dataMissing){
+            return false;
+        }else{
+            return true;
+        }
+    }
 
-        //Get data to populate the model
+    //Return a list of equipment that is avaliable for booking
+    function getEquipment(){
+        //On Modify Booking we need to fetch the id from the url
+        var url = window.location.href;
+        var id = null
+
+        if(url.includes('edit')){
+          console.log("HERE");
+          id = url.split("/")[4];
+          console.log(id);
+        }
+
         jQuery.ajax({
             type: "GET",
-            url: "assets/"+id,
+            url: "/loans/getBookableEquipment",
+            async: false,
             dataType: 'json',
+            data: {
+                loanType: $("#formAddLoan input[type='radio']:checked").attr('id'),
+                start_date: $('#loanStartDate').val(),
+                end_date: $('#loanEndDate').val(),
+                equipmentSelected: equipmentCart,
+                id, id
+            },
             success: function(data) {
-                $('#assetName', '.bootbox').val(data.name),
-                $('#assetDescription', '.bootbox').val(data.description),
-                $('#assetTag', '.bootbox').val(data.tag),
-                $('#assetCost','.bootbox').val(data.cost),
-                $('#assetBookable','.bootbox').prop('checked', data.bookable ? true : false)
+                populateEquipmentDropdown("equipmentSelected", data);
             },
             error: function(data){
+
+            }
+        });
+    }
+
+    //List all the avaliable equipment for booking on the form
+    function populateEquipmentDropdown(name, data){
+        var dropdown = $('#' + name);
+        $(dropdown).empty();
+        dropdown.append("<option></option>");
+
+        //Populate dropdown options
+        console.log(data);
+        $.each(data, function() {
+            //Make sure item is not already in the shopping cart
+            if(!(this.id in equipmentCart)){
+                $("<option />", {
+                    val: this.id,
+                    text: this.name + " (" + this.tag + ")"
+                }).appendTo(dropdown);
             }
         });
 
-        //Show model and handle saving data back to database
-        var modal = bootbox.dialog({
-            message: $(".addAsset").html(),
-            size: "large",
-            title: "Modify Asset",
-            buttons: [
-            {
-                label: "Save",
-                className: "btn btn-primary pull-right",
-                callback: function(result) {
-                    //Send ajax request to the server to save to database and then update the table on the website accordingly
-                    jQuery.ajax({
-                        type: "PATCH",
-                        url: "assets/"+id,
-                        dataType: 'json',
-                        async: false,
-                        data: {
-                            name: $('#assetName', '.bootbox').val(),
-                            description: $('#assetDescription', '.bootbox').val(),
-                            tag: $('#assetTag', '.bootbox').val(),
-                            cost: $('#assetCost','.bootbox').val(),
-                            bookable: $('#assetBookable','.bootbox').is(':checked') ? 1 : 0
-                        },
-                        success: function(data) {
-                            //Popup to tell the user the action has completed successfully
-                            toastr.success(data['name'] + ' has been modified');
+        //Check if any items are in the shopping cart that shouldn't be
+        //This can happen when the user changes the start/end date and
+        //asset is no longer avalaible to book.
+        if(equipmentTable.data().any()){
+            equipmentTable.rows().every(function(index, element){
+                var assetID = this.node().id;
+                var assetName = this.data()[0];
+                var returned = this.node().dataset.returned;
 
-                            //Re-populate the table
-                            assetTable.ajax.reload();
+                var found = false;
+                $.each(data, function() {
+                    if(this.id == assetID){
+                        found = true;
+                    }
+                });
 
-                            //Close the model
-                            modal.modal("hide");
-                        },
-                        error: function(data){
-                            //Clear all errors currently being displayed
-                            $('.inputError').each(function(i, obj) {
-                                $(this).html("");
-                            });
+                if(found == false){
+                    console.log(assetName + " needs removing");
+                    delete equipmentCart[assetID];
 
-                            $.each(data['responseJSON']['errors'], function(key, data){
-                                OutputDataEntryError(key, data);
-                            })
-                        }
-                    });
+                    $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
 
-                    return false;
+                    //Remove from table
+                    document.getElementById(assetID).classList.add('addStrike');
+                }else if(returned == 0){
+                    document.getElementById(assetID).classList.remove('addStrike');
                 }
-            },
-            {
-                label: "Cancel",
-                className: "btn btn-danger pull-right",
-            }
-            ],
-            onEscape: function() {
-                modal.modal("hide");
-            }
-        });
+            });
+        }
+
+        //If you select the equipment too quickly it returns blank so disable for one second
+        //TODO: figure out why this is?
+        $("#equipmentSelected").attr('disabled',true);
+        setTimeout(function() {
+            $("#equipmentSelected").attr('disabled',false);
+        }, 1000);
+    }
+
+    //Add selected equipment to the shopping cart
+    $(document).on('change','#equipmentSelected',function (e) {
+        console.log(e);
+
+        //Find what has just been selected
+        var assetName = $(e.target).find("option:selected").text();
+        var assetID = $(e.target).val();
+
+        //Fill out datatable on form
+        //Must redraw after adding to show user the changes
+        if(colCount == 2){
+            equipmentTable.row.add( [
+                assetName,
+                '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>'
+            ] ).node().id = assetID;
+        }else if(colCount == 3){
+            equipmentTable.row.add( [
+                assetName,
+                '<button class="removeFromCart btn btn-danger btn-sm rounded-0" type="button" data-assetname="' + assetName + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>',
+                '<button class="bookFromCart btn btn-success btn-sm rounded-0" type="button" data-assetname="' + '" data-assetid="' + $(this).val() + '" data-toggle="tooltip" data-placement="top" title="Book In Single"><i class="fa fa-check"></i></button>',
+            ] ).node().id = assetID;
+        }
+
+
+
+        equipmentTable.draw();
+
+        //Add to the shopping card to pass onto the database for storage
+        equipmentCart[assetID] = {}
+        equipmentCart[assetID]['returned'] = 0
+
+        //Set the equipment array to a hidden input on the form
+        //Must be sent in json format and not a javascript array
+        $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+
+        //Remove from the dropdown menu
+        $('#equipmentSelected :selected').remove();
     });
 
-    //Show Multi-Day Booking
-    $('#formAddLoan').on('change', '#loanTypeMulti', function() {
-        //$('#equipmentTable tbody > tr').remove();
-        //$('#equipmentSelected option').remove();
-        $("#singleDayBooking",'.bootbox').hide();
-        $("#multiDayBooking",'.bootbox').show();
+    //Delete item in shopping cart
+    $(document).on('click', '.removeFromCart', function(e) {
+        var dropdown = $('#equipmentSelected');
+        //Re-add to equipment dropdown
+        $("<option />", {
+            val: this.dataset.assetid,
+            text: this.dataset.assetname
+        }).appendTo(dropdown);
 
+        //Remove from shopping cart array
+        delete equipmentCart[this.dataset.assetid];
 
-        if($(this).is(':checked')){
-            alert("2");
-            //loanType = "multi";
-        }
+        $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+
+        //Remove from table
+        equipmentTable.row($(this).parents('tr')).remove().draw();
     });
 
-    //Show Single Day Booking
-    $('#formAddLoan').on('change', '#loanTypeSingle', function() {
-        $("#multiDayBooking",'.bootbox').hide();
+    //Book in individual item from the shopping cart
+    $(document).on('click', '.bookFromCart', function(e) {
+        //Send ajax request to update database and send email
 
-        //$('#equipmentTable tbody > tr').remove();
-        //$('#equipmentSelected option').remove();
-        if($(this).is(':checked')){
-            $("#singleDayBooking",'.bootbox').show();
-            //loanType = "single";
-        }
+        var dropdown = $('#equipmentSelected');
+        //Re-add to equipment dropdown
+        $("<option />", {
+            val: this.dataset.assetid,
+            text: this.dataset.assetname
+        }).appendTo(dropdown);
+
+        console.log(equipmentCart);
+
+        //Marked as returned in the shopping cart
+        equipmentCart[this.dataset.assetid] = {}
+        equipmentCart[this.dataset.assetid]['returned'] = 1
+
+        //console.log(this.dataset.assetid);
+
+        $('#equipmentToSubmit').val(JSON.stringify(equipmentCart));
+
+        //Remove from table
+        equipmentTable.row($(this).parents('tr')).remove().draw();
     });
 });

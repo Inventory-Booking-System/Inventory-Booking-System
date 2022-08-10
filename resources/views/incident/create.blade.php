@@ -18,13 +18,20 @@
                     </div>
                 </div>
 
-                <!-- User Selected -->
+                <!-- Distribution Group -->
                 <label id="userSelectedLabel">Inform</label>
-                @if($errors->has('user_id'))
-                    <span class="text-danger">{{ $errors->first('user_id') }}</span>
+                @if($errors->has('distribution_id'))
+                    <span class="text-danger">{{ $errors->first('distribution_id') }}</span>
                 @endif
-                <select name="user_id" class="form-control" id="userSelected"">
+                <select name="distribution_id" class="form-control" id="distributionGroupSelected"">
                     <option></option>
+                    @foreach ($distributions as $distribution)
+                        @if (old('distribution_id') == $distribution->id)
+                            <option value="{{ $distribution->id }}" selected>{{ $distribution->name }}</option>
+                        @else
+                            <option value="{{ $distribution->id }}">{{ $distribution->name }}</option>
+                        @endif
+                    @endforeach
                 </select>
 
                 <!-- Location -->
@@ -43,12 +50,20 @@
                     @endforeach
                 </select>
 
-                <!-- Equipment -->
+                <!-- Equipment Issues -->
                 <label class="mt-3" id="equipmentTableLabel">Equipment</label>
                 @if($errors->has('equipmentSelected'))
                     <span class="text-danger">{{ $errors->first('equipmentSelected') }}</span>
                 @endif
-                <select class="form-control" id="equipmentSelected">
+                <select name="equipment_id" class="form-control" id="equipmentSelected"">
+                    <option></option>
+                    @foreach ($equipmentIssues as $equipment)
+                        @if (old('equipment_id') == $equipment->id)
+                            <option value="{{ $equipment->id }}" selected>{{ $equipment->title }}</option>
+                        @else
+                            <option value="{{ $equipment->id }}" data-cost="{{ $equipment->cost }}">{{ $equipment->title }}</option>
+                        @endif
+                    @endforeach
                 </select>
 
                 <!-- Evidence -->
@@ -65,7 +80,7 @@
                 @endif
                 <textarea rows="8" name="details" class="form-control" id="additionalDetails">{{ old('details') }}</textarea>
 
-                <button type="submit" class="btn btn-primary btn-block mt-3">Create Loan</button>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Create Incident</button>
             </div>
 
             <!-- Shopping Cart -->
@@ -95,6 +110,9 @@
                     </table>
                 </div>
                 <input type="hidden" id="equipmentToSubmit" name="equipmentSelected">
+
+                <!-- Total Cost -->
+                <h2 class="mt-3">Total Cost</h2><span></span>
             </div>
         </div>
     </form>

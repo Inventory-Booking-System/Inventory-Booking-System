@@ -213,3 +213,13 @@ function OutputDataEntryError(id,message){
     //Set label colour to red to indicate an error
     $('#' + id + "Error",'.bootbox').css("color","red");
 }
+
+//Livewire
+document.addEventListener('livewire:load', function () {
+
+    //Global Notifications
+    toastr.options.progressBar = true;
+    Livewire.on('alert', param => {
+        toastr[param['type']](param['message']);
+    });
+});

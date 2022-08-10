@@ -15,7 +15,7 @@ class EquipmentIssueFactory extends Factory
     {
         return [
             'title' => $this->faker->unique()->randomElement(['Keyboard Broken', 'Monitor Broken', 'Mouse Broken', 'Keyboard Vandalised', 'Mouse Vandalised', 'PC Unplugged']),
-            'cost' => $this->faker->randomDigit(),
+            'cost' => $this->faker->numberBetween(10,100),
         ];
     }
 }

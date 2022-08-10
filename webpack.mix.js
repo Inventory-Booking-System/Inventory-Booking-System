@@ -25,6 +25,8 @@ mix.combine([
     ], 'public/js/app.js')
     .js('resources/js/assets.js', 'public/js/assets.js')
     .js('resources/js/loans.js', 'public/js/loans.js')
+    .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
+    //.postCss("resources/css/tailwind.css", "public/css", [require("tailwindcss")])
     .styles([
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
         'node_modules/@fortawesome/fontawesome-free/css/all.min.css',
@@ -36,5 +38,4 @@ mix.combine([
         'node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
-    .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .sourceMaps();

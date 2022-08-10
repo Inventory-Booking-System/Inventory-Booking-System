@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Location;
+use App\Models\DistributionGroup;
+use App\Models\EquipmentIssue;
 
 class IncidentController extends Controller
 {
@@ -27,10 +29,14 @@ class IncidentController extends Controller
     {
         //Get list of users
         $locations = Location::latest()->get();
+        $distributions = DistributionGroup::latest()->get();
+        $equipmentIssues = EquipmentIssue::latest()->get();
 
         //Render rest of the page
         return view('incident.create',[
-            'locations' => $locations
+            'locations' => $locations,
+            'distributions' => $distributions,
+            'equipmentIssues' => $equipmentIssues
         ]);
     }
 

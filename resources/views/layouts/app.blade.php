@@ -1,58 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<meta name="description" content="Inventory Booking System">
-		<meta name="author" content="Ryan Coombes 2018-2022">
-        <meta name="csrf-token" content="{{ csrf_token() }}" />
-		<link rel="icon" href="favicon.ico">
-		<title>{{ config('app.name', 'Inventory Booking System') }}</title>
+<x-layouts.base>
+    <div class="wrapper">
+            <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+                <a href="#" class="navbar-brand"><i class="fa fa-cube"></i>Inventory Booking System</b></a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- Collection of nav links, forms, and other content for toggling -->
+                <div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
+                    <form class="navbar-form form-inline">
 
-        <!-- Styles -->
-        <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+                    </form>
+                    <div class="navbar-nav mr-auto">
 
-        <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}"></script>
-        @stack('scripts')
-    </head>
+                        <a href="#" class="nav-item nav-link active"><i class="fa-solid fa-cart-shopping"></i><span>Loans</span></a>
+                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-truck-ramp-box"></i><span>Setups</span></a>
+                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-triangle-exclamation"></i><span>Incidents</span></a>
+                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-camera"></i><span>Assets</span></a>
+                        <a href="#" class="nav-item nav-link"><i class="fa fa-users"></i><span>Accounts</span></a>
+                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+                    </div>
 
-    <!-- Navbar -->
-    <body class="hold-transition sidebar-mini">
-        <div class="wrapper">
-        <nav class="main-header navbar navbar-expand navbar-dark navbar-gray-dark">
-        <!-- Left navbar links -->
-        <ul class="navbar-nav">
-            <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="/loans">Loans</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="/bookings">Setups</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="/incidents">Incidents</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="/assets">Assets</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a class="nav-link" href="/users">Accounts</a>
-            </li>
-        </ul>
+                    <div class="navbar-nav ml-auto">
+                        <div class="nav-item dropdown">
+                            <a href="#" data-toggle="dropdown" class="nav-item nav-link dropdown-toggle user-action">Antonio Moreno<b class="caret"></b></a>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item"><i class="fa fa-envelope"></i> Profile</a>
+                                <a href="#" class="dropdown-item"><i class="fa fa-envelope"></i> Calendar</a>
+                                <a href="#" class="dropdown-item"><i class="fa fa-sliders"></i> Settings</a>
+                                <div class="divider dropdown-divider"></div>
+                                <a href="#" class="dropdown-item"><i class="fa fa-envelope"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
-        <!-- Right navbar links -->
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item d-none d-sm-inline-block">
-            <a class="nav-link" href="">Settings</a>
-            </li>
-        </ul>
-        </nav>
-        <!-- /.navbar -->
-
-        <!-- Main Sidebar Container -->
+        {{-- <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="https://github.com/Dragnogd/SEAS-Booking-System" class="brand-link">
@@ -61,45 +44,44 @@
 
             <!-- Sidebar -->
             <div class="sidebar">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-            <!-- Sidebar Menu -->
-
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                    <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
-                    @yield('navItems')
-                </ul>
-            </nav>
-            <!-- /.sidebar-menu -->
+                    </ul>
+                </nav>
             </div>
-            <!-- /.sidebar -->
-            </aside>
+        </aside> --}}
 
-            <!-- Content Wrapper. Contains page content -->
-            <div class="content-wrapper">
+        <!-- Content Wrapper. Contains page content -->
+        <div>
             <!-- Content Header (Page header) -->
             <div class="content-header">
-            <div class="container-fluid">
-            </div><!-- /.container-fluid -->
+                <div class="container-fluid">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                              <li class="breadcrumb-item"><a href="#">Home</a></li>
+                              <li class="breadcrumb-item"><a href="#">Assets</a></li>
+                              <li class="breadcrumb-item active" aria-current="page">New Asset</li>
+                            </ol>
+                        </nav>
+                    </div>
             </div>
-            <!-- /.content-header -->
 
             <!-- Main content -->
             <div class="content">
-            <div class="container-fluid">
-                <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        @yield('mainContent')
-                    </div>
+                <div class="container-fluid">
+                    {{-- <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                @yield('mainContent')
+                            </div>
+                        </div>
+                    </div> --}}
+
+                    {{ $slot }}
                 </div>
-                <!-- /.col-md-6 -->
-                </div>
-                <!-- /.row -->
-            </div><!-- /.container-fluid -->
             </div>
-            <!-- /.content -->
-            </div>
-            <!-- /.content-wrapper -->
-    </body>
-</html>
+        </div>
+    </div>
+</x-layouts.base>

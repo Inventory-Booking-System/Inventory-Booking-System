@@ -43,25 +43,6 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'forename' => 'required|string',
-            'surname' => 'required|string',
-            'email' => 'required|email|unique:users',
-        ]);
-
-        $user = User::create($data);
-
-        return redirect()->route('users.index');
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -91,31 +72,6 @@ class UserController extends Controller
         return view('user.edit',[
             'user' => $user
         ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'forename' => 'required|string',
-            'surname' => 'required|string',
-            'email' => 'required|email|unique:users,email,'.$id,
-        ]);
-
-        $user = User::where('id', $id)->update([
-            'forename' => $request->input('forename'),
-            'surname' => $request->input('surname'),
-            'email' => $request->input('email'),
-        ]);
-
-
-        return redirect()->route('users.index');
     }
 
     /**

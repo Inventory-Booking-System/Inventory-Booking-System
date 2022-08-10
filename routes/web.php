@@ -25,7 +25,9 @@ Route::patch('loans/bookOutBooking/{id}', [LoanController::class, 'bookOutBookin
 Route::resource('loans', LoanController::class);
 
 //Assets
-Route::resource('assets', AssetController::class);
+Route::resource('assets', AssetController::class)->except([
+    'store', 'update'
+]);
 
 //Bookings
 Route::resource('bookings', BookingController::class);

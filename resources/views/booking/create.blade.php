@@ -55,11 +55,20 @@
                 </select>
 
                 <!-- Location -->
-                <label class="mt-3" id="locationTableLabel">Location</label>
-                @if($errors->has('location'))
-                    <span class="text-danger">{{ $errors->first('location') }}</span>
+                <label id="locationSelectedLabel">Location</label>
+                @if($errors->has('location_id'))
+                    <span class="text-danger">{{ $errors->first('location_id') }}</span>
                 @endif
-                <input type="text" class="form-control" id="location"{{ old('location') }}>
+                <select name="location_id" class="form-control" id="locationSelected"">
+                    <option></option>
+                    @foreach ($locations as $location)
+                        @if (old('location_id') == $location->id)
+                            <option value="{{ $location->id }}" selected>{{ $location->name }}</option>
+                        @else
+                            <option value="{{ $location->id }}">{{ $location->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
 
                 <!-- Additional Details -->
                 <label class="mt-3">Details</label>

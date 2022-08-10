@@ -43,25 +43,6 @@ class AssetController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'tag' => 'required|numeric|unique:assets',
-            'description' => 'string',
-        ]);
-
-        $asset = Asset::create($data);
-
-        return redirect()->route('assets.index');
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -92,31 +73,6 @@ class AssetController extends Controller
         return view('asset.edit',[
             'asset' => $asset
         ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'tag' => 'required|numeric|unique:assets,tag,'.$id,
-            'description' => 'string',
-        ]);
-
-        $asset = Asset::where('id', $id)->update([
-            'name' => $request->input('name'),
-            'description' => $request->input('description'),
-            'tag' => $request->input('tag'),
-        ]);
-
-
-        return redirect()->route('assets.index');
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Location;
 
 class BookingController extends Controller
 {
@@ -24,7 +25,13 @@ class BookingController extends Controller
      */
     public function create()
     {
-        return view('booking.create');
+        //Get list of users
+        $locations = Location::latest()->get();
+
+        //Render rest of the page
+        return view('booking.create',[
+            'locations' => $locations
+        ]);
     }
 
     /**
