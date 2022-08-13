@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Location;
 use App\Models\DistributionGroup;
 use App\Models\EquipmentIssue;
+use App\Models\Incident;
 
 class IncidentController extends Controller
 {
@@ -41,17 +42,6 @@ class IncidentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -59,7 +49,11 @@ class IncidentController extends Controller
      */
     public function show($id)
     {
-        //
+        $incident = Incident::where('id', $id)->with('issues')->first();
+
+        return view('incident.show',[
+            'incident' => $incident
+        ]);
     }
 
     /**
@@ -70,19 +64,19 @@ class IncidentController extends Controller
      */
     public function edit($id)
     {
-        return view('incident.edit');
-    }
+        //Get list of users
+        $locations = Location::latest()->get();
+        $distributions = DistributionGroup::latest()->get();
+        $equipmentIssues = EquipmentIssue::latest()->get();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        $incident = Incident::where('id', $id)->with('issues')->first();
+
+        return view('incident.edit',[
+            'locations' => $locations,
+            'distributions' => $distributions,
+            'equipmentIssues' => $equipmentIssues,
+            'incident' => $incident,
+        ]);
     }
 
     /**

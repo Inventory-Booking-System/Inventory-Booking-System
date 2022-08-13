@@ -12,7 +12,6 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.10",
-        "tempusdominus/bootstrap-4": "^5.1",
         "yajra/laravel-datatables-oracle": "^9.19"
     },
     "require-dev": {

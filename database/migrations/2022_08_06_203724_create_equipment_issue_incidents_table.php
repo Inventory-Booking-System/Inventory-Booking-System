@@ -13,9 +13,18 @@ class CreateEquipmentIssueIncidentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('equipment_issue_incidents', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('equipment_issue_incident', function (Blueprint $table) {
+            $table->integer('incident_id')->unsigned();
+            $table->integer('equipment_issue_id')->unsigned();
+            $table->integer('quantity')->default(1);
+            $table->foreign('incident_id')
+                ->references('id')
+                ->on('incidents')
+                ->onDelete('cascade');
+            $table->foreign('equipment_issue_id')
+                ->references('id')
+                ->on('equipment_issues')
+                ->onDelete('cascade');
         });
     }
 
@@ -26,6 +35,6 @@ class CreateEquipmentIssueIncidentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('equipment_issue_incidents');
+        Schema::dropIfExists('equipment_issue_incident');
     }
 }

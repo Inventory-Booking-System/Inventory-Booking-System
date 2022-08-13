@@ -36,4 +36,6 @@ Route::resource('bookings', BookingController::class);
 Route::resource('users', UserController::class);
 
 //Incidents
-Route::resource('incidents', IncidentController::class);
+Route::resource('incidents', IncidentController::class)->except([
+    'store', 'update'
+]);
