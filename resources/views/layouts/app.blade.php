@@ -12,12 +12,12 @@
                     </form>
                     <div class="navbar-nav mr-auto">
 
-                        <a href="#" class="nav-item nav-link active"><i class="fa-solid fa-cart-shopping"></i><span>Loans</span></a>
-                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-truck-ramp-box"></i><span>Setups</span></a>
-                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-triangle-exclamation"></i><span>Incidents</span></a>
-                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-camera"></i><span>Assets</span></a>
-                        <a href="#" class="nav-item nav-link"><i class="fa fa-users"></i><span>Accounts</span></a>
-                        <a href="#" class="nav-item nav-link"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+                        <a href="/loans" class="nav-item nav-link active"><i class="fa-solid fa-cart-shopping"></i><span>Loans</span></a>
+                        <a href="/setups" class="nav-item nav-link"><i class="fa-solid fa-truck-ramp-box"></i><span>Setups</span></a>
+                        <a href="/incidents" class="nav-item nav-link"><i class="fa-solid fa-triangle-exclamation"></i><span>Incidents</span></a>
+                        <a href="/assets" class="nav-item nav-link"><i class="fa-solid fa-camera"></i><span>Assets</span></a>
+                        <a href="/users" class="nav-item nav-link"><i class="fa fa-users"></i><span>Accounts</span></a>
+                        <a href="/settings" class="nav-item nav-link"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
                     </div>
 
                     <div class="navbar-nav ml-auto">

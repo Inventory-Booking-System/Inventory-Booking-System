@@ -16,19 +16,6 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
-        //Populate data in table
-        if($request->ajax()){
-            $assets = Asset::latest()->get();
-            return Datatables::of($assets)
-                ->setRowId('id')
-                ->addColumn('action', function ($asset){
-                    return '<button class="modifyAsset btn btn-warning btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Modify" onclick="location.href=\'/assets/' . $asset->id . '/edit\';"><i class="fa fa-pen-to-square"></i></button>
-                            <button class="deleteAsset btn btn-danger btn-sm rounded-0" type="button" data-assetname="' . $asset->name . '" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash-can"></i></button>';
-                })
-                ->make(true);
-        }
-
-        //Render rest of the page
         return view('asset.assets');
     }
 

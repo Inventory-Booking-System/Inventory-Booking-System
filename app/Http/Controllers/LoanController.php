@@ -77,13 +77,8 @@ class LoanController extends Controller
      */
     public function create()
     {
-        //Get list of users
-        $users = User::latest()->get();
-
         //Render rest of the page
-        return view('loan.create',[
-            'users' => $users
-        ]);
+        return view('loan.create');
     }
 
     /**
@@ -94,18 +89,6 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        //Perform the first step of validation on the data. At this stage we are
-        //just checking that data has arrived in the expected format for further
-        //processing afterwards
-        $validator = Validator::make($request->all(),[
-            'user_id' => 'required|integer',
-            'start_date' => 'required|date|before:end_date|nullable',
-            'end_date' => 'required|date|after:start_date|nullable',
-            'equipmentSelected' => 'required|json',
-            'details' => 'nullable|string',
-            'status_id' => 'required|string|in:0,1',
-        ]);
-
         //We now need to verify the equipment the user has booked is actually bookable still.
         //This can fail for two reasons
         //The user has modified the array used to store equipment they are allowed to book client side. We should never trust this data.
@@ -335,62 +318,6 @@ class LoanController extends Controller
         $loan->delete();
 
         return Response::json($loan);
-    }
-
-    /**
-     * Fetches a list of equipment avaliable for the current selected input values.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function getBookableEquipment(Request $request)
-    {
-        $data = $request->validate([
-            'start_date' => 'required_if:loanType,loanTypeMulti|date|before:end_date|nullable',
-            'end_date' => 'required_if:loanType,loanTypeMulti|date|after:start_date|nullable',
-            'equipmentSelected' => 'required',
-            'id' => 'nullable|integer'
-        ]);
-
-        $ignoredIds = [];
-        foreach ((array)$data['equipmentSelected'] as $key => $value) {
-            array_push($ignoredIds, $key);
-        }
-
-        $validatedDate =[
-            'start_date_time' => carbon::parse($data['start_date']),
-            'end_date_time' => carbon::parse($data['end_date']),
-            'id' =>  $data['id'] ?? -1
-        ];
-
-        //echo $validatedDate['start_date_time'];
-        //echo $validatedDate['end_date_time'];
-        //echo intval($validatedDate['id']);
-
-        return Response::json(Asset::with('loans')
-                                    //->where('bookable',true)
-                                    //->whereNotIn('assets.id', $ignoredIds)
-                                    ->where(function($query) use($validatedDate){
-                                        $query->whereNotIn('assets.id', function($query) use($validatedDate){
-                                            $query->select('asset_loan.asset_id')
-                                                  ->from('loans')
-                                                  ->join('asset_loan','loans.id','asset_loan.loan_id')
-                                                  ->whereRaw('`assets`.`id` = `asset_loan`.`asset_id`')
-                                                  ->where('loans.id', '!=', $validatedDate['id'])
-                                                  ->where(function($query2) use($validatedDate){
-                                                        $query2->where('loans.start_date_time', '>=', $validatedDate['start_date_time'])
-                                                                ->where('loans.start_date_time', '<=', $validatedDate['end_date_time'])
-                                                                ->where('loans.id', '!=', $validatedDate['id']);
-                                                    })->orWhere(function($query2) use($validatedDate){
-                                                        $query2->where('loans.end_date_time', '>=', $validatedDate['start_date_time'])
-                                                            ->where('loans.end_date_time', '<=', $validatedDate['end_date_time'])
-                                                            ->where('loans.id', '!=', $validatedDate['id']);
-                                                    })
-                                                   ->where('asset_loan.returned','=',0);
-                                        })
-                                        ->orWhereDoesntHave('loans');
-                                    })
-                                    ->get());
     }
 
     /**

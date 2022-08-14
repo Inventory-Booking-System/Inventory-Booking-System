@@ -1,11 +1,13 @@
 @props([
     'placeholder' => null,
     'clearSelection' => null,
+    'iteration' => null,
 ])
 
+@if($iteration)<div wire:key='"select-field-version-{{ $iteration }}'>@endif
 <div
     x-data="{
-         {{ $attributes->get('id') }}: @entangle($attributes->wire('model'))
+        {{ $attributes->get('id') }}: @entangle($attributes->wire('model'))
     }"
     x-init="
         select2 = $('#{{ $attributes->get('id') }}').select2({
@@ -34,3 +36,4 @@
         {{ $slot }}
     </select>
 </div>
+@if($iteration)</div>@endif
