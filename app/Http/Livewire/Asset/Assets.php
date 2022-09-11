@@ -13,11 +13,24 @@ class Assets extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $search = '';
+    public $sortField;
+    public $sortDirection = 'asc';
+    #->orderBy($this->sortField, $this->sortDirection)
+
+    public function sortBy($field)
+    {
+
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
         return view('livewire.asset.assets', [
-            'assets' => Asset::search('name', $this->search)->paginate(10),
+            'assets' => Asset::search('name', $this->search)->paginate(13),
         ]);
     }
 }
