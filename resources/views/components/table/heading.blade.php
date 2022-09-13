@@ -4,7 +4,7 @@
     'direction' => null,
 ])
 
-<th role='button' class="col-{{ $width }}">{{ $slot }}
+<th {{ $attributes }} role='button' class="col-{{ $width }}">{{ $slot }}
 <span>
 @if($direction == "desc")
     <i style="transform: translateY(-10%);" class="fa-solid fa-sort-down"></i>

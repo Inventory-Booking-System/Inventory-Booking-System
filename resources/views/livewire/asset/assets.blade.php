@@ -5,7 +5,7 @@
         </div>
 
         <div class="col-lg-6">
-            <button type="button" class="btn btn-primary">Create new Asset</button>
+            <a href="/assets/create"><button type="button" class="btn btn-primary">Create new Asset</button></a>
         </div>
     </div>
 
@@ -14,9 +14,9 @@
             <x-table>
                 <x-slot name="head">
                     <x-table.row>
-                        <x-table.heading sortable wire:click="sortBy('name')" width="3">Name</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('tag')" width="2">Tag</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('description')" width="7">Description</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('name')" :direction="$sortField === 'name' ? $sortDirection : null" width="3">Name</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('tag')" :direction="$sortField === 'tag' ? $sortDirection : null" width="2">Tag</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('description')" :direction="$sortField === 'description' ? $sortDirection : null" width="7">Description</x-table.heading>
                     </x-table.row>
                 </x-slot>
 
