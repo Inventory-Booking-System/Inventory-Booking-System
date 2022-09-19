@@ -54,23 +54,16 @@
         </aside> --}}
 
         <!-- Content Wrapper. Contains page content -->
-        <div>
+        <div style="background:#f5f7f7;">
             <!-- Content Header (Page header) -->
             <div class="content-header">
                 <div class="container-fluid">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                              <li class="breadcrumb-item"><a href="#">Home</a></li>
-                              <li class="breadcrumb-item"><a href="#">Assets</a></li>
-                              <li class="breadcrumb-item active" aria-current="page">New Asset</li>
-                            </ol>
-                        </nav>
-                    </div>
+                </div>
             </div>
 
             <!-- Main content -->
             <div class="content">
-                <div class="container-fluid">
+                <div class="container-fluid px-5">
                     {{-- <div class="row">
                         <div class="col-lg-12">
                             <div class="card">

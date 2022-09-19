@@ -1,0 +1,1 @@
+<span wire:loading {{ $attributes }} class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>

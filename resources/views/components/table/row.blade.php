@@ -1,3 +1,3 @@
-<tr class="d-flex" wire:loading.style.delay="opacity:0.5;">
+<tr class="d-flex" wire:loading.style.delay="opacity:0.5;" {{ $attributes }}>
     {{ $slot }}
 </tr>

@@ -5,41 +5,24 @@
         </div>
 
         <div class="col-lg-1">
-            <x-button.link class="align-bottom" wire:click="$toggle('showFilters')">@if ($showFilters) Hide @endif Advanced Search...</x-button.link>
+            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
         </div>
 
-        <div class="col-lg-8">
-            <x-button.primary class="float-right" wire:click="create">New Asset</x-button.primary>
+        <div class="col-lg-1" >
+            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </x-input.select>
         </div>
-    </div>
 
-    <div>
-        @if($showFilters)
-            <div style="background:#3c9edf !important;" class="jumbotron jumbotron-fluid p-3 my-2 text-white">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <x-input.group for="name" label="Name" >
-                                <x-input.text wire:model.lazy="filters.name" />
-                            </x-input.group>
-
-                            <x-input.group for="tag" label="Tag" >
-                                <x-input.text wire:model.lazy="filters.tag" />
-                            </x-input.group>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <x-input.group for="description" label="Description" >
-                                <x-input.text wire:model.lazy="filters.description" />
-                            </x-input.group>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <x-button.link wire:click="resetFilters">Reset Filters...</x-button.link>
-                    </div>
-                </div>
-            </div>
-        @endif
+        <div class="col">
+            <x-dropdown class="float-right" label="Actions">
+                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
+                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
+            </x-dropdown>
+            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Asset</x-button.primary>
+        </div>
     </div>
 
     <div class="row">
@@ -47,21 +30,56 @@
             <x-table>
                 <x-slot name="head">
                     <x-table.row>
-                        <x-table.heading sortable wire:click="sortBy('name')" :direction="$sortField === 'name' ? $sortDirection : null" width="3">Name</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('tag')" :direction="$sortField === 'tag' ? $sortDirection : null" width="2">Tag</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('description')" :direction="$sortField === 'description' ? $sortDirection : null" width="7">Description</x-table.heading>
-                        <x-table.heading />
+                        <x-table.heading direction="null">
+                            <x-input.checkbox wire:model="selectPage" />
+                        </x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('name')" :direction="$sorts['name'] ?? null" class="col-3">Name</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('tag')" :direction="$sorts['tag'] ?? null" class="col-1">Tag</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('description')" :direction="$sorts['description'] ?? null" class="col">Description</x-table.heading>
+                        <x-table.heading class="col-2"/>
                     </x-table.row>
+
+                    @if($showFilters)
+                        <x-table.row>
+                            <x-table.heading direction="null">
+                                <x-input.checkbox />
+                            </x-table.heading>
+                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.name" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.tag" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.description" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"/>
+                        </x-table.row>
+                    @endif
                 </x-slot>
 
                 <x-slot name="body">
+                    @if($selectPage)
+                        <x-table.row>
+                            <x-table.cell width="12">
+                                <div class="d-flex justify-content-center">
+                                    @unless($selectAll)
+                                        <div>
+                                            <span>You selected <strong> {{ $assets->count() }} </strong> assets, do you want to select all <strong> {{ $assets->total() }} </strong>?</span>
+                                            <x-button.link wire:click="selectAll">Select All</x-button.link>
+                                        </div>
+                                    @else
+                                        <span>You have selected all <strong> {{ $assets->total() }} </strong> assets.</span>
+                                    @endif
+                                </div>
+                            </x-table.cell>
+                        </x-table.row>
+                    @endif
+
                     @forelse ($assets as $asset)
-                        <x-table.row :wire:key="$loop->index">
-                            <x-table.cell width="3">{{ $asset->name }}</x-table.cell>
-                            <x-table.cell width="2">{{ $asset->tag }}</x-table.cell>
-                            <x-table.cell width="5">{{ $asset->description }}</x-table.cell>
-                            <x-table.cell width="2">
-                                <x-button.primary wire:click="edit({{ $asset->id }})" >Edit</x-button.primary>
+                        <x-table.row wire:key="row-{{ $asset->id }}">
+                            <x-table.cell >
+                                <x-input.checkbox wire:model="selected" value="{{ $asset->id }}"></x-input.checkbox>
+                            </x-table.cell>
+                            <x-table.cell class="col-3">{{ $asset->name }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $asset->tag }}</x-table.cell>
+                            <x-table.cell class="col">{{ $asset->description }}</x-table.cell>
+                            <x-table.cell class="col-2">
+                                <x-button.primary wire:click="edit({{ $asset->id }})" ><x-loading wire:target="edit({{ $asset->id }})" />Edit</x-button.primary>
                             </x-table.cell>
                         </x-table.row>
                     @empty
@@ -87,12 +105,25 @@
         </div>
     </div>
 
-    <button type="button" wire:click="edit()">
-        Test Modal {{ $counter }}
-    </button>
+    <!-- Delete Modal -->
+    <form wire:submit.prevent="deleteSelected">
+        <x-modal.dialog type="confirmModal">
+            <x-slot name="title">Delete Assets</x-slot>
 
+            <x-slot name="content">
+                Are you sure you want to delete these assets? This action is irreversible.
+            </x-slot>
+
+            <x-slot name="footer">
+                <x-button.secondary wire:click="$emit('hideModal','confirm')">Cancel</x-button.secondary>
+                <x-button.danger type="submit">Delete</x-button.primary>
+            </x-slot>
+        </x-modal.dialog>
+    </form>
+
+    <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
-        <x-modal.dialog>
+        <x-modal.dialog type="editModal">
             <x-slot name="title">Edit Asset</x-slot>
 
             <x-slot name="content">
@@ -110,7 +141,7 @@
             </x-slot>
 
             <x-slot name="footer">
-                <x-button.secondary wire:click="$emit('hideModal')">Cancel</x-button.secondary>
+                <x-button.secondary wire:click="$emit('hideModal','edit')">Cancel</x-button.secondary>
                 <x-button.primary type="submit">Save</x-button.primary>
             </x-slot>
         </x-modal.dialog>

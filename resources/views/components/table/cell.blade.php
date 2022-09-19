@@ -2,4 +2,4 @@
 	'width' => null,
 ])
 
-<td class="col-{{ $width }}">{{ $slot }}</td>
+<td {{ $attributes }}>{{ $slot }}</td>

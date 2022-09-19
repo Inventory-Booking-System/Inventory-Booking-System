@@ -25,7 +25,7 @@
                 opacity: 1 !important;
             }
             body {
-                background: #eeeeee;
+                background: #f5f7f7;;
                 font-family: 'Varela Round', sans-serif;
             }
             .navbar {

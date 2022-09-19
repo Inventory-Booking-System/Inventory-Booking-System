@@ -3,28 +3,30 @@
 namespace App\Http\Livewire\Asset;
 
 use Livewire\Component;
-use Livewire\WithPagination;
+use App\Http\Livewire\DataTable\WithSorting;
+use App\Http\Livewire\DataTable\WithBulkActions;
+use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Models\Asset;
 
 class Assets extends Component
 {
-    use WithPagination;
+    use WithPerPagePagination, WithSorting, WithBulkActions;
 
     protected $paginationTheme = 'bootstrap';
 
-    public $sortField = 'name';
-    public $sortDirection = 'asc';
     public $showFilters = false;
+
     public $filters = [
         'search' => '',
         'name' => null,
         'tag' => null,
         'description' => null,
     ];
+
     public $counter = 0;
     public Asset $editing;
 
-    protected $queryString = ['sortField', 'sortDirection'];
+    protected $queryString = [];
 
     public function rules()
     {
@@ -40,15 +42,7 @@ class Assets extends Component
         $this->emit('showModal');
     }
 
-    public function sortBy($field)
-    {
-        if($this->sortField === $field){
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        }else{
-            $this->sortDirection = 'asc';
-        }
-        $this->sortField = $field;
-    }
+
 
     public function mount()
     {
@@ -63,6 +57,20 @@ class Assets extends Component
     public function makeBlankAsset()
     {
         $this->editing = Asset::make();
+    }
+
+    public function deleteSelected()
+    {
+        $this->selectedRowsQuery->delete();
+
+        $this->emit('hideModal', 'confirm');
+    }
+
+    public function exportSelected()
+    {
+        return response()->streamDownload(function() {
+            echo $this->selectedRowsQuery->toCsv();
+        }, 'asset.csv');
     }
 
     public function create()
@@ -80,7 +88,7 @@ class Assets extends Component
             $this->editing = $asset;
         }
 
-        $this->emit('showModal');
+        $this->emit('showModal', 'edit');
     }
 
     public function save()
@@ -89,7 +97,7 @@ class Assets extends Component
 
         $this->editing->save();
 
-        $this->emit('hideModal');
+        $this->emit('hideModal', 'edit');
     }
 
     public function resetFilters()
@@ -97,16 +105,30 @@ class Assets extends Component
         $this->reset('filters');
     }
 
-    public function render()
+    public function getRowsQueryProperty()
     {
-        return view('livewire.asset.assets', [
-            'assets' => Asset::query()
+        $query = Asset::query()
             ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
             ->when($this->filters['tag'], fn($query, $tag) => $query->where('tag', $tag))
             ->when($this->filters['description'], fn($query, $description) => $query->where('description', $description))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'))
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(13),
+            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'));
+
+        return $this->applySorting($query);
+    }
+
+    public function getRowsProperty()
+    {
+        return $this->applyPagination($this->rowsQuery);
+    }
+
+    public function render()
+    {
+        if($this->selectAll){
+           $this->selectPageRows();
+        }
+
+        return view('livewire.asset.assets', [
+            'assets' => $this->rows,
         ]);
     }
 }

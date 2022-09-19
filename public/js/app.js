@@ -235,13 +235,11 @@ document.addEventListener('livewire:load', function () {
     Livewire.on('alert', param => {
         toastr[param['type']](param['message']);
     });
-    Livewire.on('showModal', () => {
-        console.log("HERE");
-        $('#exampleModal').modal('show');
+    Livewire.on('showModal', param => {
+        $('#' + param + 'Modal').modal('show');
     });
-    Livewire.on('hideModal', () => {
-        console.log("HERE");
-        $('#exampleModal').modal('hide');
+    Livewire.on('hideModal', param => {
+        $('#' + param + 'Modal').modal('hide');
     });
 });
 

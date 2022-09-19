@@ -1,6 +1,6 @@
 
-<table class="table align-middle mb-0 bg-white">
-	<thead class="bg-light">
+<table class="table table-sm table-hover bg-light">
+	<thead class="">
 		<tr>
 			{{ $head }}
 		</tr>

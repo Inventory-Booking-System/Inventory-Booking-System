@@ -1,0 +1,1 @@
+<input {{ $attributes }} type="checkbox" style="transform: scale(1.3);">
