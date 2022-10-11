@@ -42,8 +42,6 @@ class Assets extends Component
         $this->emit('showModal');
     }
 
-
-
     public function mount()
     {
         $this->makeBlankAsset();
@@ -70,7 +68,7 @@ class Assets extends Component
     {
         return response()->streamDownload(function() {
             echo $this->selectedRowsQuery->toCsv();
-        }, 'asset.csv');
+        }, 'assets.csv');
     }
 
     public function create()
@@ -79,7 +77,7 @@ class Assets extends Component
             $this->makeBlankAsset();
         }
 
-        $this->emit('showModal');
+        $this->emit('showModal', 'edit');
     }
 
     public function edit(Asset $asset)
