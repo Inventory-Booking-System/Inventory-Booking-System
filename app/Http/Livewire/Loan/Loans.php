@@ -130,7 +130,7 @@ class Loans extends Component
         }
 
         return view('livewire.loan.loans', [
-            'users' => $this->rows,
+            'loans' => $this->rows,
         ]);
     }
 }
