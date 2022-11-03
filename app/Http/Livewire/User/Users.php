@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Asset;
+namespace App\Http\Livewire\User;
 
 use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
@@ -109,7 +109,7 @@ class Users extends Component
             ->when($this->filters['forename'], fn($query, $forename) => $query->where('forename', $forename))
             ->when($this->filters['surname'], fn($query, $surname) => $query->where('surname', $surname))
             ->when($this->filters['email'], fn($query, $email) => $query->where('email', $email))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'));
+            ->when($this->filters['search'], fn($query, $search) => $query->where('forename', 'like', '%'.$search.'%'));
 
         return $this->applySorting($query);
     }
@@ -126,7 +126,7 @@ class Users extends Component
         }
 
         return view('livewire.user.users', [
-            'assets' => $this->rows,
+            'users' => $this->rows,
         ]);
     }
 }
