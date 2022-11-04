@@ -6,6 +6,7 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\SetupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,13 +25,15 @@ Route::patch('loans/completeBooking/{id}', [LoanController::class, 'completeBook
 Route::patch('loans/bookOutBooking/{id}', [LoanController::class, 'bookOutBooking']);
 Route::resource('loans', LoanController::class);
 
+//Setups
+Route::resource('setups', SetupController::class)->except([
+    'store', 'update'
+]);
+
 //Assets
 Route::resource('assets', AssetController::class)->except([
     'store', 'update'
 ]);
-
-//Bookings
-Route::resource('bookings', BookingController::class);
 
 //Accounts
 Route::resource('users', UserController::class);
