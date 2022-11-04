@@ -7,6 +7,10 @@ use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Models\Incident;
+use App\Models\Location;
+use App\Models\DistributionGroup;
+use App\Models\EquipmentIssue;
+use App\Models\EquipmentIssueIncident;
 
 class Incidents extends Component
 {
@@ -18,26 +22,30 @@ class Incidents extends Component
 
     public $filters = [
         'search' => '',
-        'start_date' => null,
-        'end_date' => null,
-        'status_id' => null,
+        'start_date_time' => null,
+        'location_id' => null,
+        'distribution_id' => null,
+        'evidence' => null,
         'details' => null,
-        'user_id' => null,
     ];
 
     public $counter = 0;
-    public Loan $editing;
+    public Incident $editing;
+
+    public $shoppingCart = [];
+    public $shoppingCost = 0;
 
     protected $queryString = [];
 
     public function rules()
     {
         return [
-            'editing.user_id' => 'required|integer',
-            'editing.start_date' => 'required|date|before:end_date|nullable',
-            'editing.end_date' => 'required|date|after:start_date|nullable',
-            'editing.details' => 'nullable|string',
-            'editing.status_id' => 'required|string|in:0,1',
+            'editing.start_date_time' => 'required|date',
+            'editing.location_id' => 'required|numeric|exists:locations,id',
+            'editing.distribution_id' => 'required|numeric|exists:distribution_groups,id',
+            'editing.equipment_id' => 'required|numeric|exists:equipment_issues,id',
+            'editing.evidence' => 'required|string',
+            'editing.details' => 'required|string',
         ];
     }
 
@@ -48,7 +56,10 @@ class Incidents extends Component
 
     public function mount()
     {
-        $this->makeBlankUser();
+        $this->makeBlankIncident();
+        $this->locations = Location::latest()->get();
+        $this->distributions = DistributionGroup::latest()->get();
+        $this->equipmentIssues = EquipmentIssue::latest()->get();
     }
 
     public function updatedFilters($filed)
@@ -56,9 +67,9 @@ class Incidents extends Component
         $this->resetPage();
     }
 
-    public function makeBlankUser()
+    public function makeBlankIncident()
     {
-        $this->editing = User::make();
+        $this->editing = Incident::make();
     }
 
     public function deleteSelected()
@@ -72,22 +83,22 @@ class Incidents extends Component
     {
         return response()->streamDownload(function() {
             echo $this->selectedRowsQuery->toCsv();
-        }, 'users.csv');
+        }, 'incidents.csv');
     }
 
     public function create()
     {
         if ($this->editing->getKey()){
-            $this->makeBlankUser();
+            $this->makeBlankIncident();
         }
 
         $this->emit('showModal', 'edit');
     }
 
-    public function edit(User $user)
+    public function edit(Incident $incident)
     {
-        if($this->editing->isNot($user)){
-            $this->editing = $user;
+        if($this->editing->isNot($incident)){
+            $this->editing = $incident;
         }
 
         $this->emit('showModal', 'edit');
@@ -109,9 +120,11 @@ class Incidents extends Component
 
     public function getRowsQueryProperty()
     {
-        $query = User::query()
-            ->when($this->filters['start_date'], fn($query, $start_date) => $query->where('start_date', $start_date))
-            ->when($this->filters['end_date'], fn($query, $end_date) => $query->where('end_date', $end_date))
+        $query = Incident::query()
+            ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
+            ->when($this->filters['location_id'], fn($query, $location_id) => $query->where('location_id', $location_id))
+            ->when($this->filters['distribution_id'], fn($query, $distribution_id) => $query->where('distribution_id', $distribution_id))
+            ->when($this->filters['evidence'], fn($query, $evidence) => $query->where('evidence', $evidence))
             ->when($this->filters['details'], fn($query, $details) => $query->where('details', $details))
             ->when($this->filters['search'], fn($query, $search) => $query->where('details', 'like', '%'.$search.'%'));
 

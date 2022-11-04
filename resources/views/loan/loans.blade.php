@@ -1,3 +1,3 @@
 <x-layouts.app>
-    <livewire.loan.loans/>
+    <livewire:loan.loans :users="$users"/>
 </x-layouts.app>

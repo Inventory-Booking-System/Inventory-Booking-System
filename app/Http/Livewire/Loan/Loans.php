@@ -7,6 +7,7 @@ use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Models\Loan;
+use App\Models\User;
 
 class Loans extends Component
 {
@@ -18,15 +19,21 @@ class Loans extends Component
 
     public $filters = [
         'search' => '',
-        'start_date' => null,
-        'end_date' => null,
-        'status_id' => null,
-        'details' => null,
         'user_id' => null,
+        'status_id' => null,
+        'start_date_time' => null,
+        'end_date_time' => null,
+        'details' => null,
     ];
 
     public $counter = 0;
     public Loan $editing;
+
+    public $shoppingCart = [];
+    public $shoppingCost = 0;
+    public $iteration = 0;
+    public $avaliableEquipment = [];
+    public $status_id = 1;
 
     protected $queryString = [];
 
@@ -34,10 +41,10 @@ class Loans extends Component
     {
         return [
             'editing.user_id' => 'required|integer',
-            'editing.start_date' => 'required|date|before:end_date|nullable',
-            'editing.end_date' => 'required|date|after:start_date|nullable',
-            'editing.details' => 'nullable|string',
             'editing.status_id' => 'required|string|in:0,1',
+            'editing.start_date_time' => 'required|date|before:end_date|nullable',
+            'editing.end_date_time' => 'required|date|after:start_date|nullable',
+            'editing.details' => 'nullable|string',
         ];
     }
 
@@ -48,7 +55,8 @@ class Loans extends Component
 
     public function mount()
     {
-        $this->makeBlankUser();
+        $this->makeBlankLoan();
+        $this->users = User::latest()->get();
     }
 
     public function updatedFilters($filed)
@@ -56,9 +64,9 @@ class Loans extends Component
         $this->resetPage();
     }
 
-    public function makeBlankUser()
+    public function makeBlankLoan()
     {
-        $this->editing = User::make();
+        $this->editing = Loan::make();
     }
 
     public function deleteSelected()
@@ -72,22 +80,22 @@ class Loans extends Component
     {
         return response()->streamDownload(function() {
             echo $this->selectedRowsQuery->toCsv();
-        }, 'users.csv');
+        }, 'loans.csv');
     }
 
     public function create()
     {
         if ($this->editing->getKey()){
-            $this->makeBlankUser();
+            $this->makeBlankLoan();
         }
 
         $this->emit('showModal', 'edit');
     }
 
-    public function edit(User $user)
+    public function edit(Loan $loan)
     {
-        if($this->editing->isNot($user)){
-            $this->editing = $user;
+        if($this->editing->isNot($loan)){
+            $this->editing = $loan;
         }
 
         $this->emit('showModal', 'edit');
@@ -109,9 +117,11 @@ class Loans extends Component
 
     public function getRowsQueryProperty()
     {
-        $query = User::query()
-            ->when($this->filters['start_date'], fn($query, $start_date) => $query->where('start_date', $start_date))
-            ->when($this->filters['end_date'], fn($query, $end_date) => $query->where('end_date', $end_date))
+        $query = Loan::query()
+            ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('user_id', $user_id))
+            ->when($this->filters['status_id'], fn($query, $status_id) => $query->where('status_id', $status_id))
+            ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
+            ->when($this->filters['end_date_time'], fn($query, $end_date_time) => $query->where('end_date_time', $end_date_time))
             ->when($this->filters['details'], fn($query, $details) => $query->where('details', $details))
             ->when($this->filters['search'], fn($query, $search) => $query->where('details', 'like', '%'.$search.'%'));
 

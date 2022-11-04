@@ -18,15 +18,17 @@ class Setups extends Component
 
     public $filters = [
         'search' => '',
-        'start_date' => null,
-        'end_date' => null,
-        'status_id' => null,
-        'details' => null,
         'user_id' => null,
+        'status_id' => null,
+        'start_date_time' => null,
+        'end_date_time' => null,
+        'title' => null,
+        'location_id' => null,
+        'details' => null,
     ];
 
     public $counter = 0;
-    public Loan $editing;
+    public Setup $editing;
 
     protected $queryString = [];
 
@@ -34,10 +36,12 @@ class Setups extends Component
     {
         return [
             'editing.user_id' => 'required|integer',
-            'editing.start_date' => 'required|date|before:end_date|nullable',
-            'editing.end_date' => 'required|date|after:start_date|nullable',
-            'editing.details' => 'nullable|string',
             'editing.status_id' => 'required|string|in:0,1',
+            'editing.start_date_time' => 'required|date|before:end_date_time|nullable',
+            'editing.end_date_time' => 'required|date|after:start_date_time|nullable',
+            'editing.title' => 'required|string',
+            'editing.location_id' => 'required|numeric|exists:locations,id',
+            'editing.details' => 'nullable|string',
         ];
     }
 
@@ -48,7 +52,7 @@ class Setups extends Component
 
     public function mount()
     {
-        $this->makeBlankUser();
+        $this->makeBlankSetup();
     }
 
     public function updatedFilters($filed)
@@ -56,9 +60,9 @@ class Setups extends Component
         $this->resetPage();
     }
 
-    public function makeBlankUser()
+    public function makeBlankSetup()
     {
-        $this->editing = User::make();
+        $this->editing = Setup::make();
     }
 
     public function deleteSelected()
@@ -72,22 +76,22 @@ class Setups extends Component
     {
         return response()->streamDownload(function() {
             echo $this->selectedRowsQuery->toCsv();
-        }, 'users.csv');
+        }, 'setups.csv');
     }
 
     public function create()
     {
         if ($this->editing->getKey()){
-            $this->makeBlankUser();
+            $this->makeBlankSetup();
         }
 
         $this->emit('showModal', 'edit');
     }
 
-    public function edit(User $user)
+    public function edit(Setup $setup)
     {
-        if($this->editing->isNot($user)){
-            $this->editing = $user;
+        if($this->editing->isNot($setup)){
+            $this->editing = $setup;
         }
 
         $this->emit('showModal', 'edit');
@@ -109,9 +113,13 @@ class Setups extends Component
 
     public function getRowsQueryProperty()
     {
-        $query = User::query()
-            ->when($this->filters['start_date'], fn($query, $start_date) => $query->where('start_date', $start_date))
-            ->when($this->filters['end_date'], fn($query, $end_date) => $query->where('end_date', $end_date))
+        $query = Setup::query()
+            ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('user_id', $user_id))
+            ->when($this->filters['status_id'], fn($query, $status_id) => $query->where('status_id', $status_id))
+            ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
+            ->when($this->filters['end_date_time'], fn($query, $end_date_time) => $query->where('end_date_time', $end_date_time))
+            ->when($this->filters['title'], fn($query, $title) => $query->where('title', $title))
+            ->when($this->filters['location_id'], fn($query, $location_id) => $query->where('location_id', $location_id))
             ->when($this->filters['details'], fn($query, $details) => $query->where('details', $details))
             ->when($this->filters['search'], fn($query, $search) => $query->where('details', 'like', '%'.$search.'%'));
 

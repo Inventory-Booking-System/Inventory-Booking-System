@@ -1,7 +1,7 @@
 <div>
     <div class="row">
         <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Users..." />
+            <x-input.text wire:model="filters.search" placeholder="Search Setups..." />
         </div>
 
         <div class="col-lg-1">
@@ -21,7 +21,7 @@
                 <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
                 <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
             </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New User</x-button.primary>
+            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Setup</x-button.primary>
         </div>
     </div>
 
@@ -33,9 +33,13 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('forename')" :direction="$sorts['forename'] ?? null" class="col-3">Forename</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('surname')" :direction="$sorts['surname'] ?? null" class="col-1">Surname</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('email')" :direction="$sorts['email'] ?? null" class="col">Email</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-3">User ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('status_id')" :direction="$sorts['status_id'] ?? null" class="col-3">Status ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-3">Start Date & Time</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('end_date_time')" :direction="$sorts['end_date_time'] ?? null" class="col-3">End Date & Time</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('title')" :direction="$sorts['title'] ?? null" class="col-3">Title</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('location_id')" :direction="$sorts['location_id'] ?? null" class="col-1">Location ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col">Details</x-table.heading>
                         <x-table.heading class="col-2"/>
                     </x-table.row>
 
@@ -44,9 +48,13 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.forename" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.surname" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.email" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.status_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.end_date_time" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.title" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.location_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.details" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col-2" direction="null"/>
                         </x-table.row>
                     @endif
@@ -59,21 +67,21 @@
                                 <div class="d-flex justify-content-center">
                                     @unless($selectAll)
                                         <div>
-                                            <span>You selected <strong> {{ $users->count() }} </strong> users, do you want to select all <strong> {{ $users->total() }} </strong>?</span>
+                                            <span>You selected <strong> {{ $setups->count() }} </strong> setups, do you want to select all <strong> {{ $setups->total() }} </strong>?</span>
                                             <x-button.link wire:click="selectAll">Select All</x-button.link>
                                         </div>
                                     @else
-                                        <span>You have selected all <strong> {{ $users->total() }} </strong> users.</span>
+                                        <span>You have selected all <strong> {{ $setups->total() }} </strong> setups.</span>
                                     @endif
                                 </div>
                             </x-table.cell>
                         </x-table.row>
                     @endif
 
-                    @forelse ($users as $user)
-                        <x-table.row wire:key="row-{{ $user->id }}">
+                    @forelse ($setups as $setup)
+                        <x-table.row wire:key="row-{{ $setup->id }}">
                             <x-table.cell >
-                                <x-input.checkbox wire:model="selected" value="{{ $user->id }}"></x-input.checkbox>
+                                <x-input.checkbox wire:model="selected" value="{{ $setup->id }}"></x-input.checkbox>
                             </x-table.cell>
                             <x-table.cell class="col-3">{{ $user->forename }}</x-table.cell>
                             <x-table.cell class="col-1">{{ $user->surname }}</x-table.cell>

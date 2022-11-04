@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Location;
 
-class BookingController extends Controller
+class SetupController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class BookingController extends Controller
     public function index()
     {
         //Render rest of the page
-        return view('booking.bookings');
+        return view('setup.setups');
     }
 
     /**
@@ -25,13 +25,7 @@ class BookingController extends Controller
      */
     public function create()
     {
-        //Get list of users
-        $locations = Location::latest()->get();
-
-        //Render rest of the page
-        return view('booking.create',[
-            'locations' => $locations
-        ]);
+        //
     }
 
     /**
@@ -53,7 +47,7 @@ class BookingController extends Controller
      */
     public function show($id)
     {
-
+        //
     }
 
     /**
@@ -64,7 +58,7 @@ class BookingController extends Controller
      */
     public function edit($id)
     {
-        return view('booking.edit');
+        //
     }
 
     /**
