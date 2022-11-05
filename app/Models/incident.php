@@ -11,6 +11,8 @@ class incident extends Model
 
     protected $fillable = ['start_date_time', 'location_id', 'distribution_id', 'evidence', 'details'];
 
+    protected $with = ['issues'];
+
     /**
      * Get the issues for the incident.
      */

@@ -11,6 +11,7 @@ use App\Models\Location;
 use App\Models\DistributionGroup;
 use App\Models\EquipmentIssue;
 use App\Models\EquipmentIssueIncident;
+use Carbon\Carbon;
 
 class Incidents extends Component
 {
@@ -31,6 +32,7 @@ class Incidents extends Component
 
     public $counter = 0;
     public Incident $editing;
+    public $equipment_id;
 
     public $shoppingCart = [];
     public $shoppingCost = 0;
@@ -43,7 +45,7 @@ class Incidents extends Component
             'editing.start_date_time' => 'required|date',
             'editing.location_id' => 'required|numeric|exists:locations,id',
             'editing.distribution_id' => 'required|numeric|exists:distribution_groups,id',
-            'editing.equipment_id' => 'required|numeric|exists:equipment_issues,id',
+            'equipment_id' => 'nullable|numeric|exists:equipment_issues,id',
             'editing.evidence' => 'required|string',
             'editing.details' => 'required|string',
         ];
@@ -70,6 +72,8 @@ class Incidents extends Component
     public function makeBlankIncident()
     {
         $this->editing = Incident::make();
+        $this->shoppingCart = [];
+        $this->shoppingCost = 0;
     }
 
     public function deleteSelected()
@@ -101,6 +105,17 @@ class Incidents extends Component
             $this->editing = $incident;
         }
 
+        //Populate Shopping Cart
+        $this->shoppingCart = [];
+        $this->editing->issues->each(function ($item, $key) {
+            $this->shoppingCart[$item->id] = [];
+            $this->shoppingCart[$item->id]['quantity'] = $item->pivot->quantity;
+            $this->shoppingCart[$item->id]['title'] = $item->title;
+            $this->shoppingCart[$item->id]['cost'] = $item->cost;
+        });
+
+        $this->updateShoppingCartCost();
+
         $this->emit('showModal', 'edit');
     }
 
@@ -108,7 +123,19 @@ class Incidents extends Component
     {
         $this->validate();
 
+        $this->editing->start_date_time = carbon::parse($this->editing->start_date_time);
+
         $this->editing->save();
+
+        $incident = Incident::find($this->editing->id);
+
+        //Add equipment issues into equipment_issue_incidents
+        $ids = [];
+        foreach($this->shoppingCart as $key => $item){
+            array_push($ids, ['incident_id' => $this->editing->id, 'equipment_issue_id' => $key, 'quantity' => $item['quantity']]);
+        }
+
+        $incident->issues()->sync($ids);
 
         $this->emit('hideModal', 'edit');
     }
@@ -145,5 +172,40 @@ class Incidents extends Component
         return view('livewire.incident.incidents', [
             'incidents' => $this->rows,
         ]);
+    }
+
+    public function updatedEquipmentId($id)
+    {
+        $item = EquipmentIssue::find($id);
+
+        if(isset($this->shoppingCart[$item->id])){
+            $this->shoppingCart[$item->id]['quantity'] += 1;
+        }else{
+            $this->shoppingCart[$item->id] = [];
+            $this->shoppingCart[$item->id]['quantity'] = 1;
+            $this->shoppingCart[$item->id]['title'] = $item->title;
+            $this->shoppingCart[$item->id]['cost'] = $item->cost;
+        }
+
+        $this->updateShoppingCartCost();
+    }
+
+    public function removeItem($id)
+    {
+        if($this->shoppingCart[$id]['quantity'] == 1){
+            unset($this->shoppingCart[$id]);
+        }elseif($this->shoppingCart[$id]['quantity'] > 1){
+            $this->shoppingCart[$id]['quantity'] -= 1;
+        }
+
+        $this->updateShoppingCartCost();
+    }
+
+    private function updateShoppingCartCost()
+    {
+        $this->shoppingCost = 0;
+        foreach($this->shoppingCart as $key => $item){
+            $this->shoppingCost += $item['cost'];
+        }
     }
 }

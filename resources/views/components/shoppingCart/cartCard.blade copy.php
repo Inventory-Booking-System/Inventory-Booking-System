@@ -1,10 +1,8 @@
 @props([
 	'id' => null,
-	'name' => null,
+	'name' => '',
 	'cost' => null,
-	'quantity' => null,
-	'assetId' => null,
-	'returned' => null,
+	'quantity' => 1,
 ])
 
 <div class="card mb-3">
@@ -16,30 +14,13 @@
 			</div>
 		</div>
 		<div class="d-flex flex-row align-items-center">
-
 			<!-- Quantity -->
-			@isset($quantity)
-				<div style="width: 50px;">
-					<h5 class="fw-normal mb-0">{{ $quantity }}</h5>
-				</div>
-			@endif
-
-			<!-- Asset ID -->
-			@isset($assetId)
-				<div style="width: 50px;">
-					<h5 class="fw-normal mb-0">{{ $assetId }}</h5>
-				</div>
-			@endif
-
-			<!-- Returned -->
-			@isset($returned)
-				<div style="width: 50px;">
-					<h5 class="fw-normal mb-0">{{ $returned ? 'yes' : 'no' }}</h5>
-				</div>
-			@endif
+			<div style="width: 50px;">
+				<h5 class="fw-normal mb-0">{{ $quantity }}</h5>
+			</div>
 
 			<!-- Cost -->
-			@isset($cost)
+			@if($cost)
 				<div style="width: 80px;">
 					<h5 class="mb-0">£{{ $cost }}</h5>
 				</div>

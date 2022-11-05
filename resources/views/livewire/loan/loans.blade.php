@@ -79,9 +79,11 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $loan->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3">{{ $loan->name }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->tag }}</x-table.cell>
-                            <x-table.cell class="col">{{ $loan->description }}</x-table.cell>
+                            <x-table.cell class="col-3">{{ $loan->user_id }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->status_id }}</x-table.cell>
+                            <x-table.cell class="col">{{ $loan->start_date_time }}</x-table.cell>
+                            <x-table.cell class="col">{{ $loan->end_date_time }}</x-table.cell>
+                            <x-table.cell class="col">{{ $loan->details }}</x-table.cell>
                             <x-table.cell class="col-2">
                                 <x-button.primary wire:click="edit({{ $loan->id }})" ><x-loading wire:target="edit({{ $loan->id }})" />Edit</x-button.primary>
                             </x-table.cell>
@@ -127,56 +129,62 @@
 
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
-        <x-modal.dialog type="editModal">
+        <x-modal.dialog type="editModal" class="modal-xl">
             <x-slot name="title">Edit Loan</x-slot>
 
             <x-slot name="content">
-                <!-- Start Date Time -->
-                <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.start_date_time')">
-                    <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
-                </x-input.group>
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Start Date Time -->
+                        <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.start_date_time')">
+                            <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
+                        </x-input.group>
 
-                <!-- End Date Time -->
-                <x-input.group label="End Date" for="end_date_time" :error="$errors->first('editing.end_date_time')">
-                    <x-input.datetime wire:model="editing.end_date_time" id="end_date_time" />
-                </x-input.group>
+                        <!-- End Date Time -->
+                        <x-input.group label="End Date" for="end_date_time" :error="$errors->first('editing.end_date_time')">
+                            <x-input.datetime wire:model="editing.end_date_time" id="end_date_time" />
+                        </x-input.group>
 
-                <!-- Users -->
-                <x-input.group label="Users" for="user_id" :error="$errors->first('editing.user_id')">
-                    <x-input.select wire:model="editing.user_id" id="user_id" placeholder="Select User">
-                        @foreach ($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
-                        @endforeach
-                    </x-input.select>
-                </x-input.group>
+                        <!-- Users -->
+                        <x-input.group label="Users" for="user_id" :error="$errors->first('editing.user_id')">
+                            <x-input.select wire:model="editing.user_id" id="user_id" placeholder="Select User">
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
 
-                <!-- Equipment -->
-                <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('editing.equipment_id')">
-                    <x-input.select wire:model="editing.equipment_id" id="equipment_id" clearSelection iteration="{{ $iteration }}" placeholder="Select Equipment">
-                        @foreach ($avaliableEquipment as $equipment)
-                            <option value="{{ $equipment->id }}">{{ $equipment->name }} ({{ $equipment->tag }})</option>
-                        @endforeach
-                    </x-input.select>
-                </x-input.group>
+                        <!-- Equipment -->
+                        <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
+                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection iteration="{{ $iteration }}" placeholder="Select Equipment">
+                                @foreach ($avaliableEquipment as $equipment)
+                                    <option value="{{ $equipment->id }}">{{ $equipment->name }} ({{ $equipment->tag }})</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
 
-                <!-- Details -->
-                <x-input.group label="Details" for="details" :error="$errors->first('editing.details')">
-                    <x-input.textarea wire:model="editing.details" id="details" rows="8" />
-                </x-input.group>
+                        <!-- Details -->
+                        <x-input.group label="Details" for="details" :error="$errors->first('editing.details')">
+                            <x-input.textarea wire:model="editing.details" id="details" rows="8" />
+                        </x-input.group>
 
-                <!-- Reservation -->
-                <x-input.group label="Reservation" for="status_id" :error="$errors->first('editing.status_id')" buttonGroup>
-                    <x-input.radioButton wire:model="editing.status_id" id="status_id_yes" value="1" text="Yes" checked="{{ $status_id }}" />
-                    <x-input.radioButton wire:model="editing.status_id" id="status_id_no" value="0" text="No" checked="{{ $status_id }}" />
-                </x-input.group>
+                        <!-- Reservation -->
+                        <x-input.group label="Reservation" for="status_id" :error="$errors->first('editing.status_id')" buttonGroup>
+                            <x-input.radioButton wire:model="editing.status_id" id="status_id_yes" value="1" text="Yes" checked="{{ $status_id }}" />
+                            <x-input.radioButton wire:model="editing.status_id" id="status_id_no" value="0" text="No" checked="{{ $status_id }}" />
+                        </x-input.group>
+                    </div>
 
-                <!-- Shopping Cart -->
-                <div class="col-lg-3 p-3" wire:model="shoppingCart">
-                    <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
-                        @foreach ($shoppingCart as $key => $item)
-                            <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" />
-                        @endforeach
-                    </x-shoppingCart.group>
+                    <div class="col-md-6">
+                        <!-- Shopping Cart -->
+                        <div wire:model="shoppingCart">
+                            <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
+                                @foreach ($shoppingCart as $key => $item)
+                                    <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" assetId="{{ $item['asset_id'] }}" returned="{{ $item['returned'] }}" />
+                                @endforeach
+                            </x-shoppingCart.group>
+                        </div>
+                    </div>
                 </div>
             </x-slot>
 

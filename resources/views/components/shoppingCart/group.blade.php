@@ -1,5 +1,5 @@
 <div>
-    <section class="" style="background-color: #eee;">
+    <section>
         <div class="container">
               <div class="row d-flex justify-content-center align-items-center">
                 <div class="col">

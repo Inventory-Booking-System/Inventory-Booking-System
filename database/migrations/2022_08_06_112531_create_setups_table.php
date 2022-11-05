@@ -15,13 +15,9 @@ class CreateSetupsTable extends Migration
     {
         Schema::create('setups', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer("user_id")->references('id')->on('users');
-            $table->integer('status_id');
-            $table->dateTime('start_date_time');
-            $table->dateTime('end_date_time');
+            $table->integer("loan_id")->references('id')->on('loans');
             $table->string('title');
             $table->string('location_id')->references('id')->on('locations');
-            $table->text('details');
             $table->timestamps();
         });
     }

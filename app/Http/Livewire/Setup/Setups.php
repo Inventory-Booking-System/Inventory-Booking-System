@@ -7,6 +7,9 @@ use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Models\Setup;
+use App\Models\User;
+use App\Models\Asset;
+use Carbon\Carbon;
 
 class Setups extends Component
 {
@@ -29,19 +32,25 @@ class Setups extends Component
 
     public $counter = 0;
     public Setup $editing;
+    public $equipment_id;
 
-    protected $queryString = [];
+    public $shoppingCart = [];
+    public $shoppingCost = 0;
+    public $iteration = 0;
+    public $avaliableEquipment = [];
+    public $status_id = 1;
 
     public function rules()
     {
         return [
             'editing.user_id' => 'required|integer',
             'editing.status_id' => 'required|string|in:0,1',
-            'editing.start_date_time' => 'required|date|before:end_date_time|nullable',
-            'editing.end_date_time' => 'required|date|after:start_date_time|nullable',
+            'editing.start_date_time' => 'required|date|before:editing.end_date_time|nullable',
+            'editing.end_date_time' => 'required|date|after:editing.start_date_time|nullable',
             'editing.title' => 'required|string',
             'editing.location_id' => 'required|numeric|exists:locations,id',
             'editing.details' => 'nullable|string',
+            'equipment_id' => 'nullable|numeric|exists:assets,id',
         ];
     }
 
@@ -63,6 +72,8 @@ class Setups extends Component
     public function makeBlankSetup()
     {
         $this->editing = Setup::make();
+        $shoppingCart = [];
+        $equipment_id = null;
     }
 
     public function deleteSelected()
@@ -101,7 +112,21 @@ class Setups extends Component
     {
         $this->validate();
 
+        $this->editing->start_date_time = carbon::parse($this->editing->start_date_time);
+        $this->editing->end_date_time = carbon::parse($this->editing->end_date_time);
+
         $this->editing->save();
+
+        $loan = Setup::find($this->editing->id);
+
+        //Add equipment issues into equipment_issue_incidents
+        $ids = [];
+        //dd($this->shoppingCart);
+        foreach($this->shoppingCart as $key => $item){
+            array_push($ids, ['setup_id' => $this->editing->id, 'setup_id' => $key, 'returned' => $item['returned']]);
+        }
+
+        $loan->assets()->sync($ids);
 
         $this->emit('hideModal', 'edit');
     }
@@ -140,5 +165,32 @@ class Setups extends Component
         return view('livewire.setup.setups', [
             'setups' => $this->rows,
         ]);
+    }
+
+    public function updatedEquipmentId($id)
+    {
+        $item = Asset::find($id);
+
+        $this->shoppingCart[$item->id] = [];
+        $this->shoppingCart[$item->id]['title'] = $item->name;
+        $this->shoppingCart[$item->id]['setup_id'] = $item->tag;
+        $this->shoppingCart[$item->id]['returned'] = 0;
+
+        //dd($this->shoppingCart);
+    }
+
+    public function removeItem($id)
+    {
+        if($this->shoppingCart[$id]['quantity'] == 1){
+            unset($this->shoppingCart[$id]);
+        }elseif($this->shoppingCart[$id]['quantity'] > 1){
+            $this->shoppingCart[$id]['quantity'] -= 1;
+        }
+    }
+
+    public function updatedEditingEndDateTime()
+    {
+        $this->getBookableEquipment();
+        $this->iteration ++;
     }
 }

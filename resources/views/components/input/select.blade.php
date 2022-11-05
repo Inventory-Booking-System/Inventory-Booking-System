@@ -6,6 +6,7 @@
 
 @if($iteration)<div wire:key='"select-field-version-{{ $iteration }}'>@endif
 <div
+    wire:ignore
     x-data="{
         {{ $attributes->get('id') }}: @entangle($attributes->wire('model'))
     }"
@@ -17,14 +18,19 @@
         });
 
         select2.on('select2:select', (event) => {
+            console.log('triggered');
             {{ $attributes->get('id') }} = event.params.data['id'];
 
             @if ($clearSelection)
                 $('#{{ $attributes->get('id') }}').val('').trigger('change');
             @endif
         });
+
+        window.livewire.on('showModal', () => {
+            $('#{{ $attributes->get('id') }}').val(@entangle($attributes->wire('model')).initialValue).trigger('change');
+        })
+
         "
-    wire:ignore
 >
     <select
         x-bind:value="{{ $attributes->get('id') }}"

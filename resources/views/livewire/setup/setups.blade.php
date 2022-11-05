@@ -83,18 +83,22 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $setup->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3">{{ $user->forename }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $user->surname }}</x-table.cell>
-                            <x-table.cell class="col">{{ $user->email }}</x-table.cell>
+                            <x-table.cell class="col-3">{{ $setup->user_id }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $setup->status_id }}</x-table.cell>
+                            <x-table.cell class="col">{{ $setup->start_date_time }}</x-table.cell>
+                            <x-table.cell class="col">{{ $setup->end_date_time }}</x-table.cell>
+                            <x-table.cell class="col">{{ $setup->title }}</x-table.cell>
+                            <x-table.cell class="col">{{ $setup->location_id }}</x-table.cell>
+                            <x-table.cell class="col">{{ $setup->details }}</x-table.cell>
                             <x-table.cell class="col-2">
-                                <x-button.primary wire:click="edit({{ $user->id }})" ><x-loading wire:target="edit({{ $user->id }})" />Edit</x-button.primary>
+                                <x-button.primary wire:click="edit({{ $setup->id }})" ><x-loading wire:target="edit({{ $setup->id }})" />Edit</x-button.primary>
                             </x-table.cell>
                         </x-table.row>
                     @empty
                         <x-table.row>
                             <x-table.cell width="12">
                                 <div class="d-flex justify-content-center">
-                                    No users found
+                                    No setups found
                                 </div>
                             </x-table.cell>
                         </x-table.row>
@@ -104,10 +108,10 @@
 
             <div class="row mt-2">
                 <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($users->currentPage() * $users->count()) - ($users->count() - 1) }} to {{ $users->currentPage() * $users->count() }} of {{ $users->total() }} results</span>
+                    <span>Showing {{ ($setups->currentPage() * $setups->count()) - ($setups->count() - 1) }} to {{ $setups->currentPage() * $setups->count() }} of {{ $setups->total() }} results</span>
                 </div>
                 <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $users->links() }}
+                    {{ $setups->links() }}
                 </div>
             </div>
         </div>
@@ -116,10 +120,10 @@
     <!-- Delete Modal -->
     <form wire:submit.prevent="deleteSelected">
         <x-modal.dialog type="confirmModal">
-            <x-slot name="title">Delete Users</x-slot>
+            <x-slot name="title">Delete Setups</x-slot>
 
             <x-slot name="content">
-                Are you sure you want to delete these users? This action is irreversible.
+                Are you sure you want to delete these setups? This action is irreversible.
             </x-slot>
 
             <x-slot name="footer">
@@ -131,21 +135,63 @@
 
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
-        <x-modal.dialog type="editModal">
-            <x-slot name="title">Edit Asset</x-slot>
+        <x-modal.dialog type="editModal" class="modal-xl">
+            <x-slot name="title">Edit Loan</x-slot>
 
             <x-slot name="content">
-                <x-input.group for="forename" label="Forename" :error="$errors->first('editing.forename')">
-                    <x-input.text wire:model="editing.forename" id="forename" />
-                </x-input.group>
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Start Date Time -->
+                        <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.start_date_time')">
+                            <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
+                        </x-input.group>
 
-                <x-input.group for="surname" label="Surname" :error="$errors->first('editing.surname')">
-                    <x-input.text wire:model="editing.surname" id="surname" />
-                </x-input.group>
+                        <!-- End Date Time -->
+                        <x-input.group label="End Date" for="end_date_time" :error="$errors->first('editing.end_date_time')">
+                            <x-input.datetime wire:model="editing.end_date_time" id="end_date_time" />
+                        </x-input.group>
 
-                <x-input.group for="email" label="Email" :error="$errors->first('editing.email')">
-                    <x-input.text wire:model="editing.email" id="email" />
-                </x-input.group>
+                        <!-- Users -->
+                        <x-input.group label="Users" for="user_id" :error="$errors->first('editing.user_id')">
+                            <x-input.select wire:model="editing.user_id" id="user_id" placeholder="Select User">
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
+
+                        <!-- Equipment -->
+                        <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
+                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection iteration="{{ $iteration }}" placeholder="Select Equipment">
+                                @foreach ($avaliableEquipment as $equipment)
+                                    <option value="{{ $equipment->id }}">{{ $equipment->name }} ({{ $equipment->tag }})</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
+
+                        <!-- Details -->
+                        <x-input.group label="Details" for="details" :error="$errors->first('editing.details')">
+                            <x-input.textarea wire:model="editing.details" id="details" rows="8" />
+                        </x-input.group>
+
+                        <!-- Reservation -->
+                        <x-input.group label="Reservation" for="status_id" :error="$errors->first('editing.status_id')" buttonGroup>
+                            <x-input.radioButton wire:model="editing.status_id" id="status_id_yes" value="1" text="Yes" checked="{{ $status_id }}" />
+                            <x-input.radioButton wire:model="editing.status_id" id="status_id_no" value="0" text="No" checked="{{ $status_id }}" />
+                        </x-input.group>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Shopping Cart -->
+                        <div wire:model="shoppingCart">
+                            <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
+                                @foreach ($shoppingCart as $key => $item)
+                                    <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" assetId="{{ $item['asset_id'] }}" returned="{{ $item['returned'] }}" />
+                                @endforeach
+                            </x-shoppingCart.group>
+                        </div>
+                    </div>
+                </div>
             </x-slot>
 
             <x-slot name="footer">

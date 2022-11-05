@@ -83,7 +83,7 @@
                             </x-table.cell>
                             <x-table.cell class="col-3">{{ $incident->start_date_time }}</x-table.cell>
                             <x-table.cell class="col-1">{{ $incident->location_id }}</x-table.cell>
-                            <x-table.cell class="col">{{ $incident->distribtuion_id }}</x-table.cell>
+                            <x-table.cell class="col">{{ $incident->distribution_id }}</x-table.cell>
                             <x-table.cell class="col">{{ $incident->evidence }}</x-table.cell>
                             <x-table.cell class="col">{{ $incident->details }}</x-table.cell>
                             <x-table.cell class="col-2">
@@ -131,59 +131,65 @@
 
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
-        <x-modal.dialog type="editModal">
+        <x-modal.dialog type="editModal" class="modal-xl">
             <x-slot name="title">Edit Incident</x-slot>
 
             <x-slot name="content">
-                <!-- Start Date Time -->    
-                <x-input.group for="start_date_time" label="Start Date & Time" :error="$errors->first('editing.start_date_time')">
-                    <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
-                </x-input.group>
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Start Date Time -->
+                        <x-input.group for="start_date_time" label="Start Date & Time" :error="$errors->first('editing.start_date_time')">
+                            <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
+                        </x-input.group>
 
-                <!-- Distribution Group -->
-                <x-input.group for="distribution_id" label="Alert" :error="$errors->first('editing.distribution_id')">
-                    <x-input.select wire:model="editing.distribution_id" id="distribution_id" placeholder="Select who to alert">
-                        @foreach ($distributions as $distribution)
-                            <option value="{{ $distribution->id }}">{{ $distribution->name }}</option>
-                        @endforeach
-                    </x-input.select>    
-                </x-input.group>
+                        <!-- Distribution Group -->
+                        <x-input.group for="distribution_id" label="Alert" :error="$errors->first('editing.distribution_id')">
+                            <x-input.select wire:model="editing.distribution_id" id="distribution_id" placeholder="Select who to alert">
+                                @foreach ($distributions as $distribution)
+                                    <option value="{{ $distribution->id }}">{{ $distribution->name }}</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
 
-                <!-- Location -->
-                <x-input.group for="location_id" label="Location" :error="$errors->first('editing.location_id')">
-                    <x-input.select wire:model="editing.location_id" id="location_id" placeholder="Select Location">
-                        @foreach ($locations as $location)
-                            <option value="{{ $location->id }}">{{ $location->name }}</option>
-                        @endforeach
-                    </x-input.select>    
-                </x-input.group>
+                        <!-- Location -->
+                        <x-input.group for="location_id" label="Location" :error="$errors->first('editing.location_id')">
+                            <x-input.select wire:model="editing.location_id" id="location_id" placeholder="Select Location">
+                                @foreach ($locations as $location)
+                                    <option value="{{ $location->id }}">{{ $location->name }}</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
 
-                <!-- Equipment Issues -->
-                <x-input.group for="equipment_id" label="Equipment Issues"  :error="$errors->first('editing.equipment_id')">
-                    <x-input.select wire:model="editing.equipment_id" id="equipment_id" placeholder="Select Issue" clearSelection>
-                        @foreach ($equipmentIssues as $equipment)
-                            <option value="{{ $equipment->id }}">{{ $equipment->title }}</option>
-                        @endforeach
-                    </x-input.select>
-                </x-input.group>
+                        <!-- Equipment Issues -->
+                        <x-input.group for="equipment_id" label="Equipment Issues"  :error="$errors->first('equipment_id')">
+                            <x-input.select wire:model="equipment_id" id="equipment_id" placeholder="Select Issue" clearSelection>
+                                @foreach ($equipmentIssues as $equipment)
+                                    <option value="{{ $equipment->id }}">{{ $equipment->title }}</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
 
-                <!-- Evidence -->
-                <x-input.group for="evidence" label="Evidence" :error="$errors->first('editing.evidence')">
-                    <x-input.text wire:model="editing.evidence" id="evidence" />
-                </x-input.group>
+                        <!-- Evidence -->
+                        <x-input.group for="evidence" label="Evidence" :error="$errors->first('editing.evidence')">
+                            <x-input.text wire:model="editing.evidence" id="evidence" />
+                        </x-input.group>
 
-                <!-- Details -->
-                <x-input.group for="details" label="Details" :error="$errors->first('editing.details')">
-                    <x-input.textarea wire:model="editing.details" id="details" rows="8" />
-                </x-input.group>
+                        <!-- Details -->
+                        <x-input.group for="details" label="Details" :error="$errors->first('editing.details')">
+                            <x-input.textarea wire:model="editing.details" id="details" rows="8" />
+                        </x-input.group>
+                    </div>
 
-                <!-- Shopping Cart -->
-                <div class="col-lg-3 p-3" wire:model="shoppingCart">
-                    <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
-                        @foreach ($shoppingCart as $key => $item)
-                            <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" cost="{{ $item['cost'] }}" quantity="{{ $item['quantity'] }}" />
-                        @endforeach
-                    </x-shoppingCart.group>
+                    <div class="col-md-6">
+                        <!-- Shopping Cart -->
+                        <div wire:model="shoppingCart">
+                            <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
+                                @foreach ($shoppingCart as $key => $item)
+                                    <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" cost="{{ $item['cost'] }}" quantity="{{ $item['quantity'] }}" />
+                                @endforeach
+                            </x-shoppingCart.group>
+                        </div>
+                    </div>
                 </div>
             </x-slot>
 
