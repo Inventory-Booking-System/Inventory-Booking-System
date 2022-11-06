@@ -6,14 +6,17 @@ use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
+use App\Http\Livewire\ShoppingCart\WithShoppingCart;
 use App\Models\Setup;
+use App\Models\Loan;
 use App\Models\User;
 use App\Models\Asset;
+use App\Models\Location;
 use Carbon\Carbon;
 
 class Setups extends Component
 {
-    use WithPerPagePagination, WithSorting, WithBulkActions;
+    use WithPerPagePagination, WithSorting, WithBulkActions, WithShoppingCart;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -43,13 +46,13 @@ class Setups extends Component
     public function rules()
     {
         return [
-            'editing.user_id' => 'required|integer',
-            'editing.status_id' => 'required|string|in:0,1',
-            'editing.start_date_time' => 'required|date|before:editing.end_date_time|nullable',
-            'editing.end_date_time' => 'required|date|after:editing.start_date_time|nullable',
+            'editing.loan.user_id' => 'required|integer',
+            'editing.loan.status_id' => 'required|string|in:0,1',
+            'editing.loan.start_date_time' => 'required|date|before:editing.end_date_time|nullable',
+            'editing.loan.end_date_time' => 'required|date|after:editing.start_date_time|nullable',
+            'editing.loan.details' => 'nullable|string',
             'editing.title' => 'required|string',
             'editing.location_id' => 'required|numeric|exists:locations,id',
-            'editing.details' => 'nullable|string',
             'equipment_id' => 'nullable|numeric|exists:assets,id',
         ];
     }
@@ -62,6 +65,10 @@ class Setups extends Component
     public function mount()
     {
         $this->makeBlankSetup();
+        $this->users = User::latest()->get();
+        $this->locations = Location::latest()->get();
+
+        dd($this->editing);
     }
 
     public function updatedFilters($filed)
@@ -110,7 +117,11 @@ class Setups extends Component
 
     public function save()
     {
+        //dd($this->editing);
+
         $this->validate();
+
+        dd("Valid");
 
         $this->editing->start_date_time = carbon::parse($this->editing->start_date_time);
         $this->editing->end_date_time = carbon::parse($this->editing->end_date_time);
@@ -164,6 +175,8 @@ class Setups extends Component
 
         return view('livewire.setup.setups', [
             'setups' => $this->rows,
+            'users' => $this->users,
+            'locations' => $this->locations,
         ]);
     }
 
@@ -173,7 +186,7 @@ class Setups extends Component
 
         $this->shoppingCart[$item->id] = [];
         $this->shoppingCart[$item->id]['title'] = $item->name;
-        $this->shoppingCart[$item->id]['setup_id'] = $item->tag;
+        $this->shoppingCart[$item->id]['asset_id'] = $item->tag;
         $this->shoppingCart[$item->id]['returned'] = 0;
 
         //dd($this->shoppingCart);
@@ -188,7 +201,7 @@ class Setups extends Component
         }
     }
 
-    public function updatedEditingEndDateTime()
+    public function updatedEditingLoanEndDateTime()
     {
         $this->getBookableEquipment();
         $this->iteration ++;

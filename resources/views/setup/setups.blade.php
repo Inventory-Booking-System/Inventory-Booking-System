@@ -1,3 +1,3 @@
 <x-layouts.app>
-    <livewire:setup.setups/>
+    <livewire:setup.setups />
 </x-layouts.app>

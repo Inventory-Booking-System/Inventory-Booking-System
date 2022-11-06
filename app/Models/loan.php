@@ -26,4 +26,12 @@ class loan extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * A loan can have a setup component
+     */
+    public function setup()
+    {
+        return $this->hasOne(Setup::class);
+    }
 }

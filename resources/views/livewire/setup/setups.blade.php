@@ -136,26 +136,40 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal" class="modal-xl">
-            <x-slot name="title">Edit Loan</x-slot>
+            <x-slot name="title">Edit Setup</x-slot>
 
             <x-slot name="content">
                 <div class="row">
                     <div class="col-md-6">
+                        <!-- Title -->
+                        <x-input.group label="Title" for="title" :error="$errors->first('editing.title')">
+                            <x-input.text wire:model="editing.title" id="title" />
+                        </x-input.group>
+
                         <!-- Start Date Time -->
-                        <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.start_date_time')">
-                            <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
+                        <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.loan.start_date_time')">
+                            <x-input.datetime wire:model="editing.loan.start_date_time" id="start_date_time" />
                         </x-input.group>
 
                         <!-- End Date Time -->
-                        <x-input.group label="End Date" for="end_date_time" :error="$errors->first('editing.end_date_time')">
-                            <x-input.datetime wire:model="editing.end_date_time" id="end_date_time" />
+                        <x-input.group label="End Date" for="end_date_time" :error="$errors->first('editing.loan.end_date_time')">
+                            <x-input.datetime wire:model="editing.loan.end_date_time" id="end_date_time" />
                         </x-input.group>
 
                         <!-- Users -->
-                        <x-input.group label="Users" for="user_id" :error="$errors->first('editing.user_id')">
-                            <x-input.select wire:model="editing.user_id" id="user_id" placeholder="Select User">
+                        <x-input.group label="Users" for="user_id" :error="$errors->first('editing.loan.user_id')">
+                            <x-input.select wire:model="editing.loan.user_id" id="user_id" placeholder="Select User">
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
+
+                        <!-- Location -->
+                        <x-input.group label="Location" for="location_id" :error="$errors->first('editing.location_id')">
+                            <x-input.select wire:model="editing.location_id" id="location_id" placeholder="Select Location">
+                                @foreach ($locations as $location)
+                                    <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
                             </x-input.select>
                         </x-input.group>
@@ -170,14 +184,8 @@
                         </x-input.group>
 
                         <!-- Details -->
-                        <x-input.group label="Details" for="details" :error="$errors->first('editing.details')">
-                            <x-input.textarea wire:model="editing.details" id="details" rows="8" />
-                        </x-input.group>
-
-                        <!-- Reservation -->
-                        <x-input.group label="Reservation" for="status_id" :error="$errors->first('editing.status_id')" buttonGroup>
-                            <x-input.radioButton wire:model="editing.status_id" id="status_id_yes" value="1" text="Yes" checked="{{ $status_id }}" />
-                            <x-input.radioButton wire:model="editing.status_id" id="status_id_no" value="0" text="No" checked="{{ $status_id }}" />
+                        <x-input.group label="Details" for="details" :error="$errors->first('editing.loan.details')">
+                            <x-input.textarea wire:model="editing.loan.details" id="details" rows="8" />
                         </x-input.group>
                     </div>
 

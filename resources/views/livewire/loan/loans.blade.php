@@ -33,12 +33,14 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-3">User ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('id')" :direction="$sorts['id'] ?? null" class="col-1">ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-2">User</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('status_id')" :direction="$sorts['status_id'] ?? null" class="col-1">Status ID</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col">Start Date & Time</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('end_date_time')" :direction="$sorts['end_date_time'] ?? null" class="col">End Date & Time</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col">Details</x-table.heading>
-                        <x-table.heading class="col-2"/>
+                        <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-1">Start Date</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('end_date_time')" :direction="$sorts['end_date_time'] ?? null" class="col-1">End Date</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col-2">Details</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('assets')" :direction="$sorts['assets'] ?? null" class="col-2">Assets</x-table.heading>
+                        <x-table.heading class="col"/>
                     </x-table.row>
 
                     @if($showFilters)
@@ -46,12 +48,14 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.status_id" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.end_date_time" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.details" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-2" direction="null"/>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.end_date_time" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.details" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.assets" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"/>
                         </x-table.row>
                     @endif
                 </x-slot>
@@ -76,15 +80,21 @@
 
                     @forelse ($loans as $loan)
                         <x-table.row wire:key="row-{{ $loan->id }}">
-                            <x-table.cell >
+                            <x-table.cell>
                                 <x-input.checkbox wire:model="selected" value="{{ $loan->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3">{{ $loan->user_id }}</x-table.cell>
+                            <x-table.cell class="col-1">#{{ $loan->id }}</x-table.cell>
+                            <x-table.cell class="col-2">{{ $loan->user->forename }} {{ $loan->user->surname }}</x-table.cell>
                             <x-table.cell class="col-1">{{ $loan->status_id }}</x-table.cell>
-                            <x-table.cell class="col">{{ $loan->start_date_time }}</x-table.cell>
-                            <x-table.cell class="col">{{ $loan->end_date_time }}</x-table.cell>
-                            <x-table.cell class="col">{{ $loan->details }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->start_date_time }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->end_date_time }}</x-table.cell>
+                            <x-table.cell class="col-2">{{ $loan->details }}</x-table.cell>
                             <x-table.cell class="col-2">
+                                @foreach($loan->assets as $asset)
+                                    {{ $asset->name }} ({{ $asset->tag }})<br>
+                                @endforeach
+                            </x-table.cell>
+                            <x-table.cell class="col">
                                 <x-button.primary wire:click="edit({{ $loan->id }})" ><x-loading wire:target="edit({{ $loan->id }})" />Edit</x-button.primary>
                             </x-table.cell>
                         </x-table.row>

@@ -3,9 +3,12 @@
 namespace App\Http\Livewire\Loan;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
+use App\Http\Livewire\ShoppingCart\WithShoppingCart;
+use App\Mail\LoanCreated;
 use App\Models\Loan;
 use App\Models\User;
 use App\Models\Asset;
@@ -13,7 +16,7 @@ use Carbon\Carbon;
 
 class Loans extends Component
 {
-    use WithPerPagePagination, WithSorting, WithBulkActions;
+    use WithPerPagePagination, WithSorting, WithBulkActions, WithShoppingCart;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -21,11 +24,13 @@ class Loans extends Component
 
     public $filters = [
         'search' => '',
+        'id' => null,
         'user_id' => null,
         'status_id' => null,
         'start_date_time' => null,
         'end_date_time' => null,
         'details' => null,
+        'assets' => null,
     ];
 
     public $counter = 0;
@@ -116,6 +121,7 @@ class Loans extends Component
 
         $this->editing->save();
 
+
         $loan = Loan::find($this->editing->id);
 
         //Add equipment issues into equipment_issue_incidents
@@ -128,6 +134,13 @@ class Loans extends Component
         $loan->assets()->sync($ids);
 
         $this->emit('hideModal', 'edit');
+
+        $this->makeBlankLoan();
+
+        //Send the email to the user
+        $user = User::find($loan->user_id);
+
+        Mail::to($user->email)->queue(new LoanCreated($loan, false));
     }
 
     public function resetFilters()
@@ -138,6 +151,8 @@ class Loans extends Component
     public function getRowsQueryProperty()
     {
         $query = Loan::query()
+            ->with('user')
+            ->with('assets')
             ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('user_id', $user_id))
             ->when($this->filters['status_id'], fn($query, $status_id) => $query->where('status_id', $status_id))
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
@@ -162,46 +177,6 @@ class Loans extends Component
         return view('livewire.loan.loans', [
             'loans' => $this->rows,
         ]);
-    }
-
-    /**
-     * Fetches a list of equipment avaliable for the current selected input values.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function getBookableEquipment()
-    {
-        $validatedDate =[
-            'start_date_time' => carbon::parse($this->editing->start_date_time),
-            'end_date_time' => carbon::parse($this->editing->end_date_time),
-            'id' =>  $this->loanId ?? -1
-        ];
-
-        $this->avaliableEquipment = Asset::with('loans')
-            ->where(function($query) use($validatedDate){
-                $query->whereNotIn('assets.id', function($query) use($validatedDate){
-                    $query->select('asset_loan.asset_id')
-                            ->from('loans')
-                            ->join('asset_loan','loans.id','asset_loan.loan_id')
-                            ->whereRaw('`assets`.`id` = `asset_loan`.`asset_id`')
-                            ->where('loans.id', '!=', $validatedDate['id'])
-                            ->where(function($query2) use($validatedDate){
-                                $query2->where('loans.start_date_time', '>=', $validatedDate['start_date_time'])
-                                        ->where('loans.start_date_time', '<=', $validatedDate['end_date_time'])
-                                        ->where('loans.id', '!=', $validatedDate['id']);
-                            })->orWhere(function($query2) use($validatedDate){
-                                $query2->where('loans.end_date_time', '>=', $validatedDate['start_date_time'])
-                                    ->where('loans.end_date_time', '<=', $validatedDate['end_date_time'])
-                                    ->where('loans.id', '!=', $validatedDate['id']);
-                            })
-                            ->where('asset_loan.returned','=',0);
-                })
-                ->orWhereDoesntHave('loans');
-            })
-            ->get();
-
-        $this->emit('refresh');
     }
 
     public function updatedEquipmentId($id)

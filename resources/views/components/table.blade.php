@@ -1,12 +1,14 @@
 
-<table class="table table-sm table-hover bg-light">
-	<thead class="">
-		<tr>
-			{{ $head }}
-		</tr>
-	</thead>
+<div class="card">
+	<table class="table table-hover">
+		<thead class="">
+			<tr>
+				{{ $head }}
+			</tr>
+		</thead>
 
-	<tbody>
-		{{ $body }}
-	</tbody>
-</table>
+		<tbody>
+			{{ $body }}
+		</tbody>
+	</table>
+</div>
