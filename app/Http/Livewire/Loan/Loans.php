@@ -109,6 +109,15 @@ class Loans extends Component
             $this->editing = $loan;
         }
 
+        //Populate Shopping Cart
+        $this->shoppingCart = [];
+        $this->editing->assets->each(function ($item, $key) {
+            $this->shoppingCart[$item->id] = [];
+            $this->shoppingCart[$item->id]['title'] = $item->name;
+            $this->shoppingCart[$item->id]['asset_id'] = $item->tag;
+            $this->shoppingCart[$item->id]['returned'] = $item->returned;
+        });
+
         $this->emit('showModal', 'edit');
     }
 
