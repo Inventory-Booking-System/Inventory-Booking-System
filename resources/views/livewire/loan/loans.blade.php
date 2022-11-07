@@ -83,19 +83,23 @@
                             <x-table.cell>
                                 <x-input.checkbox wire:model="selected" value="{{ $loan->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-1">#{{ $loan->id }}</x-table.cell>
-                            <x-table.cell class="col-2">{{ $loan->user->forename }} {{ $loan->user->surname }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->status_id }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->start_date_time }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->end_date_time }}</x-table.cell>
+                            <x-table.cell class="col-1"><x-link route="loans" id="{{ $loan->id }}" value="#{{ $loan->id }}"></x-link></x-table.cell>
+                            <x-table.cell class="col-2"><x-link route="users" id="{{ $loan->user->id }}" value="{{ $loan->user->forename }} {{ $loan->user->surname }}"></x-link></x-table.cell>
+                            <x-table.cell class="col-1"><span class="badge badge-pill badge-{{ $loan->status_type }}">{{ $loan->status }}</span></x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->start_date_for_humans }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->end_date_for_humans }}</x-table.cell>
                             <x-table.cell class="col-2">{{ $loan->details }}</x-table.cell>
                             <x-table.cell class="col-2">
                                 @foreach($loan->assets as $asset)
-                                    {{ $asset->name }} ({{ $asset->tag }})<br>
+                                    <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link><br>
                                 @endforeach
                             </x-table.cell>
                             <x-table.cell class="col">
                                 <x-button.primary wire:click="edit({{ $loan->id }})" ><x-loading wire:target="edit({{ $loan->id }})" />Edit</x-button.primary>
+                                @if($loan->status_id == 1)
+                                    <x-button.success wire:click="book({{ $loan->id }})" ><x-loading wire:target="book({{ $loan->id }})" />Book Out</x-button.primary>
+                                    <x-button.danger wire:click="cancel({{ $loan->id }})" ><x-loading wire:target="cancel({{ $loan->id }})" />Cancel</x-button.primary>
+                                @endif
                             </x-table.cell>
                         </x-table.row>
                     @empty
