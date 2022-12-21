@@ -86,8 +86,8 @@
                             <x-table.cell class="col-1"><x-link route="loans" id="{{ $loan->id }}" value="#{{ $loan->id }}"></x-link></x-table.cell>
                             <x-table.cell class="col-2"><x-link route="users" id="{{ $loan->user->id }}" value="{{ $loan->user->forename }} {{ $loan->user->surname }}"></x-link></x-table.cell>
                             <x-table.cell class="col-1"><span class="badge badge-pill badge-{{ $loan->status_type }}">{{ $loan->status }}</span></x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->start_date_for_humans }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->end_date_for_humans }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->startDateTime }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->endDateTime }}</x-table.cell>
                             <x-table.cell class="col-2">{{ $loan->details }}</x-table.cell>
                             <x-table.cell class="col-2">
                                 @foreach($loan->assets as $asset)
@@ -95,11 +95,13 @@
                                 @endforeach
                             </x-table.cell>
                             <x-table.cell class="col">
-                                <x-button.primary wire:click="edit({{ $loan->id }})" ><x-loading wire:target="edit({{ $loan->id }})" />Edit</x-button.primary>
+                                <div class="btn-group" role="group" aria-label="Basic example">
                                 @if($loan->status_id == 1)
-                                    <x-button.success wire:click="book({{ $loan->id }})" ><x-loading wire:target="book({{ $loan->id }})" />Book Out</x-button.primary>
-                                    <x-button.danger wire:click="cancel({{ $loan->id }})" ><x-loading wire:target="cancel({{ $loan->id }})" />Cancel</x-button.primary>
+                                    <x-button.success wire:click="book({{ $loan->id }})" ><x-loading wire:target="book({{ $loan->id }})" />Book Out</x-button.success>
+                                    <x-button.danger wire:click="cancel({{ $loan->id }})" ><x-loading wire:target="cancel({{ $loan->id }})" />Cancel</x-button.danger>
                                 @endif
+                                <x-button.primary wire:click="edit({{ $loan->id }})" ><x-loading wire:target="edit({{ $loan->id }})" />Edit</x-button.primary>
+                                </div>
                             </x-table.cell>
                         </x-table.row>
                     @empty
@@ -171,8 +173,12 @@
                         <!-- Equipment -->
                         <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
                             <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection iteration="{{ $iteration }}" placeholder="Select Equipment">
-                                @foreach ($avaliableEquipment as $equipment)
-                                    <option value="{{ $equipment->id }}">{{ $equipment->name }} ({{ $equipment->tag }})</option>
+                                @foreach ($equipmentList as $equipment)
+                                @if($equipment['avaliable'] == true)
+                                    <option value="{{ $equipment['id'] }}">{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
+                                @else
+                                    <option value="{{ $equipment['id'] }}" disabled>{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
+                                @endif
                                 @endforeach
                             </x-input.select>
                         </x-input.group>
@@ -184,17 +190,17 @@
 
                         <!-- Reservation -->
                         <x-input.group label="Reservation" for="status_id" :error="$errors->first('editing.status_id')" buttonGroup>
-                            <x-input.radioButton wire:model="editing.status_id" id="status_id_yes" value="1" text="Yes" checked="{{ $status_id }}" />
-                            <x-input.radioButton wire:model="editing.status_id" id="status_id_no" value="0" text="No" checked="{{ $status_id }}" />
+                            <x-input.radioButton wire:model="editing.status_id" id="status_id_yes" value="1" text="Yes" checked="{{ $editing->status_id }}" />
+                            <x-input.radioButton wire:model="editing.status_id" id="status_id_no" value="0" text="No" checked="{{ $editing->status_id }}" />
                         </x-input.group>
                     </div>
 
                     <div class="col-md-6">
                         <!-- Shopping Cart -->
-                        <div wire:model="shoppingCart">
+                        <div wire:model="shoppingCart" iteration="{{ $iteration }}">
                             <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
-                                @foreach ($shoppingCart as $key => $item)
-                                    <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" assetId="{{ $item['asset_id'] }}" returned="{{ $item['returned'] }}" />
+                                @foreach ($shoppingCart as $key => $asset)
+                                    <x-shoppingCart.cartCard id="{{ $asset['id'] }}" name="{{ $asset['name'] }}" assetId="{{ $asset['tag'] }}" returned="{{ $asset['pivot']['returned'] }}" />
                                 @endforeach
                             </x-shoppingCart.group>
                         </div>

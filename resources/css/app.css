@@ -1,0 +1,14 @@
+/* Set disabled options in dropdowns to red */
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--disabled, .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-disabled=true]
+{
+    color:red;
+}
+
+/* Font Awesome icon modifications */
+.fa-trash-alt {
+    color: red;
+}
+
+.fa-circle-check {
+    color: green;
+}

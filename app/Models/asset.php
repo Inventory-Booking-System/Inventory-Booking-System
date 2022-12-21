@@ -11,8 +11,6 @@ class asset extends Model
 
     protected $fillable = ['name', 'tag', 'description', 'cost', 'bookable'];
 
-    protected $with = ['loans'];
-
     /**
      * Get the loans for the asset.
      */

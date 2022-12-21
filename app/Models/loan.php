@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class loan extends Model
 {
@@ -11,7 +12,7 @@ class loan extends Model
 
     protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details'];
 
-    protected $dates = ['start_date_time'];
+    protected $with = ['assets'];
 
     /**
      * An asset can belong to many loan
@@ -44,6 +45,7 @@ class loan extends Model
             '1' => 'Reservation',
             '2' => 'Overdue',
             '3' => 'Setup',
+            '4' => 'Cancelled',
         ][$this->status_id] ?? 'Error';
     }
 
@@ -57,13 +59,27 @@ class loan extends Model
         ][$this->status_id] ?? 'secondary';
     }
 
-    public function getStartDateForHumansAttribute()
+    public function getStartDateTimeAttribute($value)
     {
-        return $this->start_date_time->format('d M Y h:ia');
+        $date = Carbon::parse($value);
+        return $date->format('d-m-Y H:i');
     }
 
-    public function getEndDateForHumansAttribute()
+    public function getEndDateTimeAttribute($value)
     {
-        return $this->start_date_time->format('d M Y h:ia');
+        $date = Carbon::parse($value);
+        return $date->format('d-m-Y H:i');
+    }
+
+    public function setStartDateTimeAttribute($value)
+    {
+        $date = Carbon::parse($value);
+        return $date->format('Y-m-d H:i:s');
+    }
+
+    public function setEndDateTimeAttribute($value)
+    {
+        $date = Carbon::parse($value);
+        return $date->format('Y-m-d H:i:s');
     }
 }

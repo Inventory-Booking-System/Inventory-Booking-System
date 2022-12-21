@@ -18,7 +18,8 @@
         });
 
         select2.on('select2:select', (event) => {
-            console.log('triggered');
+            $('#{{ $attributes->get('id') }}').find(':selected').attr('disabled','disabled').css('color','red !important').trigger('change');
+
             {{ $attributes->get('id') }} = event.params.data['id'];
 
             @if ($clearSelection)
