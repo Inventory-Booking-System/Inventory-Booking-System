@@ -12,7 +12,7 @@ use App\Models\Loan;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\AssetLoan;
-use App\Mail\LoanCreated;
+use App\Mail\Order;
 use Carbon\Carbon;
 
 class Loans extends Component
@@ -159,7 +159,8 @@ class Loans extends Component
         $this->emit('hideModal', 'edit');
 
         //Send the email to the user
-        Mail::to($user->email)->queue(new LoanCreated($this->editing, $this->editing->wasRecentlyCreated));
+        $user = User::find($loan->user_id);
+        Mail::to($user->email)->queue(new Order($this->editing, $this->editing->wasRecentlyCreated));
     }
 
     public function resetFilters()
@@ -257,14 +258,10 @@ class Loans extends Component
 
     public function cancel($id){
         $this->updateLoanStatus($id, 4);
-
-        //TODO: Send email stuff
     }
 
     public function complete($id){
         $this->updateLoanStatus($id, 5);
-
-        //TODO: Send email stuff
     }
 
     protected function updateLoanStatus($id, $status)
@@ -279,6 +276,10 @@ class Loans extends Component
             array_push($ids, ['loan_id' => $id, 'asset_id' => $asset['id'], 'returned' => 1]);
         }
         $loan->assets()->sync($ids);
+
+        //Send the email to the user
+        $user = User::find($loan->user_id);
+        Mail::to($user->email)->queue(new Order($loan, $this->editing->wasRecentlyCreated));
     }
 
     public function updatedEquipmentId($id)

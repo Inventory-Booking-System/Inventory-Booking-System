@@ -47,6 +47,7 @@ class loan extends Model
             '3' => 'Setup',
             '4' => 'Cancelled',
             '5' => 'Completed',
+            '6' => 'Modified',
         ][$this->status_id] ?? 'Error';
     }
 
