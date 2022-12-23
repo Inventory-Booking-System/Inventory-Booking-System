@@ -46,6 +46,7 @@ class loan extends Model
             '2' => 'Overdue',
             '3' => 'Setup',
             '4' => 'Cancelled',
+            '5' => 'Completed',
         ][$this->status_id] ?? 'Error';
     }
 
@@ -62,24 +63,32 @@ class loan extends Model
     public function getStartDateTimeAttribute($value)
     {
         $date = Carbon::parse($value);
-        return $date->format('d-m-Y H:i');
+
+        return $date->format('d M Y H:i');
     }
 
-    public function getEndDateTimeAttribute($value)
+    public function getEndDateTimeAttribute($value2)
     {
-        $date = Carbon::parse($value);
-        return $date->format('d-m-Y H:i');
+        $date2 = Carbon::parse($value2);
+
+        return $date2->format('d M Y H:i');
     }
 
-    public function setStartDateTimeAttribute($value)
-    {
-        $date = Carbon::parse($value);
-        return $date->format('Y-m-d H:i:s');
-    }
+    // public function getFormatDateForDatabaseAttribute()
+    // {
+    //     $date = Carbon::parse($this->startDateTime);
+    //     return $date->format('Y-m-d H:i');
+    // }
 
-    public function setEndDateTimeAttribute($value)
-    {
-        $date = Carbon::parse($value);
-        return $date->format('Y-m-d H:i:s');
-    }
+    // public function setStartDateTimeAttribute($value)
+    // {
+    //     $date = Carbon::parse($value);
+    //     return $date->format('Y-m-d H:i:s');
+    // }
+
+    // public function setEndDateTimeAttribute($value)
+    // {
+    //     $date = Carbon::parse($value);
+    //     return $date->format('Y-m-d H:i:s');
+    // }
 }

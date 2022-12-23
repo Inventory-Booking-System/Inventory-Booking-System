@@ -4,7 +4,7 @@
 
 <div
     x-data="{ {{ $id }}: @entangle($attributes->wire('model'))}"
-    x-init="picker = new tempusDominus.TempusDominus(document.getElementById('picker{{ $id }}'), {display: {sideBySide: true,}}); picker.dates.formatInput = date => moment(date).format('DD-MM-yyyy HH:mm')"
+    x-init="picker = new tempusDominus.TempusDominus(document.getElementById('picker{{ $id }}'), {display: {sideBySide: true,}}); picker.dates.formatInput = date => moment(date).format('DD MMM yyyy HH:mm')"
 >
     <div
         class='input-group'

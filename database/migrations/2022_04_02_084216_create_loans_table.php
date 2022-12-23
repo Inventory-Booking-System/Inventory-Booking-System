@@ -19,7 +19,7 @@ class CreateLoansTable extends Migration
             $table->integer('status_id');
             $table->dateTime('start_date_time');
             $table->dateTime('end_date_time');
-            $table->text('details');
+            $table->text('details')->nullable();
             $table->timestamps();
         });
     }

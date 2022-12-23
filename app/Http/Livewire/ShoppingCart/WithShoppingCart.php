@@ -12,7 +12,7 @@ trait WithShoppingCart
     public $avaliableEquipment = [];            #Equipment that is avaliable for booking
     public $equipmentList = [];                 #A list of all equipment in the system regardless of avaliability
 
-    public function addItemToCart($item)
+    public function addItemToCart($item, $new)
     {
         //Livewire will convert an collection of eloquent objects into an array of arrays after the first render
         //Therefore lets convert our object into an array first so we dont need to handle both the object and
@@ -25,8 +25,10 @@ trait WithShoppingCart
 
                     if(isset($item->pivot)){
                         $itemAttributeTable['pivot'] = $item->pivot->toArray();
+                        $itemAttributeTable['new'] = false;
                     }else{
                         //New asset so set returned to false
+                        $itemAttributeTable['new'] = true;
                         $itemAttributeTable['pivot'] = [];
                         $itemAttributeTable['pivot']['returned'] = false;
                     }

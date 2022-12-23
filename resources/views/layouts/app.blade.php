@@ -1,7 +1,7 @@
 <x-layouts.base>
     <div class="wrapper">
             <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
-                <a href="#" class="navbar-brand"><i class="fa fa-cube"></i>Inventory Booking System</b></a>
+                <a href="#" class="navbar-brand"><i class="fa fa-cube"></i>Toolokit</b></a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>

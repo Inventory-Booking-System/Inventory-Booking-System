@@ -13,15 +13,17 @@ class LoanCreated extends Mailable
     use Queueable, SerializesModels;
 
     public $loan;
+    public $newRecord;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(Loan $loan, $setup)
+    public function __construct(Loan $loan, $newRecord)
     {
         $this->loan = $loan;
+        $this->newRecord = $newRecord;
     }
 
     /**

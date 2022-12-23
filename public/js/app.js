@@ -236,10 +236,30 @@ document.addEventListener('livewire:load', function () {
         toastr[param['type']](param['message']);
     });
     Livewire.on('showModal', param => {
-        $('#' + param + 'Modal').modal('show');
+        switch (param){
+            case "create":
+                $('#editModal').modal('show');
+                break;
+            case "edit":
+                $('#editModal').modal('show');
+                break;
+            case "confirm":
+                $('#confirmModal').modal('show');
+                break;
+        }
     });
     Livewire.on('hideModal', param => {
-        $('#' + param + 'Modal').modal('hide');
+        switch (param){
+            case "create":
+                $('#editModal').modal('hide');
+                break;
+            case "edit":
+                $('#editModal').modal('hide');
+                break;
+            case "confirm":
+                $('#confirmModal').modal('hide');
+                break;
+        }
     });
 });
 

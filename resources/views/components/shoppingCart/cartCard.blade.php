@@ -5,6 +5,7 @@
 	'quantity' => null,
 	'assetId' => null,
 	'returned' => null,
+	'new' => null,
 ])
 
 <div class="card {{ $returned == "1" ? "bg-success" : "" }} mb-3">
@@ -15,6 +16,7 @@
 				<h5 class="mb-0">{{ $name }}</h5>
 				</div>
 			</div>
+
 			<div class="d-flex flex-row align-items-center">
 
 				<!-- Quantity -->
@@ -38,10 +40,14 @@
 					</div>
 				@endif
 
+				<!-- Book in single items in the booking without completing the actual booking -->
+				@if($new == "0")
+					<a class="mr-1" href="#" wire:click='bookSingleItem({{ $id }})'>
+						<i class='fa-sharp fa-solid fa-circle-check'></i>
+					</a>
+				@endif
+
 				<!-- Remove from cart -->
-				<a href="#" wire:click='bookSingleItem({{ $id }})'>
-					<i class='fa-sharp fa-solid fa-circle-check'></i>
-				</a>
 				<a href="#" wire:click='removeItem({{ $id }})' style="color: #cecece;">
 					<i class="fas fa-trash-alt"></i>
 					<x-loading wire:target="removeItem({{ $id }})" />

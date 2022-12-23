@@ -86,8 +86,8 @@
                             <x-table.cell class="col-1"><x-link route="loans" id="{{ $loan->id }}" value="#{{ $loan->id }}"></x-link></x-table.cell>
                             <x-table.cell class="col-2"><x-link route="users" id="{{ $loan->user->id }}" value="{{ $loan->user->forename }} {{ $loan->user->surname }}"></x-link></x-table.cell>
                             <x-table.cell class="col-1"><span class="badge badge-pill badge-{{ $loan->status_type }}">{{ $loan->status }}</span></x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->startDateTime }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $loan->endDateTime }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->start_date_time }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $loan->end_date_time }}</x-table.cell>
                             <x-table.cell class="col-2">{{ $loan->details }}</x-table.cell>
                             <x-table.cell class="col-2">
                                 @foreach($loan->assets as $asset)
@@ -99,6 +99,8 @@
                                 @if($loan->status_id == 1)
                                     <x-button.success wire:click="book({{ $loan->id }})" ><x-loading wire:target="book({{ $loan->id }})" />Book Out</x-button.success>
                                     <x-button.danger wire:click="cancel({{ $loan->id }})" ><x-loading wire:target="cancel({{ $loan->id }})" />Cancel</x-button.danger>
+                                @else
+                                    <x-button.success wire:click="complete({{ $loan->id }})" ><x-loading wire:target="complete({{ $loan->id }})" />Complete</x-button.success>
                                 @endif
                                 <x-button.primary wire:click="edit({{ $loan->id }})" ><x-loading wire:target="edit({{ $loan->id }})" />Edit</x-button.primary>
                                 </div>
@@ -146,7 +148,7 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal" class="modal-xl">
-            <x-slot name="title">Edit Loan</x-slot>
+            <x-slot name="title">{{ $modalType }} Loan</x-slot>
 
             <x-slot name="content">
                 <div class="row">
@@ -172,7 +174,7 @@
 
                         <!-- Equipment -->
                         <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
-                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection iteration="{{ $iteration }}" placeholder="Select Equipment">
+                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected refreshData iteration="{{ $iteration }}" placeholder="Select Equipment">
                                 @foreach ($equipmentList as $equipment)
                                 @if($equipment['avaliable'] == true)
                                     <option value="{{ $equipment['id'] }}">{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
@@ -198,9 +200,9 @@
                     <div class="col-md-6">
                         <!-- Shopping Cart -->
                         <div wire:model="shoppingCart" iteration="{{ $iteration }}">
-                            <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
+                            <x-shoppingCart.group>
                                 @foreach ($shoppingCart as $key => $asset)
-                                    <x-shoppingCart.cartCard id="{{ $asset['id'] }}" name="{{ $asset['name'] }}" assetId="{{ $asset['tag'] }}" returned="{{ $asset['pivot']['returned'] }}" />
+                                    <x-shoppingCart.cartCard id="{{ $asset['id'] }}" name="{{ $asset['name'] }}" assetId="{{ $asset['tag'] }}" returned="{{ $asset['pivot']['returned'] }}" new="{{ (int)$asset['new'] }}" />
                                 @endforeach
                             </x-shoppingCart.group>
                         </div>
