@@ -34,33 +34,27 @@ class Loans extends Component
     ];
 
     public Loan $editing;                           #Data relating to the current loan excluding any assets
-
     public $equipment_id;                           #Used to trigger update on the select2 dropdown as we cannot use wire:model due to wire:ignore in place
+    public $iteration = 0;                          #Increment anytime we want the Select2 Dropdown to update (as we are using wire:ignore to stop it updating each render)
+    public $modalType;                              #Whether the user is creating/edit a loan so we can get correct wording
+
+    #TODO: Is this needed?
     public $counter;                                #???
 
-    public $iteration = 0;                          #Increment anytime we want the Select2 Dropdown to update (as we are using wire:ignore to stop it updating each render)
-
-    public $selectedTagId = "Test";
-
-    public $modalType;                               #Whether the user is creating/edit a loan so we can get correct wording
-
-    public function updatedSelectedTagId()
-    {
-        dd($this->selectedTagId);
-    }
-
+    #TODO: Start date rules look wrong?
     public function rules()
     {
         return [
             'editing.user_id' => 'required|integer',
             'editing.status_id' => 'required|integer|in:0,1',
-            'editing.start_date_time' => 'required|nullable',
+            'editing.start_date_time' => 'required|date|before:editing.end_date_time|nullable',
             'editing.end_date_time' => 'required|date|after:editing.start_date_time|nullable',
             'editing.details' => 'nullable|string',
             'equipment_id' => 'nullable|numeric|exists:assets,id',
         ];
     }
 
+    #TODO: Is this needed?
     public function showModal()
     {
         $this->emit('showModal');
@@ -80,7 +74,6 @@ class Loans extends Component
     public function makeBlankLoan()
     {
         $this->editing = Loan::make();
-        $shoppingCart = [];
         $equipment_id = null;
         $this->emptyCart();
         $this->iteration ++;
@@ -102,8 +95,13 @@ class Loans extends Component
 
     public function create()
     {
+        //TODO: Can we re-implement this so form input is saved if modal closed on accident
+        //I Removed for now as it wasen't resetting properly between editing/creating etc
         if ($this->editing->getKey()){
         }
+
+        //dd($this->editing);
+
         $this->makeBlankLoan();
 
         $this->modalType = "Create";
@@ -114,13 +112,13 @@ class Loans extends Component
     {
         #If the loan is the same as the previous loan that we have stored, just show the modal
         #in the current state that is was when it was last closed rather than wiping the data.
-        $this->emptyCart();
-        $this->editing = $loan;
-
+        //TODO: Can we re-implement this so form input is saved if modal closed on accident
+        //I Removed for now as it wasen't resetting properly between editing/creating etc
         if($this->editing->isNot($loan)){
         }
 
-        //dd($this->shoppingCart);
+        $this->emptyCart();
+        $this->editing = $loan;
 
         //Load assets from loans model into the shopping cart
         $this->editing->assets->each(function ($item, $key) {
@@ -148,6 +146,7 @@ class Loans extends Component
         $this->editing->push();
 
         //Update assets in database
+        //TODO: We need to validate ShoppingCart Data. Can this be done through laravel rules?
         $loan = Loan::find($this->editing->id);
         $ids = [];
         foreach($this->shoppingCart as $key => $item){
@@ -249,11 +248,7 @@ class Loans extends Component
     }
 
     public function book($id){
-        $loan = Loan::find($id);
-        $loan->status_id = 0;
-        $loan->push();
-
-        //TODO: Send email stuff
+        $this->updateLoanStatus($id, 0);
     }
 
     public function cancel($id){
@@ -273,7 +268,7 @@ class Loans extends Component
         //Update assets in database
         $ids = [];
         foreach($loan->assets as $key => $asset){
-            array_push($ids, ['loan_id' => $id, 'asset_id' => $asset['id'], 'returned' => 1]);
+            $ids[$asset['id']] = ['returned' => 1];
         }
         $loan->assets()->sync($ids);
 
@@ -295,8 +290,6 @@ class Loans extends Component
         foreach($this->equipmentList as $key => $equipment){
             if($equipment['id'] == $id){
                 $this->equipmentList[$key]['avaliable'] = false;
-
-
             }
         }
 
@@ -304,6 +297,7 @@ class Loans extends Component
         $this->equipment_id = null;
     }
 
+    //TODO: We should also check when start date changes and fetch equipment if end date present
     public function updatedEditingEndDateTime()
     {
         $this->getBookableEquipment();

@@ -18,6 +18,16 @@ class setup extends Model
      */
     public function loan()
     {
-        return $this->belongsTo(Loan::class);
+        return $this->belongsTo(Loan::class)->withDefault([
+            'details' => 'Test Description',
+        ]);
+    }
+
+    /**
+     * A setup has a location
+     */
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }

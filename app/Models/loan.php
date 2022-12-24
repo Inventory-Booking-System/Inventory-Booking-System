@@ -68,11 +68,11 @@ class loan extends Model
         return $date->format('d M Y H:i');
     }
 
-    public function getEndDateTimeAttribute($value2)
+    public function getEndDateTimeAttribute($value)
     {
-        $date2 = Carbon::parse($value2);
+        $date = Carbon::parse($value);
 
-        return $date2->format('d M Y H:i');
+        return $date->format('d M Y H:i');
     }
 
     // public function getFormatDateForDatabaseAttribute()

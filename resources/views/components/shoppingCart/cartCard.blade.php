@@ -42,8 +42,9 @@
 
 				<!-- Book in single items in the booking without completing the actual booking -->
 				@if($new == "0")
-					<a class="mr-1" href="#" wire:click='bookSingleItem({{ $id }})'>
+					<a wire:key='removeItem-{{ $id }}' class="mr-1" href="#" wire:click='bookSingleItem({{ $id }})'>
 						<i class='fa-sharp fa-solid fa-circle-check'></i>
+						<x-loading wire:target="bookSingleItem({{ $id }})" />
 					</a>
 				@endif
 

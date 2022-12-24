@@ -82,9 +82,11 @@ trait WithShoppingCart
     {
         $this->getAllEquipment();
 
+        //dd($this->editing);
+
         $validatedDate =[
-            'start_date_time' => carbon::parse($this->editing->start_date_time),
-            'end_date_time' => carbon::parse($this->editing->end_date_time),
+            'start_date_time' => carbon::parse($this->editing->loan->start_date_time),
+            'end_date_time' => carbon::parse($this->editing->loan->end_date_time),
             'id' =>  $this->loanId ?? -1
         ];
 

@@ -33,14 +33,14 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-3">User ID</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('status_id')" :direction="$sorts['status_id'] ?? null" class="col-3">Status ID</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-3">Start Date & Time</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('end_date_time')" :direction="$sorts['end_date_time'] ?? null" class="col-3">End Date & Time</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('title')" :direction="$sorts['title'] ?? null" class="col-3">Title</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('location_id')" :direction="$sorts['location_id'] ?? null" class="col-1">Location ID</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col">Details</x-table.heading>
-                        <x-table.heading class="col-2"/>
+                        <x-table.heading sortable wire:click="sortBy('id')" :direction="$sorts['id'] ?? null" class="col-1">ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-2">User</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('location')" :direction="$sorts['location'] ?? null" class="col-1">Location</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-1">Start Date</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('end_date_time')" :direction="$sorts['end_date_time'] ?? null" class="col-1">End Date</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col-2">Details</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('assets')" :direction="$sorts['assets'] ?? null" class="col-2">Assets</x-table.heading>
+                        <x-table.heading class="col"/>
                     </x-table.row>
 
                     @if($showFilters)
@@ -48,14 +48,14 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.status_id" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.end_date_time" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.title" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.location_id" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.details" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-2" direction="null"/>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.location" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.end_date_time" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.details" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.assets" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"/>
                         </x-table.row>
                     @endif
                 </x-slot>
@@ -79,21 +79,33 @@
                     @endif
 
                     @forelse ($setups as $setup)
-                        <x-table.row wire:key="row-{{ $setup->id }}">
-                            <x-table.cell >
-                                <x-input.checkbox wire:model="selected" value="{{ $setup->id }}"></x-input.checkbox>
-                            </x-table.cell>
-                            <x-table.cell class="col-3">{{ $setup->user_id }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $setup->status_id }}</x-table.cell>
-                            <x-table.cell class="col">{{ $setup->start_date_time }}</x-table.cell>
-                            <x-table.cell class="col">{{ $setup->end_date_time }}</x-table.cell>
-                            <x-table.cell class="col">{{ $setup->title }}</x-table.cell>
-                            <x-table.cell class="col">{{ $setup->location_id }}</x-table.cell>
-                            <x-table.cell class="col">{{ $setup->details }}</x-table.cell>
-                            <x-table.cell class="col-2">
-                                <x-button.primary wire:click="edit({{ $setup->id }})" ><x-loading wire:target="edit({{ $setup->id }})" />Edit</x-button.primary>
-                            </x-table.cell>
-                        </x-table.row>
+                    <x-table.row wire:key="row-{{ $setup->loan->id }}">
+                        <x-table.cell>
+                            <x-input.checkbox wire:model="selected" value="{{ $setup->loan->id }}"></x-input.checkbox>
+                        </x-table.cell>
+                        <x-table.cell class="col-1"><x-link route="loans" id="{{ $setup->loan->id }}" value="#{{ $setup->loan->id }} {{ $setup->title }}"></x-link></x-table.cell>
+                        <x-table.cell class="col-2"><x-link route="users" id="{{ $setup->loan->user->id }}" value="{{ $setup->loan->user->forename }} {{ $setup->loan->user->surname }}"></x-link></x-table.cell>
+                        <x-table.cell class="col-1">{{ $setup->location->name }}</x-table.cell>
+                        <x-table.cell class="col-1">{{ $setup->loan->start_date_time }}</x-table.cell>
+                        <x-table.cell class="col-1">{{ $setup->loan->end_date_time }}</x-table.cell>
+                        <x-table.cell class="col-2">{{ $setup->loan->details }}</x-table.cell>
+                        <x-table.cell class="col-2">
+                            @foreach($setup->loan->assets as $asset)
+                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link><br>
+                            @endforeach
+                        </x-table.cell>
+                        <x-table.cell class="col">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                @if($setup->loan->status_id == 1)
+                                    <x-button.success wire:click="book({{ $setup->id }})" ><x-loading wire:target="book({{ $setup->loan->id }})" />Book Out</x-button.success>
+                                    <x-button.danger wire:click="cancel({{ $setup->id }})" ><x-loading wire:target="cancel({{ $setup->loan->id }})" />Cancel</x-button.danger>
+                                @else
+                                    <x-button.success wire:click="complete({{ $setup->id }})" ><x-loading wire:target="complete({{ $setup->loan->id }})" />Complete</x-button.success>
+                                @endif
+                                <x-button.primary wire:click="edit({{ $setup->id }})" ><x-loading wire:target="edit({{ $setup->loan->id }})" />Edit</x-button.primary>
+                            </div>
+                        </x-table.cell>
+                    </x-table.row>
                     @empty
                         <x-table.row>
                             <x-table.cell width="12">
@@ -136,7 +148,7 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal" class="modal-xl">
-            <x-slot name="title">Edit Setup</x-slot>
+            <x-slot name="title">{{ $modalType }}</x-slot>
 
             <x-slot name="content">
                 <div class="row">
@@ -148,12 +160,12 @@
 
                         <!-- Start Date Time -->
                         <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.loan.start_date_time')">
-                            <x-input.datetime wire:model="editing.loan.start_date_time" id="start_date_time" />
+                            <x-input.datetime wire:model.defer="editing.loan.start_date_time" id="start_date_time" />
                         </x-input.group>
 
                         <!-- End Date Time -->
                         <x-input.group label="End Date" for="end_date_time" :error="$errors->first('editing.loan.end_date_time')">
-                            <x-input.datetime wire:model="editing.loan.end_date_time" id="end_date_time" />
+                            <x-input.datetime wire:model="editing.loan.end_date_time" id="end_date_time" relation="editing.loan" />
                         </x-input.group>
 
                         <!-- Users -->
@@ -176,9 +188,13 @@
 
                         <!-- Equipment -->
                         <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
-                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection iteration="{{ $iteration }}" placeholder="Select Equipment">
-                                @foreach ($avaliableEquipment as $equipment)
-                                    <option value="{{ $equipment->id }}">{{ $equipment->name }} ({{ $equipment->tag }})</option>
+                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected refreshData iteration="{{ $iteration }}" placeholder="Select Equipment">
+                                @foreach ($equipmentList as $equipment)
+                                @if($equipment['avaliable'] == true)
+                                    <option value="{{ $equipment['id'] }}">{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
+                                @else
+                                    <option value="{{ $equipment['id'] }}" disabled>{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
+                                @endif
                                 @endforeach
                             </x-input.select>
                         </x-input.group>
@@ -191,10 +207,10 @@
 
                     <div class="col-md-6">
                         <!-- Shopping Cart -->
-                        <div wire:model="shoppingCart">
-                            <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
-                                @foreach ($shoppingCart as $key => $item)
-                                    <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" assetId="{{ $item['asset_id'] }}" returned="{{ $item['returned'] }}" />
+                        <div wire:model="shoppingCart" iteration="{{ $iteration }}">
+                            <x-shoppingCart.group>
+                                @foreach ($shoppingCart as $key => $asset)
+                                    <x-shoppingCart.cartCard id="{{ $asset['id'] }}" name="{{ $asset['name'] }}" assetId="{{ $asset['tag'] }}" returned="{{ $asset['pivot']['returned'] }}" new="{{ (int)$asset['new'] }}" />
                                 @endforeach
                             </x-shoppingCart.group>
                         </div>
@@ -208,4 +224,10 @@
             </x-slot>
         </x-modal.dialog>
     </form>
+
+    <script>
+        $(document).ready(function() {
+            console.log(@entangle('editing.loan.start_date_time'));
+        })
+    </script>
 </div>

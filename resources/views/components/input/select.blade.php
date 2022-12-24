@@ -42,6 +42,7 @@
         window.livewire.on('showModal', (data) => {
             console.log('Recieved showModal event');
             console.log(data);
+            console.log(@entangle('editing.loan.start_date_time'));
             if(data == &quot;create&quot;){
                 @if($refreshData)
                     $('#{{ $attributes->get('id') }}').select2().empty();
