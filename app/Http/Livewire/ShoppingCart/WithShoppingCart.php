@@ -12,13 +12,13 @@ trait WithShoppingCart
     public $avaliableEquipment = [];            #Equipment that is avaliable for booking
     public $equipmentList = [];                 #A list of all equipment in the system regardless of avaliability
 
-    public function addItemToCart($item, $new)
+    public function addItemToCart($item, $new, $itemType = 'asset')
     {
         //Livewire will convert an collection of eloquent objects into an array of arrays after the first render
         //Therefore lets convert our object into an array first so we dont need to handle both the object and
         //array version of the item
         if(is_object($item)){
-            if(class_basename($item) == "asset"){
+            if(class_basename($item) == "asset" or class_basename($item) == "equipmentIssue"){
                 if($this->checkIfItemInCart($item) == false){
                     $itemAttributeTable = $item->toArray();
                     $itemPivotAttributeTable = [];
@@ -30,10 +30,18 @@ trait WithShoppingCart
                         //New asset so set returned to false
                         $itemAttributeTable['new'] = true;
                         $itemAttributeTable['pivot'] = [];
-                        $itemAttributeTable['pivot']['returned'] = false;
+
+                        if($itemType == "asset"){
+                            $itemAttributeTable['pivot']['returned'] = false;
+                        }elseif($itemType == "issue"){
+                            $itemAttributeTable['pivot']['quantity'] = 1;
+                        }
                     }
 
                     array_push($this->shoppingCart, $itemAttributeTable);
+                }elseif($itemType == 'issue'){
+                    #Increment Counter for selected issue (e.g Monitor Broken)
+                    $this->IncrementItemCounter($item);
                 }
             }else{
                 //TODO: Data is not an eloquent model of type asset
@@ -43,11 +51,32 @@ trait WithShoppingCart
         }
     }
 
-    public function removeItemFromCart($id)
+    private function IncrementItemCounter($item)
+    {
+        foreach($this->shoppingCart as $key => $cartItem){
+            if($cartItem['id'] == $item->id){
+                $this->shoppingCart[$key]['pivot']['quantity'] ++;
+            }
+        }
+    }
+
+    private function updateItemCostInCart()
+    {
+        $this->shoppingCost = 0;
+        foreach($this->shoppingCart as $key => $item){
+            $this->shoppingCost += $item['cost'];
+        }
+    }
+
+    public function removeItemFromCart($id, $decrement = false)
     {
         foreach($this->shoppingCart as $key => $cartItem){
             if($cartItem['id'] == $id){
-                unset($this->shoppingCart[$key]);
+                if($decrement == false or $cartItem['pivot']['quantity'] == 1){
+                    unset($this->shoppingCart[$key]);
+                }else{
+                    $this->shoppingCart[$key]['pivot']['quantity'] -= 1;
+                }
             }
         }
     }
@@ -65,6 +94,7 @@ trait WithShoppingCart
     public function emptyCart()
     {
         $this->shoppingCart = [];
+        $this->shoppingCost = 0;
     }
 
     public function getAllEquipment()
@@ -78,15 +108,16 @@ trait WithShoppingCart
         }
     }
 
-    public function getBookableEquipment()
+    public function getBookableEquipment($startDate, $endDate)
     {
         $this->getAllEquipment();
 
         //dd($this->editing);
 
+        //TODO: Don't hard code the start and end dates
         $validatedDate =[
-            'start_date_time' => carbon::parse($this->editing->loan->start_date_time),
-            'end_date_time' => carbon::parse($this->editing->loan->end_date_time),
+            'start_date_time' => carbon::parse($startDate),
+            'end_date_time' => carbon::parse($endDate),
             'id' =>  $this->loanId ?? -1
         ];
 

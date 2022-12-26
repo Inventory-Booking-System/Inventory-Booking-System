@@ -3,24 +3,27 @@
 namespace App\Http\Livewire\Incident;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
+use App\Http\Livewire\ShoppingCart\WithShoppingCart;
 use App\Models\Incident;
 use App\Models\Location;
+use App\Models\User;
 use App\Models\DistributionGroup;
 use App\Models\EquipmentIssue;
 use App\Models\EquipmentIssueIncident;
+use App\Mail\Incident\IncidentOrder;
 use Carbon\Carbon;
 
 class Incidents extends Component
 {
-    use WithPerPagePagination, WithSorting, WithBulkActions;
+    use WithPerPagePagination, WithSorting, WithBulkActions, WithShoppingCart;
 
     protected $paginationTheme = 'bootstrap';
-
+    protected $queryString = [];
     public $showFilters = false;
-
     public $filters = [
         'search' => '',
         'start_date_time' => null,
@@ -30,14 +33,13 @@ class Incidents extends Component
         'details' => null,
     ];
 
-    public $counter = 0;
-    public Incident $editing;
-    public $equipment_id;
+    public Incident $editing;               #Data relating to the current incident
+    public $equipment_id;                   #Used to trigger update on the select2 dropdown as we cannot use wire:model due to wire:ignore in place
+    public $iteration = 0;                  #Increment anytime we want the Select2 Dropdown to update (as we are using wire:ignore to stop it updating each render)
+    public $modalType;                      #Whether the user is creating/edit a loan so we can get correct wording
 
-    public $shoppingCart = [];
-    public $shoppingCost = 0;
-
-    protected $queryString = [];
+    #TODO: Is this needed?
+    public $counter = 0;                            #???
 
     public function rules()
     {
@@ -45,12 +47,13 @@ class Incidents extends Component
             'editing.start_date_time' => 'required|date',
             'editing.location_id' => 'required|numeric|exists:locations,id',
             'editing.distribution_id' => 'required|numeric|exists:distribution_groups,id',
-            'equipment_id' => 'nullable|numeric|exists:equipment_issues,id',
             'editing.evidence' => 'required|string',
             'editing.details' => 'required|string',
+            'equipment_id' => 'nullable|numeric|exists:equipment_issues,id',
         ];
     }
 
+    #TODO: Is this needed
     public function showModal()
     {
         $this->emit('showModal');
@@ -72,8 +75,10 @@ class Incidents extends Component
     public function makeBlankIncident()
     {
         $this->editing = Incident::make();
-        $this->shoppingCart = [];
-        $this->shoppingCost = 0;
+
+        $equipment_id = null;
+        $this->emptyCart();
+        $this->iteration ++;
     }
 
     public function deleteSelected()
@@ -92,31 +97,37 @@ class Incidents extends Component
 
     public function create()
     {
+        //TODO: Can we re-implement this so form input is saved if modal closed on accident
+        //I Removed for now as it wasen't resetting properly between editing/creating etc
         if ($this->editing->getKey()){
-            $this->makeBlankIncident();
         }
+        $this->makeBlankIncident();
 
-        $this->emit('showModal', 'edit');
+        $this->modalType = "Create";
+        $this->emit('showModal', 'create');
     }
 
     public function edit(Incident $incident)
     {
+        #If the loan is the same as the previous loan that we have stored, just show the modal
+        #in the current state that is was when it was last closed rather than wiping the data.
+        //TODO: Can we re-implement this so form input is saved if modal closed on accident
+        //I Removed for now as it wasen't resetting properly between editing/creating etc
         if($this->editing->isNot($incident)){
-            $this->editing = $incident;
         }
 
-        //Populate Shopping Cart
-        $this->shoppingCart = [];
+        $this->emptyCart();
+        $this->editing = $incident;
+
         $this->editing->issues->each(function ($item, $key) {
-            $this->shoppingCart[$item->id] = [];
-            $this->shoppingCart[$item->id]['quantity'] = $item->pivot->quantity;
-            $this->shoppingCart[$item->id]['title'] = $item->title;
-            $this->shoppingCart[$item->id]['cost'] = $item->cost;
+            $this->addItemToCart($item, false, "issue");
         });
 
-        $this->updateShoppingCartCost();
-
+        //Display the modal to the user
+        $this->modalType = "Edit";
         $this->emit('showModal', 'edit');
+
+        $this->updateItemCostInCart();
     }
 
     public function save()
@@ -130,14 +141,18 @@ class Incidents extends Component
         $incident = Incident::find($this->editing->id);
 
         //Add equipment issues into equipment_issue_incidents
+        //Load assets from loans model into the shopping cart
         $ids = [];
         foreach($this->shoppingCart as $key => $item){
-            array_push($ids, ['incident_id' => $this->editing->id, 'equipment_issue_id' => $key, 'quantity' => $item['quantity']]);
+            $ids[$item['id']] = ['quantity' => $item['pivot']['quantity']];
         }
-
         $incident->issues()->sync($ids);
 
         $this->emit('hideModal', 'edit');
+
+        //Send the email to the user
+        $users = $incident->group->users->pluck('users.email');
+        Mail::to($users)->queue(new IncidentOrder($this->editing, $this->editing->wasRecentlyCreated, $this->shoppingCost));
     }
 
     public function resetFilters()
@@ -148,6 +163,9 @@ class Incidents extends Component
     public function getRowsQueryProperty()
     {
         $query = Incident::query()
+            ->with('issues')
+            ->with('location')
+            ->with('group')
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
             ->when($this->filters['location_id'], fn($query, $location_id) => $query->where('location_id', $location_id))
             ->when($this->filters['distribution_id'], fn($query, $distribution_id) => $query->where('distribution_id', $distribution_id))
@@ -178,34 +196,17 @@ class Incidents extends Component
     {
         $item = EquipmentIssue::find($id);
 
-        if(isset($this->shoppingCart[$item->id])){
-            $this->shoppingCart[$item->id]['quantity'] += 1;
-        }else{
-            $this->shoppingCart[$item->id] = [];
-            $this->shoppingCart[$item->id]['quantity'] = 1;
-            $this->shoppingCart[$item->id]['title'] = $item->title;
-            $this->shoppingCart[$item->id]['cost'] = $item->cost;
-        }
+        $this->addItemToCart($item, true, 'issue');
 
-        $this->updateShoppingCartCost();
+        $this->updateItemCostInCart();
     }
 
     public function removeItem($id)
     {
-        if($this->shoppingCart[$id]['quantity'] == 1){
-            unset($this->shoppingCart[$id]);
-        }elseif($this->shoppingCart[$id]['quantity'] > 1){
-            $this->shoppingCart[$id]['quantity'] -= 1;
-        }
+        $this->removeItemFromCart($id, true);
 
-        $this->updateShoppingCartCost();
+        $this->updateItemCostInCart();
     }
 
-    private function updateShoppingCartCost()
-    {
-        $this->shoppingCost = 0;
-        foreach($this->shoppingCart as $key => $item){
-            $this->shoppingCost += $item['cost'];
-        }
-    }
+
 }

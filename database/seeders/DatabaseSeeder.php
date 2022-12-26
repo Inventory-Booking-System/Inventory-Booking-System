@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         Location::factory()->count(6)->create();
         EquipmentIssue::factory()->count(6)->create();
         DistributionGroup::factory()->count(6)->create();
-        DistributionGroupUser::factory()->count(100)->create();
+        DistributionGroupUser::factory()->count(10)->create();
 
         //User::factory()->count(6)->hasAttached(DistributionGroup::factory())->create();
     }

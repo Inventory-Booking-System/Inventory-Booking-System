@@ -11,7 +11,7 @@ class setup extends Model
 
     protected $fillable = ['title', 'location_id'];
 
-    protected $with = ['loan'];
+    protected $with = ['loan','location'];
 
     /**
      * A setup belongs to a loan

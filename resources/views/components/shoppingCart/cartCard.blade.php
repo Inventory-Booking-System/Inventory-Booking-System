@@ -22,7 +22,7 @@
 				<!-- Quantity -->
 				@isset($quantity)
 					<div style="width: 50px;">
-						<h5 class="fw-normal mb-0">{{ $quantity }}</h5>
+						<h5 class="fw-normal mb-0">x{{ $quantity }}</h5>
 					</div>
 				@endif
 

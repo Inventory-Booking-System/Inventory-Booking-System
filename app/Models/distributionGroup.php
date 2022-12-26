@@ -9,12 +9,11 @@ class distributionGroup extends Model
 {
     use HasFactory;
 
-
     /**
-     * A distribution group can belongs to many users.
+     * A distribution group can have many users.
      */
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->hasMany(DistributionGroupUser::class, 'distribution_group_id');
     }
 }

@@ -13,7 +13,7 @@ use App\Models\Loan;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\Location;
-use App\Mail\Order;
+use App\Mail\Setup\SetupOrder;
 use Carbon\Carbon;
 
 class Setups extends Component
@@ -37,7 +37,7 @@ class Setups extends Component
         'location' => null,
     ];
 
-    public Setup $editing;                           #Data relating to the current setup excluding any assets
+    public Setup $editing;                          #Data relating to the current setup excluding any assets
     public $equipment_id;                           #Used to trigger update on the select2 dropdown as we cannot use wire:model due to wire:ignore in place
     public $iteration = 0;                          #Increment anytime we want the Select2 Dropdown to update (as we are using wire:ignore to stop it updating each render)
     public $modalType;                              #Whether the user is creating/edit a loan so we can get correct wording
@@ -45,14 +45,12 @@ class Setups extends Component
     #TODO: Is this needed?
     public $counter = 0;                            #???
 
-    public $keepModelInstance = true;
-
     public function rules()
     {
         return [
             'editing.loan.user_id' => 'required|integer',
-            'editing.loan.start_date_time' => 'required|date|before:editing.loan.end_date_time|nullable',
-            'editing.loan.end_date_time' => 'required|date|after:editing.loan.start_date_time|nullable',
+            'editing.loan.start_date_time' => 'required|date|before:editing.loan.end_date_time',
+            'editing.loan.end_date_time' => 'required|date|after:editing.loan.start_date_time',
             'editing.loan.details' => 'nullable|string',
             'editing.title' => 'required|string',
             'editing.location_id' => 'required|numeric|exists:locations,id',
@@ -71,8 +69,6 @@ class Setups extends Component
         $this->makeBlankSetup();
         $this->users = User::latest()->get();
         $this->locations = Location::latest()->get();
-
-        //dd($this->editing);
     }
 
     public function updatedFilters($filed)
@@ -82,13 +78,9 @@ class Setups extends Component
 
     public function makeBlankSetup()
     {
-        $this->editing = Setup::make()->setRelation('loan', Loan::make());
         #We must preload an empty loan so @entangle doesnt error
-        //$this->editing->loan = new Loan;
+        $this->editing = Setup::make()->setRelation('loan', Loan::make());
 
-        //dd($this->editing);
-
-        $shoppingCart = [];
         $equipment_id = null;
         $this->emptyCart();
         $this->iteration ++;
@@ -110,13 +102,10 @@ class Setups extends Component
 
     public function create()
     {
-        //dd($this->editing);
-
         //TODO: Can we re-implement this so form input is saved if modal closed on accident
         //I Removed for now as it wasen't resetting properly between editing/creating etc
         if ($this->editing->getKey()){
         }
-
         $this->makeBlankSetup();
 
         $this->modalType = "Create";
@@ -125,8 +114,6 @@ class Setups extends Component
 
     public function edit(Setup $setup)
     {
-        //dd($setup);
-
         #If the loan is the same as the previous loan that we have stored, just show the modal
         #in the current state that is was when it was last closed rather than wiping the data.
         //TODO: Can we re-implement this so form input is saved if modal closed on accident
@@ -147,20 +134,18 @@ class Setups extends Component
         $this->emit('showModal', 'edit');
 
         //Populate equipment dropdown
-        $this->getBookableEquipment();
+        $this->getBookableEquipment($this->editing->loan->start_date_time, $this->editing->loan->end_date_time);
         $this->iteration ++;
     }
 
     public function save()
     {
-
         $this->validate();
 
 
         $this->editing->loan->start_date_time = carbon::parse($this->editing->loan->start_date_time);
         $this->editing->loan->end_date_time = carbon::parse($this->editing->loan->end_date_time);
         $this->editing->loan->status_id = 3;
-
 
         $this->editing->loan->save();
         $this->editing->loan_id = $this->editing->loan->id;
@@ -181,7 +166,7 @@ class Setups extends Component
 
         //Send the email to the user
         $user = User::find($setup->loan->user_id);
-        Mail::to($user->email)->queue(new Order($this->editing->loan, $this->editing->wasRecentlyCreated));
+        Mail::to($user->email)->queue(new SetupOrder($this->editing, $this->editing->wasRecentlyCreated));
     }
 
     public function resetFilters()
@@ -194,6 +179,9 @@ class Setups extends Component
         $query = Setup::query()
             ->with('location')
             ->with('loan.user')
+            ->whereHas('loan', function($query){
+                $query->where('status_id', '=', '3');
+            })
             ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('user_id', $user_id))
             ->when($this->filters['status_id'], fn($query, $status_id) => $query->where('status_id', $status_id))
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
@@ -293,7 +281,7 @@ class Setups extends Component
 
         //Send the email to the user
         $user = User::find($setup->loan->user_id);
-        Mail::to($user->email)->queue(new Order($setup->loan, $this->editing->wasRecentlyCreated));
+        Mail::to($user->email)->queue(new SetupOrder($setup, $this->editing->wasRecentlyCreated));
     }
 
     public function updatedEquipmentId($id)
@@ -316,19 +304,10 @@ class Setups extends Component
         $this->equipment_id = null;
     }
 
-    // public function removeItem($id)
-    // {
-    //     if($this->shoppingCart[$id]['quantity'] == 1){
-    //         unset($this->shoppingCart[$id]);
-    //     }elseif($this->shoppingCart[$id]['quantity'] > 1){
-    //         $this->shoppingCart[$id]['quantity'] -= 1;
-    //     }
-    // }
-
     //TODO: We should also check when start date changes and fetch equipment if end date present
     public function updatedEditingLoanEndDateTime()
     {
-        $this->getBookableEquipment();
+        $this->getBookableEquipment($this->editing->loan->start_date_time, $this->editing->loan->end_date_time);
         $this->iteration ++;
     }
 }

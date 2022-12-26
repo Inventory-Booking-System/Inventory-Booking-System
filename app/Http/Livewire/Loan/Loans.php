@@ -12,7 +12,7 @@ use App\Models\Loan;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\AssetLoan;
-use App\Mail\Order;
+use App\Mail\Loan\LoanOrder;
 use Carbon\Carbon;
 
 class Loans extends Component
@@ -100,8 +100,6 @@ class Loans extends Component
         if ($this->editing->getKey()){
         }
 
-        //dd($this->editing);
-
         $this->makeBlankLoan();
 
         $this->modalType = "Create";
@@ -130,7 +128,7 @@ class Loans extends Component
         $this->emit('showModal', 'edit');
 
         //Populate equipment dropdown
-        $this->getBookableEquipment();
+        $this->getBookableEquipment($this->editing->start_date_time, $this->editing->end_date_time);
         $this->iteration ++;
     }
 
@@ -159,7 +157,7 @@ class Loans extends Component
 
         //Send the email to the user
         $user = User::find($loan->user_id);
-        Mail::to($user->email)->queue(new Order($this->editing, $this->editing->wasRecentlyCreated));
+        Mail::to($user->email)->queue(new LoanOrder($this->editing, $this->editing->wasRecentlyCreated));
     }
 
     public function resetFilters()
@@ -274,7 +272,7 @@ class Loans extends Component
 
         //Send the email to the user
         $user = User::find($loan->user_id);
-        Mail::to($user->email)->queue(new Order($loan, $this->editing->wasRecentlyCreated));
+        Mail::to($user->email)->queue(new LoanOrder($loan, $this->editing->wasRecentlyCreated));
     }
 
     public function updatedEquipmentId($id)
@@ -300,7 +298,7 @@ class Loans extends Component
     //TODO: We should also check when start date changes and fetch equipment if end date present
     public function updatedEditingEndDateTime()
     {
-        $this->getBookableEquipment();
+        $this->getBookableEquipment($this->editing->start_date_time, $this->editing->end_date_time);
         $this->iteration ++;
     }
 }

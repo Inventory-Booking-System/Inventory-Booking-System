@@ -82,12 +82,22 @@
                                 <x-input.checkbox wire:model="selected" value="{{ $incident->id }}"></x-input.checkbox>
                             </x-table.cell>
                             <x-table.cell class="col-3">{{ $incident->start_date_time }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $incident->location_id }}</x-table.cell>
-                            <x-table.cell class="col">{{ $incident->distribution_id }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $incident->location->name }}</x-table.cell>
+                            <x-table.cell class="col">{{ $incident->group->name }}</x-table.cell>
+
+                            <x-table.cell class="col-2">
+                                @foreach($incident->issues as $issue)
+                                    <x-link route="incidents" id="{{ $issue->id }}" value="x{{ $issue->pivot->quantity }} {{ $issue->title }}"></x-link><br>
+                                @endforeach
+                            </x-table.cell>
+
                             <x-table.cell class="col">{{ $incident->evidence }}</x-table.cell>
                             <x-table.cell class="col">{{ $incident->details }}</x-table.cell>
                             <x-table.cell class="col-2">
-                                <x-button.primary wire:click="edit({{ $incident->id }})" ><x-loading wire:target="edit({{ $incident->id }})" />Edit</x-button.primary>
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <x-button.primary wire:click="edit({{ $incident->id }})" ><x-loading wire:target="edit({{ $incident->id }})" />Edit</x-button.primary>
+                                    <x-button.success wire:click="resolve({{ $incident->id }})" ><x-loading wire:target="resolve({{ $incident->id }})" />Resolve</x-button.success>
+                                </div>
                             </x-table.cell>
                         </x-table.row>
                     @empty
@@ -185,7 +195,7 @@
                         <div wire:model="shoppingCart">
                             <x-shoppingCart.group totalCost="£{{ $shoppingCost }}" >
                                 @foreach ($shoppingCart as $key => $item)
-                                    <x-shoppingCart.cartCard id="{{ $key }}" name="{{ $item['title'] }}" cost="{{ $item['cost'] }}" quantity="{{ $item['quantity'] }}" />
+                                    <x-shoppingCart.cartCard id="{{ $item['id'] }}" name="{{ $item['title'] }}" cost="{{ $item['cost'] }}" quantity="{{ $item['pivot']['quantity'] }}" />
                                 @endforeach
                             </x-shoppingCart.group>
                         </div>

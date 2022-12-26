@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Loan;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Loan;
 
-class Order extends Mailable
+class LoanOrder extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -70,6 +70,6 @@ class Order extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.created');
+        return $this->view('emails.loan.order');
     }
 }
