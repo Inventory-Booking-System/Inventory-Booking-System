@@ -7,6 +7,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\SetupController;
+use App\Http\Controllers\LocationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,11 @@ Route::resource('setups', SetupController::class)->except([
 
 //Assets
 Route::resource('assets', AssetController::class)->except([
+    'store', 'update'
+]);
+
+//Locations
+Route::resource('locations', LocationController::class)->except([
     'store', 'update'
 ]);
 

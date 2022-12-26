@@ -1,7 +1,7 @@
 <x-layouts.base>
     <div class="wrapper">
             <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
-                <a href="#" class="navbar-brand"><i class="fa fa-cube"></i>My IT Toolkit</b></a>
+                <a href="#" class="navbar-brand"><i class="fa fa-cube"></i>Inventory Booking System</b></a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -17,6 +17,7 @@
                         <a href="/incidents" class="nav-item nav-link"><i class="fa-solid fa-triangle-exclamation"></i><span>Incidents</span></a>
                         <a href="/assets" class="nav-item nav-link"><i class="fa-solid fa-camera"></i><span>Assets</span></a>
                         <a href="/users" class="nav-item nav-link"><i class="fa fa-users"></i><span>Accounts</span></a>
+                        <a href="/locations" class="nav-item nav-link"><i class="fa fa-house-chimney"></i><span>Locations</span></a>
                         <a href="/settings" class="nav-item nav-link"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
                     </div>
 
