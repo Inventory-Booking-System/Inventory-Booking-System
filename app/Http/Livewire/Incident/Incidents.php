@@ -151,7 +151,7 @@ class Incidents extends Component
         $this->emit('hideModal', 'edit');
 
         //Send the email to the user
-        $users = $incident->group->users->pluck('users.email');
+        $users = $incident->group->users->pluck('email');
         Mail::to($users)->queue(new IncidentOrder($this->editing, $this->editing->wasRecentlyCreated, $this->shoppingCost));
     }
 

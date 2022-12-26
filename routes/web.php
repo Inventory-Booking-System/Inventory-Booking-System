@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\DistributionGroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,11 @@ Route::resource('assets', AssetController::class)->except([
 
 //Locations
 Route::resource('locations', LocationController::class)->except([
+    'store', 'update'
+]);
+
+//Locations
+Route::resource('distributionGroups', DistributionGroupController::class)->except([
     'store', 'update'
 ]);
 

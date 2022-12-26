@@ -11,14 +11,4 @@ class distributionGroupUser extends Model
 
     protected $table = 'distribution_group_user';
     public $timestamps = false;
-
-    protected $with = ['users'];
-
-    /**
-     * A distribution group user belongs to a user.
-     */
-    public function users()
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
 }

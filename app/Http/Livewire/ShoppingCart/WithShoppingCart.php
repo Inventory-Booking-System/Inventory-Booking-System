@@ -4,6 +4,7 @@ namespace App\Http\Livewire\ShoppingCart;
 use Carbon\Carbon;
 use App\Models\Asset;
 use App\Models\Loan;
+use App\Models\User;
 
 trait WithShoppingCart
 {
@@ -18,7 +19,7 @@ trait WithShoppingCart
         //Therefore lets convert our object into an array first so we dont need to handle both the object and
         //array version of the item
         if(is_object($item)){
-            if(class_basename($item) == "asset" or class_basename($item) == "equipmentIssue"){
+            if(class_basename($item) == "asset" or class_basename($item) == "equipmentIssue" or class_basename($item) == "user"){
                 if($this->checkIfItemInCart($item) == false){
                     $itemAttributeTable = $item->toArray();
                     $itemPivotAttributeTable = [];
@@ -108,13 +109,35 @@ trait WithShoppingCart
         }
     }
 
+    public function getAllUsers()
+    {
+        //Fetch all users in the booking system. Assume that everything is avaliable initially
+
+        $this->equipmentList = User::get()->toArray();
+
+        foreach($this->equipmentList as $key => $equipment){
+            $this->equipmentList[$key]['avaliable'] = true;
+        }
+    }
+
+    public function getBookableUsers()
+    {
+        $this->getAllUsers();
+
+        //Mark unavailable users in master equipment list
+        foreach($this->shoppingCart as $cartItem){
+            foreach($this->equipmentList as $key => $equipment){
+                if($cartItem['id'] == $equipment['id']){
+                    $this->equipmentList[$key]['avaliable'] = false;
+                }
+            }
+        }
+    }
+
     public function getBookableEquipment($startDate, $endDate)
     {
         $this->getAllEquipment();
 
-        //dd($this->editing);
-
-        //TODO: Don't hard code the start and end dates
         $validatedDate =[
             'start_date_time' => carbon::parse($startDate),
             'end_date_time' => carbon::parse($endDate),

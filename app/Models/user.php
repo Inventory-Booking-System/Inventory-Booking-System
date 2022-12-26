@@ -20,10 +20,10 @@ class user extends Model
     }
 
     /**
-     * A user can belongs to multiple distribution groups.
+     * A user can belongs to many distribution groups.
      */
     public function distributionGroups()
     {
-        return $this->belongsToMany(DistributionGroup::class);
+        return $this->belongsToMany(DistributionGroup::class, 'distribution_groups_user', 'user_id', 'distribution_group_id');
     }
 }

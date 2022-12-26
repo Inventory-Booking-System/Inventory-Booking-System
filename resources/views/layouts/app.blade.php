@@ -18,6 +18,7 @@
                         <a href="/assets" class="nav-item nav-link"><i class="fa-solid fa-camera"></i><span>Assets</span></a>
                         <a href="/users" class="nav-item nav-link"><i class="fa fa-users"></i><span>Accounts</span></a>
                         <a href="/locations" class="nav-item nav-link"><i class="fa fa-house-chimney"></i><span>Locations</span></a>
+                        <a href="/distributionGroups" class="nav-item nav-link"><i class="fa-sharp fa-solid fa-user-group"></i><span>Distribution Groups</span></a>
                         <a href="/settings" class="nav-item nav-link"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
                     </div>
 

@@ -24,8 +24,21 @@ class DatabaseSeeder extends Seeder
         Location::factory()->count(6)->create();
         EquipmentIssue::factory()->count(6)->create();
         DistributionGroup::factory()->count(6)->create();
-        DistributionGroupUser::factory()->count(10)->create();
 
-        //User::factory()->count(6)->hasAttached(DistributionGroup::factory())->create();
+        $distributionGroups = DistributionGroup::all();
+        $users = User::all();
+
+        foreach ($distributionGroups as $distributionGroup) {
+            $numUsers = rand(2, 3); // Random number of users between 1 and 5
+
+            $usersToAssign = $users->random($numUsers);
+            foreach ($usersToAssign as $user) {
+                DistributionGroupUser::factory()->create([
+                    'distribution_group_id' => $distributionGroup->id,
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
+
     }
 }
