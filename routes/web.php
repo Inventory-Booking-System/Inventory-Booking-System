@@ -9,6 +9,8 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DistributionGroupController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\LogoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,36 +23,41 @@ use App\Http\Controllers\DistributionGroupController;
 |
 */
 
-//Loans
-Route::get('loans/getBookableEquipment', [LoanController::class, 'getBookableEquipment']);
-Route::patch('loans/completeBooking/{id}', [LoanController::class, 'completeBooking']);
-Route::patch('loans/bookOutBooking/{id}', [LoanController::class, 'bookOutBooking']);
-Route::resource('loans', LoanController::class);
+/**
+ * App Routes
+ */
+Route::middleware('auth')->group(function () {
+    //Loans
+    Route::resource('/', LoanController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+    Route::resource('loans', LoanController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
-//Setups
-Route::resource('setups', SetupController::class)->except([
-    'store', 'update'
-]);
+    //Setups
+    Route::resource('setups', SetupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
-//Assets
-Route::resource('assets', AssetController::class)->except([
-    'store', 'update'
-]);
+    //Assets
+    Route::resource('assets', AssetController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
-//Locations
-Route::resource('locations', LocationController::class)->except([
-    'store', 'update'
-]);
+    //Locations
+    Route::resource('locations', LocationController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
-//Locations
-Route::resource('distributionGroups', DistributionGroupController::class)->except([
-    'store', 'update'
-]);
+    //Locations
+    Route::resource('distributionGroups', DistributionGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
-//Accounts
-Route::resource('users', UserController::class);
+    //Users
+    Route::resource('users', UserController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
-//Incidents
-Route::resource('incidents', IncidentController::class)->except([
-    'store', 'update'
-]);
+    //Incidents
+    Route::resource('incidents', IncidentController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+
+    //Logout
+    Route::get('logout', [LogoutController::class, 'index'])->name('logout');
+});
+
+/**
+ * Authentication
+ */
+Route::middleware('guest')->group(function () {
+    //Login
+    Route::get('/', [LoginController::class, 'index']);
+    Route::get('login', [LoginController::class, 'index'])->name('login');
+});
