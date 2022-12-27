@@ -6,6 +6,10 @@ use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Mail\Auth\NewUser;
 use App\Models\User;
 
 class Users extends Component
@@ -34,6 +38,7 @@ class Users extends Component
             'editing.forename' => 'required|string',
             'editing.surname' => 'required|string',
             'editing.email' => 'required|email|unique:users,email,'.$this->editing->id,
+            'editing.has_account' => 'required|boolean',
         ];
     }
 
@@ -92,6 +97,15 @@ class Users extends Component
     public function save()
     {
         $this->validate();
+
+        //If value has been updated to true, we need to generate a one time password and email to user
+        if($this->editing->has_account and $this->editing->isDirty('has_account')){
+            $password = Str::random(8);
+            $this->editing->password = Hash::make($password);
+
+            //Send Email Code
+            Mail::to($this->editing->email)->queue(new NewUser($this->editing, $password));
+        }
 
         $this->editing->save();
 

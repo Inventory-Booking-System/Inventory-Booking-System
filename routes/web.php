@@ -10,6 +10,7 @@ use App\Http\Controllers\SetupController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DistributionGroupController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LogoutController;
 
 /*
@@ -26,7 +27,7 @@ use App\Http\Controllers\LogoutController;
 /**
  * App Routes
  */
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'checkpassword'])->group(function () {
     //Loans
     Route::resource('/', LoanController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('loans', LoanController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
@@ -60,4 +61,9 @@ Route::middleware('guest')->group(function () {
     //Login
     Route::get('/', [LoginController::class, 'index']);
     Route::get('login', [LoginController::class, 'index'])->name('login');
+});
+
+Route::middleware('auth')->group(function () {
+    //Register
+    Route::get('register', [RegisterController::class, 'index'])->name('register');
 });

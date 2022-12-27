@@ -80,6 +80,9 @@
                             <x-table.cell class="col">{{ $user->email }}</x-table.cell>
                             <x-table.cell class="col-2">
                                 <x-button.primary wire:click="edit({{ $user->id }})" ><x-loading wire:target="edit({{ $user->id }})" />Edit</x-button.primary>
+                                @if($user->has_account)
+                                    <x-button.danger wire:click="resetPassword({{ $user->id }})" ><x-loading wire:target="resetPassword({{ $user->id }})" />Reset Password</x-button.danger>
+                                @endif
                             </x-table.cell>
                         </x-table.row>
                     @empty
@@ -137,6 +140,10 @@
 
                 <x-input.group for="email" label="Email" :error="$errors->first('editing.email')">
                     <x-input.text wire:model="editing.email" id="email" />
+                </x-input.group>
+
+                <x-input.group for="has_account" label="Has Account" :error="$errors->first('editing.has_account')">
+                    <x-input.checkbox wire:model="editing.has_account" id="has_account" />
                 </x-input.group>
             </x-slot>
 

@@ -12,9 +12,9 @@ class user extends Authenticatable
 
     protected $guarded = [];
 
-    protected $fillable = ['forename', 'surname', 'email'];
+    protected $fillable = ['forename', 'surname', 'email', 'has_account'];
 
-    protected $hidden = ['password, remember_token'];
+    protected $hidden = ['password,', 'remember_token'];
 
     protected $casts = ['email_verified_at' => 'datetime'];
 

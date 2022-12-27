@@ -9,6 +9,7 @@ use App\Models\Location;
 use App\Models\DistributionGroup;
 use App\Models\DistributionGroupUser;
 use App\Models\EquipmentIssue;
+use App\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +20,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        //Make admin user
+        $user = User::factory()->count(1)->withSuperAdmin()->create()->first();
+        Role::factory()->count(1)->withUser($user)->create();
+
         User::factory()->count(200)->create();
         Asset::factory()->count(100)->create();
         Location::factory()->count(6)->create();
@@ -28,8 +33,12 @@ class DatabaseSeeder extends Seeder
         $distributionGroups = DistributionGroup::all();
         $users = User::all();
 
+        foreach($users as $user){
+            Role::factory()->count(1)->withUser($user)->create();
+        }
+
         foreach ($distributionGroups as $distributionGroup) {
-            $numUsers = rand(2, 3); // Random number of users between 1 and 5
+            $numUsers = rand(2, 3);
 
             $usersToAssign = $users->random($numUsers);
             foreach ($usersToAssign as $user) {
