@@ -13,6 +13,10 @@ class LoginController extends Controller
      */
     public function index()
     {
+        if(!file_exists(storage_path('installed'))){
+            return redirect()->route('LaravelInstaller::welcome');
+        }
+
         return view('auth.login');
     }
 }

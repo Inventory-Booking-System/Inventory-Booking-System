@@ -1,0 +1,135 @@
+<?php
+
+namespace App\Helpers\Install;
+
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+class EnvironmentManager
+{
+    /**
+     * @var string
+     */
+    private $envPath;
+
+    /**
+     * @var string
+     */
+    private $envExamplePath;
+
+    /**
+     * Set the .env and .env.example paths.
+     */
+    public function __construct()
+    {
+        $this->envPath = base_path('.env');
+        $this->envExamplePath = base_path('.env.example');
+    }
+
+    /**
+     * Get the content of the .env file.
+     *
+     * @return string
+     */
+    public function getEnvContent()
+    {
+        if (! file_exists($this->envPath)) {
+            if (file_exists($this->envExamplePath)) {
+                copy($this->envExamplePath, $this->envPath);
+            } else {
+                touch($this->envPath);
+            }
+        }
+
+        return file_get_contents($this->envPath);
+    }
+
+    /**
+     * Get the the .env file path.
+     *
+     * @return string
+     */
+    public function getEnvPath()
+    {
+        return $this->envPath;
+    }
+
+    /**
+     * Get the the .env.example file path.
+     *
+     * @return string
+     */
+    public function getEnvExamplePath()
+    {
+        return $this->envExamplePath;
+    }
+
+    /**
+     * Save the edited content to the .env file.
+     *
+     * @param Request $input
+     * @return string
+     */
+    public function saveFileClassic(Request $input)
+    {
+        $message = trans('installer_messages.environment.success');
+
+        try {
+            file_put_contents($this->envPath, $input->get('envConfig'));
+        } catch (Exception $e) {
+            $message = trans('installer_messages.environment.errors');
+        }
+
+        return $message;
+    }
+
+    /**
+     * Save the form content to the .env file.
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function saveFileWizard(Request $request)
+    {
+        $results = trans('installer_messages.environment.success');
+
+        $envFileData =
+        'APP_NAME="Inventory Booking System"'."\n".
+        'APP_ENV=production'."\n".
+        'APP_KEY='.'base64:'.base64_encode(Str::random(32))."\n".
+        'APP_DEBUG=false'."\n".
+        'APP_URL='.$request->app_url."\n\n".
+        'LOG_CHANNEL=stack'."\n".
+        'LOG_DEPRECATIONS_CHANNEL=null'."\n".
+        'LOG_LEVEL=error'."\n\n".
+        'DB_CONNECTION='.$request->database_connection."\n".
+        'DB_HOST='.$request->database_hostname."\n".
+        'DB_PORT='.$request->database_port."\n".
+        'DB_DATABASE='.$request->database_name."\n".
+        'DB_USERNAME='.$request->database_username."\n".
+        'DB_PASSWORD='.$request->database_password."\n\n".
+        'BROADCAST_DRIVER=log'."\n".
+        'CACHE_DRIVER=file'."\n".
+        'FILESYSTEM_DRIVER=local'."\n".
+        'QUEUE_CONNECTION=database'."\n".
+        'SESSION_DRIVER=file'."\n".
+        'SESSION_LIFETIME=120'."\n\n".
+        'MAIL_MAILER='.$request->mail_driver."\n".
+        'MAIL_HOST='.$request->mail_host."\n".
+        'MAIL_PORT='.$request->mail_port."\n".
+        'MAIL_USERNAME='.$request->mail_username."\n".
+        'MAIL_PASSWORD='.$request->mail_password."\n".
+        'MAIL_ENCRYPTION='.$request->mail_encryption."\n".
+        'MAIL_FROM_ADDRESS='.$request->mail_from_address."\n".
+        'MAIL_FROM_NAME=${APP_NAME}';
+
+        try {
+            file_put_contents($this->envPath, $envFileData);
+        } catch (Exception $e) {
+            $results = trans('installer_messages.environment.errors');
+        }
+
+        return $results;
+    }
+}

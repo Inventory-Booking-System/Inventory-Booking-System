@@ -1,6 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Install\WelcomeController;
+use App\Http\Controllers\Install\EnvironmentController;
+use App\Http\Controllers\Install\RequirementsController;
+use App\Http\Controllers\Install\PermissionsController;
+use App\Http\Controllers\Install\DatabaseController;
+use App\Http\Controllers\Install\FinalController;
+
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\BookingController;
@@ -25,32 +33,36 @@ use App\Http\Controllers\LogoutController;
 */
 
 /**
+ * Installer
+ */
+Route::middleware(['guest', 'canInstall'])->prefix('install')->namespace('Install')->name('LaravelInstaller::')->group(function () {
+    Route::get('/', [WelcomeController::class, 'welcome'])->name('welcome');
+    Route::get('environment', [EnvironmentController::class, 'environmentMenu'])->name('environment');
+    Route::get('environment/wizard', [EnvironmentController::class, 'environmentWizard'])->name('environmentWizard');
+    Route::post('environment/saveWizard', [EnvironmentController::class, 'saveWizard'])->name('environmentSaveWizard');
+
+    Route::get('requirements', [RequirementsController::class, 'requirements'])->name('requirements');
+    Route::get('permissions', [PermissionsController::class, 'permissions'])->name('permissions');
+    Route::get('database', [DatabaseController::class, 'database'])->name('database');
+    Route::get('final', [FinalController::class, 'finish'])->name('final');
+});
+
+
+/**
  * App Routes
  */
 Route::middleware(['auth', 'checkpassword'])->group(function () {
     //Loans
     Route::resource('/', LoanController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+
     Route::resource('loans', LoanController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
-
-    //Setups
     Route::resource('setups', SetupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
-
-    //Assets
     Route::resource('assets', AssetController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
-
-    //Locations
     Route::resource('locations', LocationController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
-
-    //Locations
     Route::resource('distributionGroups', DistributionGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
-
-    //Users
     Route::resource('users', UserController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
-
-    //Incidents
     Route::resource('incidents', IncidentController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
-    //Logout
     Route::get('logout', [LogoutController::class, 'index'])->name('logout');
 });
 
@@ -67,3 +79,8 @@ Route::middleware('auth')->group(function () {
     //Register
     Route::get('register', [RegisterController::class, 'index'])->name('register');
 });
+
+/**
+ * Route all remaining requests
+ */
+Route::middleware('canInstall')->any('{any}', [WelcomeController::class, 'welcome']);
