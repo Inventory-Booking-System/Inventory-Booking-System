@@ -37,12 +37,10 @@ class LoanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show($id, Request $request)
     {
-        $loan = Loan::with('assets')->with('user')->find($id);
-
         return view('loan.show',[
-            'loan' => $loan,
+            'loan' => $id,
         ]);
     }
 }
