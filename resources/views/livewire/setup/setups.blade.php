@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Setups..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Setup</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="Setup" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -83,7 +59,7 @@
                         <x-table.cell>
                             <x-input.checkbox wire:model="selected" value="{{ $setup->loan->id }}"></x-input.checkbox>
                         </x-table.cell>
-                        <x-table.cell class="col-1"><x-link route="loans" id="{{ $setup->loan->id }}" value="#{{ $setup->loan->id }} {{ $setup->title }}"></x-link></x-table.cell>
+                        <x-table.cell class="col-1"><x-link route="setups" id="{{ $setup->loan->id }}" value="#{{ $setup->loan->id }} {{ $setup->title }}"></x-link></x-table.cell>
                         <x-table.cell class="col-2"><x-link route="users" id="{{ $setup->loan->user->id }}" value="{{ $setup->loan->user->forename }} {{ $setup->loan->user->surname }}"></x-link></x-table.cell>
                         <x-table.cell class="col-1">{{ $setup->location->name }}</x-table.cell>
                         <x-table.cell class="col-1">{{ $setup->loan->start_date_time }}</x-table.cell>
@@ -114,14 +90,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($setups->currentPage() * $setups->count()) - ($setups->count() - 1) }} to {{ $setups->currentPage() * $setups->count() }} of {{ $setups->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $setups->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$setups" />
         </div>
     </div>
 

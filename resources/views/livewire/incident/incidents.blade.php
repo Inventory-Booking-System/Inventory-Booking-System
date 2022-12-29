@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Incidents..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Incident</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="Incident" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -33,10 +9,10 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-3">Start Date & Time</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('location_id')" :direction="$sorts['location_id'] ?? null" class="col-1">Location ID</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('distribtuion_id')" :direction="$sorts['distribution_id'] ?? null" class="col">Distribution ID</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('equipment_id')" :direction="$sorts['equipment_id'] ?? null" class="col">Equipment ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-1">Start Date</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('location_id')" :direction="$sorts['location_id'] ?? null" class="col-1">Location</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('distribtuion_id')" :direction="$sorts['distribution_id'] ?? null" class="col-1">Alert</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('equipment_id')" :direction="$sorts['equipment_id'] ?? null" class="col">Issues</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('evidence')" :direction="$sorts['evidence'] ?? null" class="col">Evidence</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col">Details</x-table.heading>
                         <x-table.heading class="col-2"/>
@@ -47,9 +23,9 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.location_id" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.distribution_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.distribution_id" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.equipment_id" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.evidence" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.details" class="form-control-sm p-0" /></x-table.heading>
@@ -81,13 +57,13 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $incident->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3">{{ $incident->start_date_time }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $incident->location->name }}</x-table.cell>
-                            <x-table.cell class="col">{{ $incident->group->name }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $incident->start_date_time }}</x-table.cell>
+                            <x-table.cell class="col-1"><x-link route="locations" id="{{ $incident->location->id }}" value="{{ $incident->location->name }}"></x-link></x-table.cell>
+                            <x-table.cell class="col-1"><x-link route="distributionGroups" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></x-table.cell>
 
-                            <x-table.cell class="col-2">
+                            <x-table.cell class="col">
                                 @foreach($incident->issues as $issue)
-                                    <x-link route="incidents" id="{{ $issue->id }}" value="x{{ $issue->pivot->quantity }} {{ $issue->title }}"></x-link><br>
+                                    <x-link route="equipmentIssues" id="{{ $issue->id }}" value="x{{ $issue->pivot->quantity }} {{ $issue->title }}"></x-link><br>
                                 @endforeach
                             </x-table.cell>
 
@@ -112,14 +88,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($incidents->currentPage() * $incidents->count()) - ($incidents->count() - 1) }} to {{ $incidents->currentPage() * $incidents->count() }} of {{ $incidents->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $incidents->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$incidents" />
         </div>
     </div>
 

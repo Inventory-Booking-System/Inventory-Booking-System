@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Users..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New User</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="User" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -97,14 +73,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($users->currentPage() * $users->count()) - ($users->count() - 1) }} to {{ $users->currentPage() * $users->count() }} of {{ $users->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $users->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$users" />
         </div>
     </div>
 

@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Loans..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Loan</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="Loan" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -35,7 +11,7 @@
                         </x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('id')" :direction="$sorts['id'] ?? null" class="col-1">ID</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-2">User</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('status_id')" :direction="$sorts['status_id'] ?? null" class="col-1">Status ID</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('status_id')" :direction="$sorts['status_id'] ?? null" class="col-1">Status</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-1">Start Date</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('end_date_time')" :direction="$sorts['end_date_time'] ?? null" class="col-1">End Date</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col-2">Details</x-table.heading>
@@ -118,14 +94,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($loans->currentPage() * $loans->count()) - ($loans->count() - 1) }} to {{ $loans->currentPage() * $loans->count() }} of {{ $loans->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $loans->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$loans" />
         </div>
     </div>
 

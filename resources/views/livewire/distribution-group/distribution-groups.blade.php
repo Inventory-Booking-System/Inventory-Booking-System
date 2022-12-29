@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Distribution Groups..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Distribution Group</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="Distribution Group" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -73,7 +49,7 @@
                             <x-table.cell>
                                 <x-input.checkbox wire:model="selected" value="{{ $distributionGroup->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-2">{{ $distributionGroup->name }}</x-table.cell>
+                            <x-table.cell class="col-2"><x-link route="distributionGroups" id="{{ $distributionGroup->id }}" value="{{ $distributionGroup->name }}"></x-link></x-table.cell>
                             <x-table.cell class="col-2">
                                 @foreach($distributionGroup->users as $user)
                                     <x-link route="users" id="{{ $user->id }}" value="{{ $user->forename }} {{ $user->surname }}"></x-link><br>
@@ -97,14 +73,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($distributionGroups->currentPage() * $distributionGroups->count()) - ($distributionGroups->count() - 1) }} to {{ $distributionGroups->currentPage() * $distributionGroups->count() }} of {{ $distributionGroups->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $distributionGroups->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$distributionGroups" />
         </div>
     </div>
 

@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Equipment Issues..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Equipment Issue</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="Equipment Issue" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -73,7 +49,7 @@
                             <x-table.cell>
                                 <x-input.checkbox wire:model="selected" value="{{ $equipmentIssue->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-2">{{ $equipmentIssue->title }}</x-table.cell>
+                            <x-table.cell class="col-2"><x-link route="equipmentIssues" id="{{ $equipmentIssue->id }}" value="{{ $equipmentIssue->title }}"></x-link></x-table.cell>
                             <x-table.cell class="col-2">{{ $equipmentIssue->cost }}</x-table.cell>
                             <x-table.cell class="col">
                                 <div class="btn-group" role="group" aria-label="Basic example">
@@ -93,14 +69,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($equipmentIssues->currentPage() * $equipmentIssues->count()) - ($equipmentIssues->count() - 1) }} to {{ $equipmentIssues->currentPage() * $equipmentIssues->count() }} of {{ $equipmentIssues->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $equipmentIssues->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$equipmentIssues" />
         </div>
     </div>
 

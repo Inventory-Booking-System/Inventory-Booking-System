@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Locations..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Location</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="Location" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -33,8 +9,8 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('name')" :direction="$sorts['name'] ?? null" class="col-6">Name</x-table.heading>
-                        <x-table.heading class="col-6"/>
+                        <x-table.heading sortable wire:click="sortBy('name')" :direction="$sorts['name'] ?? null" class="col-2">Name</x-table.heading>
+                        <x-table.heading class="col"/>
                     </x-table.row>
 
                     @if($showFilters)
@@ -42,8 +18,8 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-6" direction="null"><x-input.text wire:model="filters.name" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-6" direction="null"/>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.name" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col" direction="null"/>
                         </x-table.row>
                     @endif
                 </x-slot>
@@ -71,8 +47,8 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $location->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-6">{{ $location->name }}</x-table.cell>
-                            <x-table.cell class="col-6">
+                            <x-table.cell class="col-2"><x-link route="locations" id="{{ $location->id }}" value="{{ $location->name }}"></x-link></x-table.cell>
+                            <x-table.cell class="col">
                                 <x-button.primary wire:click="edit({{ $location->id }})" ><x-loading wire:target="edit({{ $location->id }})" />Edit</x-button.primary>
                             </x-table.cell>
                         </x-table.row>
@@ -88,14 +64,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($locations->currentPage() * $locations->count()) - ($locations->count() - 1) }} to {{ $locations->currentPage() * $locations->count() }} of {{ $locations->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $locations->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$locations" />
         </div>
     </div>
 

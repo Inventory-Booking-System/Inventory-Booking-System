@@ -1,29 +1,5 @@
 <div>
-    <div class="row">
-        <div class="col-lg-3 mb-3">
-            <x-input.text wire:model="filters.search" placeholder="Search Assets..." />
-        </div>
-
-        <div class="col-lg-1">
-            <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
-        </div>
-
-        <div class="col-lg-1" >
-            <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </x-input.select>
-        </div>
-
-        <div class="col">
-            <x-dropdown class="float-right" label="Actions">
-                <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
-                <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
-            </x-dropdown>
-            <x-button.primary class="float-right mx-2 px-5" wire:click="create">New Asset</x-button.primary>
-        </div>
-    </div>
+    <x-table.controls name="Asset" />
 
     <div class="row">
         <div class="col-lg-12">
@@ -75,7 +51,7 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $asset->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3">{{ $asset->name }}</x-table.cell>
+                            <x-table.cell class="col-3"><x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }}"></x-link></x-table.cell>
                             <x-table.cell class="col-1">{{ $asset->tag }}</x-table.cell>
                             <x-table.cell class="col">{{ $asset->description }}</x-table.cell>
                             <x-table.cell class="col-2">
@@ -94,14 +70,7 @@
                 </x-slot>
             </x-table>
 
-            <div class="row mt-2">
-                <div class="col-lg-3 d-flex flex-row">
-                    <span>Showing {{ ($assets->currentPage() * $assets->count()) - ($assets->count() - 1) }} to {{ $assets->currentPage() * $assets->count() }} of {{ $assets->total() }} results</span>
-                </div>
-                <div class="col-lg-9 d-flex flex-row-reverse">
-                    {{ $assets->links() }}
-                </div>
-            </div>
+            <x-table.pagination-summary :model="$assets" />
         </div>
     </div>
 
@@ -136,7 +105,7 @@
                 </x-input.group>
 
                 <x-input.group for="description" label="Description" :error="$errors->first('editing.description')">
-                    <x-input.text wire:model="editing.description" id="description" />
+                    <x-input.textarea wire:model="editing.description" id="description" />
                 </x-input.group>
             </x-slot>
 
