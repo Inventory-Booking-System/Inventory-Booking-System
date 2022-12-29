@@ -13,7 +13,7 @@ class EquipmentIssueController extends Controller
      */
     public function index()
     {
-        //
+        return view('equipment-issue.equipment-issues');
     }
 
     /**

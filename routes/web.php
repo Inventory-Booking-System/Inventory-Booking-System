@@ -17,6 +17,7 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DistributionGroupController;
+use App\Http\Controllers\EquipmentIssueController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LogoutController;
@@ -60,6 +61,7 @@ Route::middleware(['auth', 'checkpassword'])->group(function () {
     Route::resource('assets', AssetController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('locations', LocationController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('distributionGroups', DistributionGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+    Route::resource('equipmentIssues', EquipmentIssueController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('users', UserController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('incidents', IncidentController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
