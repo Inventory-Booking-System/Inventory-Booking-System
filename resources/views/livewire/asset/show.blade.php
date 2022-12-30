@@ -3,10 +3,13 @@
         <div class="row">
             <div class="card w-100 mr-3">
                 <div class="card-header bg-dark text-center">
-                    <h1>{{ $asset->name }} ({{ $asset->tag }})</h1>
+                    <h1>{{ $asset->name }}</h1>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">{{ $asset->description }}</p>
+                    <strong>Tag:</strong><p class="card-text">{{ $asset->tag }}</p>
+                    <strong>Description:</strong><p class="card-text">{{ $asset->description }}</p>
+                    <strong>Created Date:</strong><p class="card-text">{{ $asset->humanFormat($asset->created_at) }}</p>
+                    <strong>Last Updated:</strong><p class="card-text">{{ $asset->humanFormat($asset->updated_at) }}</p>
                 </div>
             </div>
         </div>

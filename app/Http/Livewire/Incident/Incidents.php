@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Incident;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
@@ -26,6 +27,7 @@ class Incidents extends Component
     public $showFilters = false;
     public $filters = [
         'search' => '',
+        'id' => null,
         'start_date_time' => null,
         'location_id' => null,
         'distribution_id' => null,
@@ -49,6 +51,7 @@ class Incidents extends Component
             'editing.distribution_id' => 'required|numeric|exists:distribution_groups,id',
             'editing.evidence' => 'required|string',
             'editing.details' => 'required|string',
+            'editing.resolution' => 'string|nullable',
             'equipment_id' => 'nullable|numeric|exists:equipment_issues,id',
         ];
     }
@@ -103,7 +106,7 @@ class Incidents extends Component
         }
         $this->makeBlankIncident();
 
-        $this->modalType = "Create";
+        $this->modalType = "create";
         $this->emit('showModal', 'create');
     }
 
@@ -124,10 +127,25 @@ class Incidents extends Component
         });
 
         //Display the modal to the user
-        $this->modalType = "Edit";
+        $this->modalType = "edit";
         $this->emit('showModal', 'edit');
 
         $this->updateItemCostInCart();
+    }
+
+    public function resolve(Incident $incident)
+    {
+        $this->modalType = "resolve";
+
+        $this->emptyCart();
+        $this->editing = $incident;
+
+
+        $this->editing->issues->each(function ($item, $key) {
+            $this->addItemToCart($item, false, "issue");
+        });
+
+        $this->emit('showModal', 'resolve');
     }
 
     public function save()
@@ -135,8 +153,13 @@ class Incidents extends Component
         $this->validate();
 
         $this->editing->start_date_time = carbon::parse($this->editing->start_date_time);
+        $this->editing->created_by = Auth::id();
+        if($this->modalType == "resolve"){
+            $this->editing->status_id = 1;
+        }
 
         $this->editing->save();
+
 
         $incident = Incident::find($this->editing->id);
 
@@ -148,7 +171,7 @@ class Incidents extends Component
         }
         $incident->issues()->sync($ids);
 
-        $this->emit('hideModal', 'edit');
+        $this->emit('hideModal', $this->modalType);
 
         //Send the email to the user
         $users = $incident->group->users->pluck('email');
@@ -163,9 +186,7 @@ class Incidents extends Component
     public function getRowsQueryProperty()
     {
         $query = Incident::query()
-            ->with('issues')
-            ->with('location')
-            ->with('group')
+            ->where('status_id', '=', '0')
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
             ->when($this->filters['location_id'], fn($query, $location_id) => $query->where('location_id', $location_id))
             ->when($this->filters['distribution_id'], fn($query, $distribution_id) => $query->where('distribution_id', $distribution_id))
@@ -207,6 +228,4 @@ class Incidents extends Component
 
         $this->updateItemCostInCart();
     }
-
-
 }

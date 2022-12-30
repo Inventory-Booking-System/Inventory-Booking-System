@@ -1,55 +1,46 @@
-
 <div class="row" >
-    <div class="col-lg-6 justify-content-center">
+    <div class="col-lg-12">
         <div class="row">
-            <div class="col-lg">
-                <h1>Incident #{{ $incidentId }}</h1>
-                <h2>Location: {{ $location_id }}</h2>
-                <h2>Distribution: {{ $distribution_id }}</h2>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg">
-                <p>{{ $evidence }}</p>
-                <p>{{ $details }}</p>
-            </div>
-        </div>
-        <div class="row">
-        </div>
-        <div class="row">
-        </div>
-    </div>
+            <div class="card w-100 mr-3">
+                <div class="card-header {{ $incident->status_id == 0 ? 'bg-danger' : 'bg-success' }} text-center">
+                    <h1>Incident #{{ $incident->id }}</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Start Date: </strong><p class="card-text">{{ $incident->start_date_time }}</p>
+                            <strong>Status:</strong><p class="card-text">{{ $incident->status }}</p>
+                            <strong>Location:</strong><p class="card-text"><x-link route="locations" id="{{ $incident->location->id }}" value="{{ $incident->location->name }}"></x-link></p>
+                            <strong>Alert: <x-link route="distributionGroups" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></strong>
+                            <ul>
+                                @foreach($incident->group->users as $user)
+                                    <li>
+                                        <x-link route="users" id="{{ $user->id }}" value="{{ $user->forename }} {{ $user->surname }}"></x-link>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <strong>Details:</strong><p class="card-text">{{ $incident->details }}</p>
+                            <strong>Created Date:</strong><p class="card-text">{{ $incident->humanFormat($incident->created_at) }}</p>
+                            <strong>Last Updated:</strong><p class="card-text">{{ $incident->humanFormat($incident->updated_at) }}</p>
+                            <strong>Created By:</strong><p class="card-text">{{ $incident->user_created_by->forename }} {{ $incident->user_created_by->surname }}</p>
+                        </div>
 
-    <div class="col-lg-6">
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
-            </tr>
-            </tbody>
-        </table>
+                        <div class="col-6">
+                            <strong>Issues:</strong>
+                            <p class="card-text">
+                                <ul>
+                                    @foreach($incident->issues as $issue)
+                                        <li>
+                                            <x-link route="equipmentIssues" id="{{ $issue->id }}" value="x{{ $issue->pivot->quantity }} {{ $issue->title }} (£{{ $issue->cost }})"></x-link>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <strong>Total Cost: </strong><p class="card-text">TODO</p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

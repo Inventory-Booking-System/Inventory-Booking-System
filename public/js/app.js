@@ -246,6 +246,9 @@ document.addEventListener('livewire:load', function () {
             case "confirm":
                 $('#confirmModal').modal('show');
                 break;
+            case "resolve":
+                $('#resolveModal').modal('show');
+                break;
         }
     });
     Livewire.on('hideModal', param => {
@@ -258,6 +261,9 @@ document.addEventListener('livewire:load', function () {
                 break;
             case "confirm":
                 $('#confirmModal').modal('hide');
+                break;
+            case "resolve":
+                $('#resolveModal').modal('hide');
                 break;
         }
     });

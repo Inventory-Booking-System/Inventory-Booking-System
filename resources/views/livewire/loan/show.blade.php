@@ -28,10 +28,10 @@
                             <strong>Start Date: </strong><p class="card-text">{{ $loan->start_date_time }}</p>
                             <strong>End Date:</strong><p class="card-text">{{ $loan->end_date_time }}</p>
                             <strong>Status:</strong><p class="card-text">{{ $loan->status }}</p>
-                            <strong>Details</strong><p class="card-text">{{ $loan->details }}</p>
-                            <strong>Created Date</strong><p class="card-text">{{ $loan->created_at }}</p>
-                            <strong>Last Updated</strong><p class="card-text">{{ $loan->updated_at }}</p>
-                            <strong>Created By</strong><p class="card-text">John Smith (CHANGE ME)</p>
+                            <strong>Details:</strong><p class="card-text">{{ $loan->details }}</p>
+                            <strong>Created Date:</strong><p class="card-text">{{ $loan->humanFormat($loan->created_at) }}</p>
+                            <strong>Last Updated:</strong><p class="card-text">{{ $loan->humanFormat($loan->updated_at) }}</p>
+                            <strong>Created By:</strong><p class="card-text"><x-link route="users" id="{{ $loan->user->id }}" value="{{ $loan->user_created_by->forename }} {{ $loan->user_created_by->surname }}"></x-link></p>
                         </div>
 
                         <div class="col-6">
@@ -39,7 +39,7 @@
                             <p class="card-text">
                                 <ul>
                                     @foreach($loan->assets as $asset)
-                                        @if ($asset->pivot->returned)
+                                        @if (!$asset->pivot->returned)
                                             <li>
                                                 <x-link route="assets" id="{{ $loan->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
                                             </li>
@@ -47,11 +47,11 @@
                                     @endforeach
                                 </ul>
                             </p>
-                            <strong>Assets Returned:</strong>
+                            <strong>Assets {{ $loan->status_id == 1 ? 'Reserved' : 'Returned' }}:</strong>
                             <p class="card-text">
                                 <ul>
                                     @foreach($loan->assets as $asset)
-                                        @if (!$asset->pivot->returned)
+                                        @if ($asset->pivot->returned)
                                             <li>
                                                 <x-link route="assets" id="{{ $loan->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
                                             </li>

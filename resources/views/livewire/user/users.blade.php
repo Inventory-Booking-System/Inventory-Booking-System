@@ -9,8 +9,7 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('forename')" :direction="$sorts['forename'] ?? null" class="col-3">Forename</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('surname')" :direction="$sorts['surname'] ?? null" class="col-1">Surname</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-3">User</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('email')" :direction="$sorts['email'] ?? null" class="col">Email</x-table.heading>
                         <x-table.heading class="col-2"/>
                     </x-table.row>
@@ -20,8 +19,7 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.forename" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.surname" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.email" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col-2" direction="null"/>
                         </x-table.row>
@@ -51,8 +49,7 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $user->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3">{{ $user->forename }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $user->surname }}</x-table.cell>
+                            <x-table.cell class="col-3"><x-link route="users" id="{{ $user->id }}" value="{{ $user->forename }} {{ $user->surname }}"></x-link></x-table.cell>
                             <x-table.cell class="col">{{ $user->email }}</x-table.cell>
                             <x-table.cell class="col-2">
                                 <x-button.primary wire:click="edit({{ $user->id }})" ><x-loading wire:target="edit({{ $user->id }})" />Edit</x-button.primary>

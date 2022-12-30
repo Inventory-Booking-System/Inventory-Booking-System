@@ -24,10 +24,8 @@ class DistributionGroupController extends Controller
      */
     public function show($id)
     {
-        $distributionGroup = DistributionGroup::find($id);
-
         return view('distribution-group.show',[
-            'distributionGroup' => $distributionGroup
+            'distributionGroup' => $id
         ]);
     }
 }

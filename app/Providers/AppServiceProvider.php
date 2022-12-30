@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,6 +50,11 @@ class AppServiceProvider extends ServiceProvider
             $values->prepend($titles);
 
             return $values->implode("\n");
+        });
+
+        Builder::macro('humanFormat', function($value) {
+            $date = Carbon::parse($value);
+            return $date->format('d M Y H:i');
         });
     }
 }

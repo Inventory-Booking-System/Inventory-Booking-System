@@ -24,6 +24,8 @@ class EquipmentIssueController extends Controller
      */
     public function show($id)
     {
-        //
+        return view('equipment-issue.show',[
+            'equipmentIssue' => $id
+        ]);
     }
 }

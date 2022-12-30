@@ -21,6 +21,8 @@ class CreateIncidentsTable extends Migration
             $table->integer('distribution_id')->references('id')->on('distibution_groups');
             $table->text('evidence');
             $table->text('details');
+            $table->text('resolution')->nullable();
+            $table->integer('created_by');
             $table->timestamps();
         });
     }

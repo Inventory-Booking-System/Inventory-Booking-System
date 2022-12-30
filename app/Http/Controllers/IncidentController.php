@@ -29,10 +29,8 @@ class IncidentController extends Controller
      */
     public function show($id)
     {
-        $incident = Incident::where('id', $id)->with('issues')->first();
-
         return view('incident.show',[
-            'incident' => $incident
+            'incident' => $id
         ]);
     }
 }

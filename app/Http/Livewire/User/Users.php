@@ -22,8 +22,7 @@ class Users extends Component
 
     public $filters = [
         'search' => '',
-        'forename' => null,
-        'surname' => null,
+        'user_id' => null,
         'email' => null,
     ];
 
@@ -120,8 +119,7 @@ class Users extends Component
     public function getRowsQueryProperty()
     {
         $query = User::query()
-            ->when($this->filters['forename'], fn($query, $forename) => $query->where('forename', $forename))
-            ->when($this->filters['surname'], fn($query, $surname) => $query->where('surname', $surname))
+            ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('user_id', $user_id))
             ->when($this->filters['email'], fn($query, $email) => $query->where('email', $email))
             ->when($this->filters['search'], fn($query, $search) => $query->where('forename', 'like', '%'.$search.'%'));
 

@@ -26,6 +26,8 @@ class SetupController extends Controller
      */
     public function show($id)
     {
-        //
+        return view('setup.show',[
+            'setup' => $id,
+        ]);
     }
 }

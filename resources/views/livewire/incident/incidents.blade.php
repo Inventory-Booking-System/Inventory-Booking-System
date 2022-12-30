@@ -9,6 +9,7 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('id')" :direction="$sorts['id'] ?? null" class="col-1">ID</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-1">Start Date</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('location_id')" :direction="$sorts['location_id'] ?? null" class="col-1">Location</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('distribtuion_id')" :direction="$sorts['distribution_id'] ?? null" class="col-1">Alert</x-table.heading>
@@ -23,6 +24,7 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
+                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.id" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.location_id" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.distribution_id" class="form-control-sm p-0" /></x-table.heading>
@@ -57,6 +59,7 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $incident->id }}"></x-input.checkbox>
                             </x-table.cell>
+                            <x-table.cell class="col-1"><x-link route="incidents" id="{{ $incident->id }}" value="#{{ $incident->id }}"></x-link></x-table.cell>
                             <x-table.cell class="col-1">{{ $incident->start_date_time }}</x-table.cell>
                             <x-table.cell class="col-1"><x-link route="locations" id="{{ $incident->location->id }}" value="{{ $incident->location->name }}"></x-link></x-table.cell>
                             <x-table.cell class="col-1"><x-link route="distributionGroups" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></x-table.cell>
@@ -104,6 +107,25 @@
             <x-slot name="footer">
                 <x-button.secondary wire:click="$emit('hideModal','confirm')">Cancel</x-button.secondary>
                 <x-button.danger type="submit">Delete</x-button.primary>
+            </x-slot>
+        </x-modal.dialog>
+    </form>
+
+    <!-- Resolve Modal -->
+    <form wire:submit.prevent="save">
+        <x-modal.dialog type="resolveModal">
+            <x-slot name="title">Resolve Incident #</x-slot>
+
+            <x-slot name="content">
+                <!-- Details -->
+                <x-input.group for="resolution" label="Resolution" :error="$errors->first('editing.resolution')">
+                    <x-input.textarea wire:model="editing.resolution" id="resolution" rows="8" />
+                </x-input.group>
+            </x-slot>
+
+            <x-slot name="footer">
+                <x-button.secondary wire:click="$emit('hideModal','resolve')">Cancel</x-button.secondary>
+                <x-button.success type="submit">Resolve</x-button.primary>
             </x-slot>
         </x-modal.dialog>
     </form>

@@ -26,10 +26,8 @@ class LocationController extends Controller
      */
     public function show($id)
     {
-        $location = Location::find($id);
-
         return view('location.show',[
-            'location' => $location
+            'location' => $id
         ]);
     }
 }

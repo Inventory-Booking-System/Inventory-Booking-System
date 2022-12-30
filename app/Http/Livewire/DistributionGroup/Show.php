@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Http\Livewire\User;
+namespace App\Http\Livewire\DistributionGroup;
 
 use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
-use App\Models\User;
-use App\Models\Loan;
-use App\Models\Setup;
+use App\Models\DistributionGroup;
+use App\Models\Incident;
 
 class Show extends Component
 {
     use WithPerPagePagination, WithSorting;
 
-    public $user;
+    public $distributionGroup;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -35,13 +34,13 @@ class Show extends Component
 
     public function getRowsQueryProperty()
     {
-        $user = $this->user;
+        $distributionGroup = $this->distributionGroup;
 
-        $query = Loan::query()
-            ->whereHas('user', function($query) use($user){
-                $query->where('user_id', '=', $user->id);
+        $query = Incident::query()
+            ->whereHas('group', function($query) use($distributionGroup){
+                $query->where('distribution_id', '=', $distributionGroup->id);
             })
-            ->when($this->filters['search'], fn($query, $search) => $query->where('forename', 'like', '%'.$search.'%'));
+            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'));
 
         return $this->applySorting($query);
     }
@@ -58,13 +57,13 @@ class Show extends Component
 
     public function render()
     {
-        return view('livewire.user.show', [
-            'loans' => $this->rows,
+        return view('livewire.distribution-group.show', [
+            'incidents' => $this->rows,
         ]);
     }
 
-    public function mount($user)
+    public function mount($distributionGroup)
     {
-        $this->user = User::find($user);
+        $this->distributionGroup = DistributionGroup::find($distributionGroup);
     }
 }

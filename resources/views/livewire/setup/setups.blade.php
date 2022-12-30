@@ -59,9 +59,9 @@
                         <x-table.cell>
                             <x-input.checkbox wire:model="selected" value="{{ $setup->loan->id }}"></x-input.checkbox>
                         </x-table.cell>
-                        <x-table.cell class="col-1"><x-link route="setups" id="{{ $setup->loan->id }}" value="#{{ $setup->loan->id }} {{ $setup->title }}"></x-link></x-table.cell>
+                        <x-table.cell class="col-1"><x-link route="setups" id="{{ $setup->id }}" value="#{{ $setup->id }} {{ $setup->title }}"></x-link></x-table.cell>
                         <x-table.cell class="col-2"><x-link route="users" id="{{ $setup->loan->user->id }}" value="{{ $setup->loan->user->forename }} {{ $setup->loan->user->surname }}"></x-link></x-table.cell>
-                        <x-table.cell class="col-1">{{ $setup->location->name }}</x-table.cell>
+                        <x-table.cell class="col-1"><x-link route="locations" id="{{ $setup->location->id }}" value="{{ $setup->location->name }}"></x-link></x-table.cell>
                         <x-table.cell class="col-1">{{ $setup->loan->start_date_time }}</x-table.cell>
                         <x-table.cell class="col-1">{{ $setup->loan->end_date_time }}</x-table.cell>
                         <x-table.cell class="col-2">{{ $setup->loan->details }}</x-table.cell>

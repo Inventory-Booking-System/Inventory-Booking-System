@@ -9,9 +9,9 @@ class incident extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['start_date_time', 'location_id', 'distribution_id', 'evidence', 'details'];
+    protected $fillable = ['start_date_time', 'location_id', 'distribution_id', 'evidence', 'details', 'status_id'];
 
-    protected $with = ['issues', 'group', 'location'];
+    protected $with = ['issues', 'group', 'location', 'user_created_by'];
 
     /**
      * Get the issues for the incident.
@@ -37,11 +37,22 @@ class incident extends Model
         return $this->belongsTo(DistributionGroup::class, 'distribution_id', 'id');
     }
 
-    // /**
-    //  * Get all the users that the indident has been assigned too
-    //  */
-    // public function groups()
-    // {
-    //     return $this->hasManyThrough(DistributionGroup::class, DistributionGroupUser::class, 'id', 'distribution_group_id', 'distribution_id');
-    // }
+    /**
+     * Get the user who created the loan.
+     */
+    public function user_created_by()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Convert status id to name
+     */
+    public function getStatusAttribute()
+    {
+        return [
+            '0' => 'Outstanding',
+            '1' => 'Resolved',
+        ][$this->status_id] ?? 'Error';
+    }
 }

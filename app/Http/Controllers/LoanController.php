@@ -37,7 +37,7 @@ class LoanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $request)
+    public function show($id)
     {
         return view('loan.show',[
             'loan' => $id,

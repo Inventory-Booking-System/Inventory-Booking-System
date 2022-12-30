@@ -12,7 +12,7 @@ class Show extends Component
 {
     use WithPerPagePagination, WithSorting;
 
-    public Asset $asset;
+    public $asset;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -64,6 +64,6 @@ class Show extends Component
 
     public function mount($asset)
     {
-        $this->asset = Asset::find($asset->id);
+        $this->asset = Asset::find($asset);
     }
 }

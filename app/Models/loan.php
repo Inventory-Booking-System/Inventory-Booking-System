@@ -10,9 +10,9 @@ class loan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details'];
+    protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details', 'created_by'];
 
-    protected $with = ['assets', 'user'];
+    protected $with = ['assets', 'user', 'user_created_by'];
 
     /**
      * An asset can belong to many loan
@@ -23,11 +23,19 @@ class loan extends Model
     }
 
     /**
-     * Get the user for the loan.
+     * Get the user who requested the loan.
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the user who created the loan.
+     */
+    public function user_created_by()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Loan;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
@@ -140,6 +141,7 @@ class Loans extends Component
         //Update database
         $this->editing->start_date_time = carbon::parse($this->editing->start_date_time);
         $this->editing->end_date_time = carbon::parse($this->editing->end_date_time);
+        $this->editing->created_by = Auth::id();
 
         $this->editing->push();
 

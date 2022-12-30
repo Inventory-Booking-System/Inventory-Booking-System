@@ -22,15 +22,12 @@ class AssetController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $request)
+    public function show($id)
     {
-        $asset = Asset::find($id);
-
         return view('asset.show',[
-            'asset' => $asset
+            'asset' => $id
         ]);
     }
 }
