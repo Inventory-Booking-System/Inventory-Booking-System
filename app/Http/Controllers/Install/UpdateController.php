@@ -10,10 +10,11 @@ namespace App\Http\Controllers\Install;
 use Illuminate\Routing\Controller;
 use App\Helpers\Install\DatabaseManager;
 use App\Helpers\Install\InstalledFileManager;
+use App\Helpers\Install\MigrationsHelper;
 
 class UpdateController extends Controller
 {
-    use App\Helpers\Install\MigrationsHelper;
+    //use App\Helpers\Install\MigrationsHelper;
 
     /**
      * Display the updater welcome page.

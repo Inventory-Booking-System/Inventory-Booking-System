@@ -21,6 +21,9 @@ use App\Http\Controllers\EquipmentIssueController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AppSettingsController;
+use App\Http\Controllers\SignageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +69,8 @@ Route::middleware(['auth', 'checkpassword'])->group(function () {
     Route::resource('incidents', IncidentController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
     Route::get('logout', [LogoutController::class, 'index'])->name('logout');
+    Route::get('profile', [ProfileController::class, 'index'])->name('profile');
+    Route::get('settings', [AppSettingsController::class, 'index'])->name('settings');
 });
 
 /**
@@ -85,4 +90,5 @@ Route::middleware('auth')->group(function () {
 /**
  * Route all remaining requests
  */
+Route::get('signage', [SignageController::class, 'index'])->name('signage');
 Route::middleware('canInstall')->any('{any}', [WelcomeController::class, 'welcome']);

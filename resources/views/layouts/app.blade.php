@@ -27,7 +27,7 @@
                     <div class="nav-item dropdown">
                         <a href="#" data-toggle="dropdown" class="nav-item nav-link dropdown-toggle user-action">{{ Auth::user()->forename }} {{ Auth::user()->surname }}<b class="caret"></b></a>
                         <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item"><i class="fa-solid fa-user"></i> Profile</a>
+                            <a href="/profile" class="dropdown-item"><i class="fa-solid fa-user"></i> Profile</a>
                             <div class="divider dropdown-divider"></div>
                             <a href="{{ route('logout') }}" class="dropdown-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
                         </div>

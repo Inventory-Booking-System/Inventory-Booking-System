@@ -12,6 +12,7 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.10",
+        "spatie/laravel-settings": "^2.6",
         "yajra/laravel-datatables-oracle": "^9.19"
     },
     "require-dev": {
