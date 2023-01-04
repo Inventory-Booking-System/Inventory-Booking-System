@@ -19,36 +19,35 @@ document.addEventListener('livewire:load', function () {
         toastr[param['type']](param['message']);
     });
     Livewire.on('showModal', param => {
-        console.log("FIRED");
-        console.log('#' + param + 'Modal');
-        console.log(param);
-        $('#' + param + 'Modal').modal('show');
+        switch (param){
+            case "create":
+                $('#editModal').modal('show');
+                break;
+            case "edit":
+                $('#editModal').modal('show');
+                break;
+            case "confirm":
+                $('#confirmModal').modal('show');
+                break;
+            case "resolve":
+                $('#resolveModal').modal('show');
+                break;
+        }
     });
     Livewire.on('hideModal', param => {
-        $('#' + param + 'Modal').modal('hide');
+        switch (param){
+            case "create":
+                $('#editModal').modal('hide');
+                break;
+            case "edit":
+                $('#editModal').modal('hide');
+                break;
+            case "confirm":
+                $('#confirmModal').modal('hide');
+                break;
+            case "resolve":
+                $('#resolveModal').modal('hide');
+                break;
+        }
     });
 });
-
-// let modalsElement = document.getElementById('laravel-livewire-modals');
-
-// modalsElement.addEventListener('hidden.bs.modal', () => {
-//     Livewire.emit('resetModal');
-// });
-
-// $( document ).ready(function() {
-//     Livewire.on('showModal', () => {
-//         let modal = Modal.getInstance(modalsElement);
-
-//         if (!modal) {
-//             modal = new Modal(modalsElement);
-//         }
-
-//         modal.show();
-//     });
-
-//     Livewire.on('hideModal', () => {
-//         let modal = Modal.getInstance(modalsElement);
-
-//         modal.hide();
-//     });
-// })

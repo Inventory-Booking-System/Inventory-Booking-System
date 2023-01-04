@@ -10,7 +10,6 @@ use App\Models\Loan;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\AssetLoan;
-use DataTables;
 use Carbon\Carbon;
 
 class LoanController extends Controller
