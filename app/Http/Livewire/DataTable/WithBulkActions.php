@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Livewire\DataTable;
-use Illuminate\Support\Facades\Log;
 
 trait WithBulkActions
 {
