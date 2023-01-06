@@ -49,7 +49,7 @@
 				@endif
 
 				<!-- Remove from cart -->
-				<a href="#" wire:click='removeItem({{ $id }})' style="color: #cecece;">
+				<a href="#" wire:key="cart-remove-{{ $id }}" wire:click='removeItem({{ $id }})' style="color: #cecece;">
 					<i class="fas fa-trash-alt"></i>
 					<x-loading wire:target="removeItem({{ $id }})" />
 				</a>
