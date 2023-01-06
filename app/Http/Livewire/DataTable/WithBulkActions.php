@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Livewire\DataTable;
+use Illuminate\Support\Facades\Log;
 
 trait WithBulkActions
 {
@@ -22,6 +23,8 @@ trait WithBulkActions
     public function updatedSelectPage($value)
     {
         if ($value) return $this->selectPageRows();
+        
+        $this->selectAll = false;
 
         $this->selected = [];
     }
