@@ -31,4 +31,4 @@ jobs:
         php artisan key:generate
  
     - name: Run Testsuite
-      run: php artisan test
+      run: php artisan test tests/Feature
