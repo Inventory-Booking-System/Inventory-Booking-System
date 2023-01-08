@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\DistributionGroupUser;
 
-class distributionGroup extends Model
+class DistributionGroup extends Model
 {
     use HasFactory;
 

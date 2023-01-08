@@ -10,7 +10,7 @@ use App\Models\User;
 use Livewire\Livewire;
 use App\Models\Role;
 
-class LoginTest extends TestCase
+class LoginPageTest extends TestCase
 {
     use RefreshDatabase;
 
