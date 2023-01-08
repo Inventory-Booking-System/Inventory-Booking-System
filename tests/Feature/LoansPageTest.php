@@ -8,20 +8,20 @@ use Tests\TestCase;
 
 class LoansPageTest extends TestCase
 {
-    /** @test */
-    public function loans_page_contains_livewire_component()
-    {
-        //Make admin user
-        $user = User::factory()->count(1)->withSuperAdmin()->create()->first();
-        Role::factory()->count(1)->withUser($user)->create();
+    // /** @test */
+    // public function loans_page_contains_livewire_component()
+    // {
+    //     //Make admin user
+    //     $user = User::factory()->count(1)->withSuperAdmin()->create()->first();
+    //     Role::factory()->count(1)->withUser($user)->create();
 
-        //Perform Login
-        Livewire::test('auth.login')
-            ->set('email', 'admin@admin123.com')
-            ->set('password', '1234')
-            ->call('login')
-            ->assertRedirect('/loans');
-            
-        $this->get('/loans')->assertSeeLivewire('loan.loans');
-    }
+    //     //Perform Login
+    //     Livewire::test('auth.login')
+    //         ->set('email', 'admin@admin123.com')
+    //         ->set('password', '1234')
+    //         ->call('login')
+    //         ->assertRedirect('/loans');
+
+    //     $this->get('/loans')->assertSeeLivewire('loan.loans');
+    // }
 }

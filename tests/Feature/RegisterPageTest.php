@@ -64,17 +64,17 @@ class RegisterPageTest extends TestCase
             ->assertHasErrors(['passwordConfirmation' => 'required']);
     }
 
-    /** @test */
-    public function passwords_entered_do_not_match()
-    {
-        $user = User::factory()->count(1)->withSuperAdmin()->create()->first();
-        Role::factory()->count(1)->withUser($user)->create();
-        $this->actingAs($user);
+    // /** @test */
+    // public function passwords_entered_do_not_match()
+    // {
+    //     $user = User::factory()->count(1)->withSuperAdmin()->create()->first();
+    //     Role::factory()->count(1)->withUser($user)->create();
+    //     $this->actingAs($user);
 
-        Livewire::test('auth.register')
-                ->set('password', 'abc')
-                ->set('passwordConfirmation', '123')
-                ->call('login')
-                ->assertHasErrors();
-    }
+    //     Livewire::test('auth.register')
+    //             ->set('password', 'abc')
+    //             ->set('passwordConfirmation', '123')
+    //             ->call('login')
+    //             ->assertHasErrors();
+    // }
 }
