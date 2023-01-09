@@ -38,4 +38,16 @@ class UserFactory extends Factory
             'password' => Hash::make('1234'),
         ]);
     }
+
+    public function withPasswordSet()
+    {
+        return $this->state([
+            'forename' => 'Super',
+            'surname' => 'Admin',
+            'email' => "admin@admin123.com",
+            'role_id' => 1,
+            'password' => Hash::make('1234'),
+            'password_set' => 1,
+        ]);
+    }
 }
