@@ -18,37 +18,29 @@ trait WithShoppingCart
         //Livewire will convert an collection of eloquent objects into an array of arrays after the first render
         //Therefore lets convert our object into an array first so we dont need to handle both the object and
         //array version of the item
-        if(is_object($item)){
-            if(class_basename($item) == "asset" or class_basename($item) == "equipmentIssue" or class_basename($item) == "user"){
-                if($this->checkIfItemInCart($item) == false){
-                    $itemAttributeTable = $item->toArray();
-                    $itemPivotAttributeTable = [];
+        if($this->checkIfItemInCart($item) == false){
+            $itemAttributeTable = $item->toArray();
+            $itemPivotAttributeTable = [];
 
-                    if(isset($item->pivot)){
-                        $itemAttributeTable['pivot'] = $item->pivot->toArray();
-                        $itemAttributeTable['new'] = false;
-                    }else{
-                        //New asset so set returned to false
-                        $itemAttributeTable['new'] = true;
-                        $itemAttributeTable['pivot'] = [];
-
-                        if($itemType == "asset"){
-                            $itemAttributeTable['pivot']['returned'] = false;
-                        }elseif($itemType == "issue"){
-                            $itemAttributeTable['pivot']['quantity'] = 1;
-                        }
-                    }
-
-                    array_push($this->shoppingCart, $itemAttributeTable);
-                }elseif($itemType == 'issue'){
-                    #Increment Counter for selected issue (e.g Monitor Broken)
-                    $this->IncrementItemCounter($item);
-                }
+            if(isset($item->pivot)){
+                $itemAttributeTable['pivot'] = $item->pivot->toArray();
+                $itemAttributeTable['new'] = false;
             }else{
-                //TODO: Data is not an eloquent model of type asset
-            };
-        }else{
-            //TODO: Data is not an object
+                //New asset so set returned to false
+                $itemAttributeTable['new'] = true;
+                $itemAttributeTable['pivot'] = [];
+
+                if($itemType == "asset"){
+                    $itemAttributeTable['pivot']['returned'] = false;
+                }elseif($itemType == "issue"){
+                    $itemAttributeTable['pivot']['quantity'] = 1;
+                }
+            }
+
+            array_push($this->shoppingCart, $itemAttributeTable);
+        }elseif($itemType == 'issue'){
+            #Increment Counter for selected issue (e.g Monitor Broken)
+            $this->IncrementItemCounter($item);
         }
     }
 
