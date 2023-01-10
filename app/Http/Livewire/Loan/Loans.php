@@ -48,10 +48,10 @@ class Loans extends Component
         return [
             'editing.user_id' => 'required|integer',
             'editing.status_id' => 'required|integer|in:0,1',
-            'editing.start_date_time' => 'required|date|before:editing.end_date_time|nullable',
-            'editing.end_date_time' => 'required|date|after:editing.start_date_time|nullable',
+            'editing.start_date_time' => 'required|date|before:editing.end_date_time',
+            'editing.end_date_time' => 'required|date|after:editing.start_date_time',
             'editing.details' => 'nullable|string',
-            'equipment_id' => 'nullable|numeric|exists:assets,id',
+            'equipment_id' => 'nullable|integer|exists:assets,id',
         ];
     }
 
