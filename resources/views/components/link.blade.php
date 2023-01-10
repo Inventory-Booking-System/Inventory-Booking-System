@@ -4,4 +4,4 @@
     'value' => null,
 ])
 
-<a href="/{{ $route }}/{{ $id }}">{{ $value }}</a>
+<a href="/{{ $route }}/{{ $id }}" {{ $attributes }} >{{ $value }}</a>
