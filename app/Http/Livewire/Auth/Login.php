@@ -19,7 +19,7 @@ class Login extends Component
     {
         $credentials = $this->validate();
 
-        return auth()->attempt($credentials) ? redirect()->intended('/loans') : $this->addError('email', trans('auth.failed'));
+        return auth()->attempt($credentials) ? redirect()->intended('/loans') : $this->addError('password', trans('auth.failed'));
     }
 
     public function render()
