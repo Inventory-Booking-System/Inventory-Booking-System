@@ -82,6 +82,6 @@ class LoginPageTest extends TestCase
             ->set('email', 'admin@admin123.com')
             ->set('password', 'letmein')
             ->call('login')
-            ->assertHasErrors(['email']);
+            ->assertHasErrors(['password']);
     }
 }
