@@ -27,6 +27,8 @@ class Signage extends Component
 
     public function render()
     {
+        $this->getTodaysLoans();
+
         return view('livewire.signage.signage');
     }
 }
