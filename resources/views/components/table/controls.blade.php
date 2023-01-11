@@ -24,6 +24,6 @@
             <x-dropdown.item wire:click="exportSelected">Export</x-dropdown.item>
             <x-dropdown.item wire:click="$emit('showModal','confirm')">Delete</x-dropdown.item>
         </x-dropdown>
-        <x-button.primary class="float-right mx-2 px-5" wire:click="create">New {{ $name }}s</x-button.primary>
+        <x-button.primary class="float-right mx-2 px-5" wire:click="create">New {{ $name }}</x-button.primary>
     </div>
 </div>
