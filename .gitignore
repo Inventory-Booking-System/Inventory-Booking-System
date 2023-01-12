@@ -16,3 +16,4 @@ yarn-error.log
 /.vscode
 /storage/installed
 /storage/dotenv-editor
+/.env.testing

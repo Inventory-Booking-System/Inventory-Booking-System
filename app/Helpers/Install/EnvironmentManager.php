@@ -116,7 +116,7 @@ class EnvironmentManager
         'DB_PASSWORD='.$request->database_password."\n\n".
         'BROADCAST_DRIVER=log'."\n".
         'CACHE_DRIVER=file'."\n".
-        'FILESYSTEM_DRIVER=local'."\n".
+        'FILESYSTEM_DISK=local'."\n".
         'QUEUE_CONNECTION=database'."\n".
         'SESSION_DRIVER=file'."\n".
         'SESSION_LIFETIME=120'."\n\n".
