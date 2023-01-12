@@ -36,7 +36,7 @@
                             <div class="row">
                                 <div class="col-6">
                                     <ul style="list-style-type: none;" class="text-center">
-                                        @for ($i = 0; $i < $loan->assets->count() / 2; $i++)
+                                        @for ($i = 0; $i < $loan->assets->count(); $i+=2)
                                             @if ($loan->assets[$i]->pivot->returned == 1)
                                                 <li style="text-decoration: line-through;">{{ $loan->assets[$i]->name }} ({{ $loan->assets[$i]->tag }})</li>
                                             @else
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="col-6">
                                     <ul style="list-style-type: none;" class="text-center">
-                                        @for ($i = $loan->assets->count() / 2; $i < $loan->assets->count(); $i++)
+                                        @for ($i = 1; $i < $loan->assets->count(); $i+=2)
                                             @if ($loan->assets[$i]->pivot->returned == 1)
                                                 <li style="text-decoration: line-through;">{{ $loan->assets[$i]->name }} ({{ $loan->assets[$i]->tag }})</li>
                                             @else
