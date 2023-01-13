@@ -127,7 +127,16 @@ class EnvironmentManager
         'MAIL_PASSWORD='.$request->mail_password."\n".
         'MAIL_ENCRYPTION='.$request->mail_encryption."\n".
         'MAIL_FROM_ADDRESS='.$request->mail_from_address."\n".
-        'MAIL_FROM_NAME=${APP_NAME}';
+        'MAIL_FROM_NAME=${APP_NAME}'."\n\n".
+        'BACKUP_FAILED_NOTIFICATION=mail'."\n".
+        'UNHEALTHY_BACKUP_WAS_NOT_FOUND_NOTIFICATION=mail'."\n".
+        'CLEANUP_HAS_FAILED_NOTIFICATION=mail'."\n".
+        'BACKUP_WAS_SUCCESSFUL_NOTIFICATION=mail'."\n".
+        'HEALTHY_BACKUP_WAS_FOUND_NOTIFICATION=mail'."\n".
+        'CLEANUP_WAS_SUCCESSFUL_NOTIFICATION=mail'."\n".
+        'NOTIFICATION_EMAIL='."\n".
+        'NOTIFICATION_OVERDUE_EMAILS=1'."\n".
+        'NOTIFICATION_SETUP_EMAILS=1';
 
         try {
             file_put_contents($this->envPath, $envFileData);
