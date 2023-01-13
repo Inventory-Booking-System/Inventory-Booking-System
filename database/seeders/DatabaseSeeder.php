@@ -10,6 +10,7 @@ use App\Models\DistributionGroup;
 use App\Models\DistributionGroupUser;
 use App\Models\EquipmentIssue;
 use App\Models\Role;
+use App\Models\Loan;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,8 +22,8 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //Make admin user
-        $user = User::factory()->count(1)->withSuperAdmin()->create()->first();
-        Role::factory()->count(1)->withUser($user)->create();
+        $userAdmin = User::factory()->count(1)->withSuperAdmin()->create()->first();
+        Role::factory()->count(1)->withUser($userAdmin)->create();
 
         User::factory()->count(200)->create();
         Asset::factory()->count(100)->create();
@@ -35,6 +36,7 @@ class DatabaseSeeder extends Seeder
 
         foreach($users as $user){
             Role::factory()->count(1)->withUser($user)->create();
+            Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->create();
         }
 
         foreach ($distributionGroups as $distributionGroup) {

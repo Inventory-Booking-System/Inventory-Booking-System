@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Artisan;
 class LoansPageTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     /** @test */
     public function loans_page_contains_livewire_component()
     {
@@ -211,6 +211,116 @@ class LoansPageTest extends TestCase
             ->set('equipment_id', Asset::first()->id)
             ->call('save')
             ->assertHasNoErrors(['editing.details' => 'nullable']);
+    }
+
+    /** @test */
+    public function search_by_id_number()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', Loan::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSee('#'.Loan::first()->id);
+    }
+
+    /** @test */
+    public function search_by_id_string()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', '#'.Loan::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSee('#'.Loan::first()->id);
+    }
+
+    /** @test */
+    public function search_by_user_forename()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', User::first()->forename)
+            ->assertDontSee('No loans found')
+            ->assertSee(User::first()->forename.' '.User::first()->surname);
+    }
+
+    /** @test */
+    public function search_by_user_surname()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', User::first()->surname)
+            ->assertDontSee('No loans found')
+            ->assertSee(User::first()->forename.' '.User::first()->surname);
+    }
+
+    /** @test */
+    public function search_by_user_full_name()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', User::first()->forename.' '.User::first()->surname)
+            ->assertDontSee('No loans found')
+            ->assertSee(User::first()->forename.' '.User::first()->surname);
+    }
+
+    /** @test */
+    public function search_by_status()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', 'booked')
+            ->assertDontSee('No loans found')
+            ->assertSee('Booked');
+    }
+
+    /** @test */
+    public function search_by_partial_status()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', 'book')
+            ->assertDontSee('No loans found')
+            ->assertSee('Booked');
+    }
+
+    /** @test */
+    public function search_by_date()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', Carbon::now()->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No loans found')
+            ->assertSee(Carbon::now()->isoFormat('D MMM YYYY'));
+    }
+
+    /** @test */
+    public function search_by_time()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', Carbon::now()->isoFormat('HH:mm'))
+            ->assertDontSee('No loans found')
+            ->assertSee(Carbon::now()->isoFormat('HH:mm'));
+    }
+
+    /** @test */
+    public function search_by_details()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', 'lorem ipsum')
+            ->assertDontSee('No loans found')
+            ->assertSee('Lorem ipsum');
     }
 
     // /** @test */
