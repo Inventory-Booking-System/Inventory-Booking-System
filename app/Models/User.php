@@ -23,7 +23,7 @@ class User extends Authenticatable
      */
     public function loans()
     {
-        return $this->hasMany(Loans::class);
+        return $this->hasMany(Loan::class);
     }
 
     /**
