@@ -213,62 +213,85 @@ class LoansPageTest extends TestCase
             ->assertHasNoErrors(['editing.details' => 'nullable']);
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_id_number()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', Loan::first()->id)
+            ->set('filters.search', Loan::skip(1)->first()->id)
             ->assertDontSee('No loans found')
-            ->assertSee('#'.Loan::first()->id);
+            ->assertSeeHtml('"/loans/'.Loan::skip(1)->first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_id_string()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', '#'.Loan::first()->id)
+            ->set('filters.search', '#'.Loan::skip(1)->first()->id)
             ->assertDontSee('No loans found')
-            ->assertSee('#'.Loan::first()->id);
+            ->assertSeeHtml('"/loans/'.Loan::skip(1)->first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_user_forename()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', User::first()->forename)
+            ->set('filters.search', User::skip(1)->first()->forename)
             ->assertDontSee('No loans found')
-            ->assertSee(User::first()->forename.' '.User::first()->surname);
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.User::skip(2)->first()->loans()->first()->id.'"');
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search1
+     */
     public function search_by_user_surname()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', User::first()->surname)
+            ->set('filters.search', User::skip(1)->first()->surname)
             ->assertDontSee('No loans found')
-            ->assertSee(User::first()->forename.' '.User::first()->surname);
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.User::skip(2)->first()->loans()->first()->id.'"');
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_user_full_name()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', User::first()->forename.' '.User::first()->surname)
+            ->set('filters.search', User::skip(1)->first()->forename.' '.User::skip(1)->first()->surname)
             ->assertDontSee('No loans found')
-            ->assertSee(User::first()->forename.' '.User::first()->surname);
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.User::skip(2)->first()->loans()->first()->id.'"');
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_status()
     {
         $this->seed();
@@ -279,7 +302,10 @@ class LoansPageTest extends TestCase
             ->assertSee('Booked');
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_partial_status()
     {
         $this->seed();
@@ -290,7 +316,10 @@ class LoansPageTest extends TestCase
             ->assertSee('Booked');
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_date()
     {
         $this->seed();
@@ -301,7 +330,10 @@ class LoansPageTest extends TestCase
             ->assertSee(Carbon::now()->isoFormat('D MMM YYYY'));
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_time()
     {
         $this->seed();
@@ -312,7 +344,10 @@ class LoansPageTest extends TestCase
             ->assertSee(Carbon::now()->isoFormat('HH:mm'));
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group search
+     */
     public function search_by_details()
     {
         $this->seed();
