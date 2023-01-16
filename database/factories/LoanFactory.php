@@ -23,10 +23,10 @@ class LoanFactory extends Factory
     public function definition()
     {
         return [
-            'status_id' => $this->faker->numberBetween(0,6),
+            'status_id' => 0,
             'start_date_time' => Carbon::now(),
             'end_date_time' => Carbon::now(),
-            'details' => $this->faker->text,
+            'details' => 'Lorem ipsum dolor sit amet',
             'created_at' => Carbon::now()
         ];
     }
