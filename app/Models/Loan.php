@@ -46,7 +46,7 @@ class Loan extends Model
         return $this->hasOne(Setup::class);
     }
 
-    public function getStatusAttribute()
+    public static function getStatusIds()
     {
         return [
             '0' => 'Booked',
@@ -56,7 +56,12 @@ class Loan extends Model
             '4' => 'Cancelled',
             '5' => 'Completed',
             '6' => 'Modified',
-        ][$this->status_id] ?? 'Error';
+        ];
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->getStatusIds()[$this->status_id] ?? 'Error';
     }
 
     public function getStatusTypeAttribute()
