@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use Livewire\Livewire;
 use App\Models\Role;
+use App\Models\Asset;
 
 class AssetsPageTest extends TestCase
 {
@@ -28,5 +29,50 @@ class AssetsPageTest extends TestCase
             ->assertRedirect('/loans');
 
         $this->get('/assets')->assertSeeLivewire('asset.assets');
+    }
+
+    /**
+     * @test
+     * @group assets-search
+     */
+    public function search_by_name()
+    {
+        $this->seed();
+
+        Livewire::test('asset.assets')
+            ->set('filters.search', Asset::first()->name)
+            ->assertDontSee('No assets found')
+            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"')
+            ->assertDontSeeHtml('"/assets/'.Asset::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group assets-search
+     */
+    public function search_by_tag()
+    {
+        $this->seed();
+
+        Livewire::test('asset.assets')
+            ->set('filters.search', Asset::first()->tag)
+            ->assertDontSee('No assets found')
+            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"')
+            ->assertDontSeeHtml('"/assets/'.Asset::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group assets-search
+     */
+    public function search_by_description()
+    {
+        $this->seed();
+
+        Livewire::test('asset.assets')
+            ->set('filters.search', Asset::first()->description)
+            ->assertDontSee('No assets found')
+            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"')
+            ->assertDontSeeHtml('"/assets/'.Asset::skip(1)->first()->id.'"');
     }
 }

@@ -109,7 +109,11 @@ class Assets extends Component
             ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
             ->when($this->filters['tag'], fn($query, $tag) => $query->where('tag', $tag))
             ->when($this->filters['description'], fn($query, $description) => $query->where('description', $description))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'));
+            ->where(function($query) { // Search
+                $query->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'))
+                      ->when($this->filters['search'], fn($query, $search) => $query->orWhere('tag', 'like', '%'.$search.'%'))
+                      ->when($this->filters['search'], fn($query, $search) => $query->orWhere('description', 'like', '%'.$search.'%'));
+            });
 
         return $this->applySorting($query);
     }
