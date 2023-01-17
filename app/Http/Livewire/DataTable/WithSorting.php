@@ -15,10 +15,16 @@ trait WithSorting
         unset($this->sorts[$field]);
     }
 
-    public function applySorting($query)
+    public function applySorting($query, $defaultSortField = 'id', $defaultSortDirection = 'asc')
     {
-        foreach($this->sorts as $field => $direction){
-            $query->orderBy($field, $direction);
+        if($this->sorts != null){
+            //Apply user selected sort
+            foreach($this->sorts as $field => $direction){
+                $query->orderBy($field, $direction);
+            }
+        }else{
+            //Apply default sort
+            $query->orderBy($defaultSortField, $defaultSortDirection);
         }
 
         return $query;
