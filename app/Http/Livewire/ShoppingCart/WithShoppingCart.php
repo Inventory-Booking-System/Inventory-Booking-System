@@ -137,8 +137,7 @@ trait WithShoppingCart
         ];
 
         //Get equipment that is avaliable for booking
-        $this->avaliableEquipment = Asset::with('loans')
-            ->where(function($query) use($validatedDate){
+        $this->avaliableEquipment = Asset::where(function($query) use($validatedDate){
                 $query->whereNotIn('assets.id', function($query) use($validatedDate){
                     $query->select('asset_loan.asset_id')
                             ->from('loans')
