@@ -185,14 +185,14 @@ class Loans extends Component
             ->when($this->filters['details'], fn($query, $details) => $query->where('loans.details', $details))
             ->where(function($query) { // Search
                 // Loan ID
-                $query->when($this->filters['search'], fn($query, $search) => 
+                $query->when($this->filters['search'], fn($query, $search) =>
                     $query->where('loans.id', 'like', '%'.$search.'%'))
-                ->when($this->filters['search'], fn($query, $search) => 
+                ->when($this->filters['search'], fn($query, $search) =>
                     // Handle searching by ID if the user has entered a leading #
                     $query->orWhere('loans.id', 'like', '%'.str_replace('#', '', $search).'%'))
 
                 // User
-                ->when($this->filters['search'], fn($query, $search) => 
+                ->when($this->filters['search'], fn($query, $search) =>
                     $query->orWhere(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%'))
 
                 // Status
@@ -231,7 +231,7 @@ class Loans extends Component
                 })
 
                 // Details
-                ->when($this->filters['search'], fn($query, $search) => 
+                ->when($this->filters['search'], fn($query, $search) =>
                       $query->orWhere('loans.details', 'like', '%'.$search.'%'));
             });
 
@@ -301,29 +301,31 @@ class Loans extends Component
     }
 
     public function book($id){
-        $this->updateLoanStatus($id, 0);
+        $this->updateLoanStatus($id, 0, false);
     }
 
     public function cancel($id){
-        $this->updateLoanStatus($id, 4);
+        $this->updateLoanStatus($id, 4, true);
     }
 
     public function complete($id){
-        $this->updateLoanStatus($id, 5);
+        $this->updateLoanStatus($id, 5, true);
     }
 
-    protected function updateLoanStatus($id, $status)
+    protected function updateLoanStatus($id, $status, $setAssetsReturned)
     {
         $loan = Loan::find($id);
         $loan->status_id = $status;
         $loan->push();
 
         //Update assets in database
-        $ids = [];
-        foreach($loan->assets as $key => $asset){
-            $ids[$asset['id']] = ['returned' => 1];
+        if($setAssetsReturned){
+            $ids = [];
+            foreach($loan->assets as $key => $asset){
+                $ids[$asset['id']] = ['returned' => 1];
+            }
+            $loan->assets()->sync($ids);
         }
-        $loan->assets()->sync($ids);
 
         //Send the email to the user
         $user = User::find($loan->user_id);
