@@ -29,4 +29,64 @@ class UsersPageTest extends TestCase
 
         $this->get('/users')->assertSeeLivewire('user.users');
     }
+
+    /**
+     * @test
+     * @group users-search
+     */
+    public function search_by_forename()
+    {
+        $this->seed();
+
+        Livewire::test('user.users')
+            ->set('filters.search', User::first()->forename)
+            ->assertDontSee('No users found')
+            ->assertSeeHtml('"/users/'.User::first()->id.'"')
+            ->assertDontSeeHtml('"/users/'.User::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group users-search
+     */
+    public function search_by_surname()
+    {
+        $this->seed();
+
+        Livewire::test('user.users')
+            ->set('filters.search', User::first()->surname)
+            ->assertDontSee('No users found')
+            ->assertSeeHtml('"/users/'.User::first()->id.'"')
+            ->assertDontSeeHtml('"/users/'.User::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group users-search
+     */
+    public function search_by_full_name()
+    {
+        $this->seed();
+
+        Livewire::test('user.users')
+            ->set('filters.search', User::first()->forename.' '.User::first()->surname)
+            ->assertDontSee('No users found')
+            ->assertSeeHtml('"/users/'.User::first()->id.'"')
+            ->assertDontSeeHtml('"/users/'.User::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group users-search
+     */
+    public function search_by_email()
+    {
+        $this->seed();
+
+        Livewire::test('user.users')
+            ->set('filters.search', User::first()->email)
+            ->assertDontSee('No users found')
+            ->assertSeeHtml('"/users/'.User::first()->id.'"')
+            ->assertDontSeeHtml('"/users/'.User::skip(1)->first()->id.'"');
+    }
 }

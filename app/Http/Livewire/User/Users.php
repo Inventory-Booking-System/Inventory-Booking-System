@@ -8,6 +8,7 @@ use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Mail\Auth\NewUser;
 use App\Models\User;
@@ -121,7 +122,10 @@ class Users extends Component
         $query = User::query()
             ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('user_id', $user_id))
             ->when($this->filters['email'], fn($query, $email) => $query->where('email', $email))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('forename', 'like', '%'.$search.'%'));
+            ->where(function($query) { // Search
+                $query->when($this->filters['search'], fn($query, $search) => $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%'))
+                      ->when($this->filters['search'], fn($query, $search) => $query->orWhere('email', 'like', '%'.$search.'%'));
+            });
 
         return $this->applySorting($query);
     }
