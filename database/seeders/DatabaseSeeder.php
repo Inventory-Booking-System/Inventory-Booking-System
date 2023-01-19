@@ -11,6 +11,7 @@ use App\Models\DistributionGroupUser;
 use App\Models\EquipmentIssue;
 use App\Models\Role;
 use App\Models\Loan;
+use App\Models\Setup;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $userAdmin = User::factory()->count(1)->withSuperAdmin()->create()->first();
         Role::factory()->count(1)->withUser($userAdmin)->create();
 
-        User::factory()->count(200)->create();
+        User::factory()->count(100)->create();
         Asset::factory()->count(100)->create();
         Location::factory()->count(6)->create();
         EquipmentIssue::factory()->count(6)->create();
@@ -33,10 +34,18 @@ class DatabaseSeeder extends Seeder
 
         $distributionGroups = DistributionGroup::all();
         $users = User::all();
+        $locations = Location::all()->all();
 
+        /**
+         * Each user will have two loans, the first is a real loan, the second
+         * is associated with a setup, with a random location.
+         */
         foreach($users as $user){
             Role::factory()->count(1)->withUser($user)->create();
             Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->create();
+
+            $setupLoan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStatusId(3)->create()->first();
+            Setup::factory()->count(1)->withLoan($setupLoan)->withLocation($locations[array_rand($locations)])->create();
         }
 
         foreach ($distributionGroups as $distributionGroup) {

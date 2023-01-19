@@ -215,37 +215,37 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_id_number()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', Loan::skip(1)->first()->id)
+            ->set('filters.search', Loan::first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::skip(1)->first()->id.'"')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
             ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
     }
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_id_string()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', '#'.Loan::skip(1)->first()->id)
+            ->set('filters.search', '#'.Loan::first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::skip(1)->first()->id.'"')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
             ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
     }
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_user_forename()
     {
@@ -260,7 +260,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search1
+     * @group loans-search
      */
     public function search_by_user_surname()
     {
@@ -275,7 +275,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_user_full_name()
     {
@@ -290,7 +290,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_status()
     {
@@ -304,7 +304,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_partial_status()
     {
@@ -318,7 +318,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_date()
     {
@@ -332,7 +332,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_time()
     {
@@ -346,16 +346,16 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group search
+     * @group loans-search
      */
     public function search_by_details()
     {
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', 'lorem ipsum')
+            ->set('filters.search', Loan::first()->details)
             ->assertDontSee('No loans found')
-            ->assertSee('Lorem ipsum');
+            ->assertSee(Loan::first()->details);
     }
 
     // /** @test */

@@ -26,7 +26,7 @@ class LoanFactory extends Factory
             'status_id' => 0,
             'start_date_time' => Carbon::now(),
             'end_date_time' => Carbon::now(),
-            'details' => 'Lorem ipsum dolor sit amet',
+            'details' => $this->faker->text,
             'created_at' => Carbon::now()
         ];
     }
@@ -42,6 +42,13 @@ class LoanFactory extends Factory
     {
         return $this->state([
             'created_by' => $user->id
+        ]);
+    }
+
+    public function withStatusId($statusId)
+    {
+        return $this->state([
+            'status_id' => $statusId
         ]);
     }
 }
