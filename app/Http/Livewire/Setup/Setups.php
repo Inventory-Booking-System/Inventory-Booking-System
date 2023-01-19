@@ -241,7 +241,7 @@ class Setups extends Component
                       $query->orWhere('loans.details', 'like', '%'.$search.'%'));
             });
 
-        return $this->applySorting($query, 'setups.id');
+        return $this->applySorting($query, 'start_date_time', 'asc');
     }
 
     public function getRowsProperty()
