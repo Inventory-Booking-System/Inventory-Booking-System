@@ -5,7 +5,7 @@
                 <div class="card-header {{ $incident->status_id == 0 ? 'bg-danger' : 'bg-success' }} text-center">
                     <h1>Incident #{{ $incident->id }}</h1>
                 </div>
-                <div class="card-body">
+                <div wire:poll.10s class="card-body">
                     <div class="row">
                         <div class="col-6">
                             <strong>Start Date: </strong><p class="card-text">{{ $incident->start_date_time }}</p>

@@ -2,7 +2,7 @@
     <x-table.controls name="Incident" />
 
     <div class="row">
-        <div class="col-lg-12">
+        <div wire:poll.10s class="col-lg-12">
             <x-table>
                 <x-slot name="head">
                     <x-table.row>

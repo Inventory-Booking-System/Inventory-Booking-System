@@ -22,7 +22,7 @@
                 @endswitch
                     <h1>Loan #{{ $loan->id }} {{ $loan->user->forename }} {{ $loan->user->surname }}</h1>
                 </div>
-                <div class="card-body">
+                <div wire:poll.10s class="card-body">
                     <div class="row">
                         <div class="col-6">
                             <strong>Start Date: </strong><p class="card-text">{{ $loan->start_date_time }}</p>

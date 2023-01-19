@@ -5,7 +5,7 @@
                 <div class="card-header bg-primary text-center">
                     <h1>Setup #{{ $setup->loan->id }} {{ $setup->loan->user->forename }} {{ $setup->loan->user->surname }}</h1>
                 </div>
-                <div class="card-body">
+                <div wire:poll.10s class="card-body">
                     <div class="row">
                         <div class="col-6">
                             <strong>Title: </strong><p class="card-text">{{ $setup->title }}</p>
