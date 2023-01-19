@@ -190,8 +190,6 @@ class Loans extends Component
             ->where(function($query) { // Search
                 // Loan ID
                 $query->when($this->filters['search'], fn($query, $search) =>
-                    $query->where('loans.id', 'like', '%'.$search.'%'))
-                ->when($this->filters['search'], fn($query, $search) =>
                     // Handle searching by ID if the user has entered a leading #
                     $query->orWhere('loans.id', 'like', '%'.str_replace('#', '', $search).'%'))
 
