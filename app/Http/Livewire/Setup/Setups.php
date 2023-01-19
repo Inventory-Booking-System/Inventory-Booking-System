@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Setup;
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
@@ -179,8 +180,12 @@ class Setups extends Component
     public function getRowsQueryProperty()
     {
         $query = Setup::query()
+            ->select('setups.*')
             ->with('location')
             ->with('loan.user')
+            ->join('loans', 'setups.loan_id', '=', 'loans.id') // Join loans table so we can get user
+            ->join('users', 'loans.user_id', '=', 'users.id') // Join users table so we can search by user name
+            ->join('locations', 'setups.location_id', '=', 'locations.id') // Join locations table so we can search by location name
             ->whereHas('loan', function($query){
                 $query->where('status_id', '=', '3');
             })
@@ -191,9 +196,52 @@ class Setups extends Component
             ->when($this->filters['title'], fn($query, $title) => $query->where('title', $title))
             ->when($this->filters['location_id'], fn($query, $location_id) => $query->where('location_id', $location_id))
             ->when($this->filters['details'], fn($query, $details) => $query->where('details', $details))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('details', 'like', '%'.$search.'%'));
+            ->where(function($query) { // Search
+                // Loan ID
+                $query->when($this->filters['search'], fn($query, $search) =>
+                    // Handle searching by ID if the user has entered a leading #
+                    $query->orWhere(DB::raw("CONCAT(setups.id, ' ', setups.title)"), 'like', '%'.str_replace('#', '', $search).'%'))
 
-        return $this->applySorting($query);
+                // User
+                ->when($this->filters['search'], fn($query, $search) =>
+                    $query->orWhere(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%'))
+
+                // Location
+                ->when($this->filters['search'], fn($query, $search) =>
+                    $query->orWhere('locations.name', 'like', '%'.$search.'%'))
+
+                // Start Date
+                ->when($this->filters['search'], function($query, $search) {
+                    try {
+                        $dateTimeString = Carbon::parse($search);
+                        $dateString = explode(' ', $dateTimeString)[0];
+                        $timeString = explode(' ', $dateTimeString)[1];
+                        $query->orWhere('loans.start_date_time', 'like', '%'.$dateString.'%');
+                        $query->orWhere('loans.start_date_time', 'like', '%'.$timeString.'%');
+                    } catch(\Throwable $e) {
+                        // Search string is not a date
+                    }
+                })
+
+                // End Date
+                ->when($this->filters['search'], function($query, $search) {
+                    try {
+                        $dateTimeString = Carbon::parse($search);
+                        $dateString = explode(' ', $dateTimeString)[0];
+                        $timeString = explode(' ', $dateTimeString)[1];
+                        $query->orWhere('loans.end_date_time', 'like', '%'.$dateString.'%');
+                        $query->orWhere('loans.end_date_time', 'like', '%'.$timeString.'%');
+                    } catch(\Throwable $e) {
+                        // Search string is not a date
+                    }
+                })
+
+                // Details
+                ->when($this->filters['search'], fn($query, $search) =>
+                      $query->orWhere('loans.details', 'like', '%'.$search.'%'));
+            });
+
+        return $this->applySorting($query, 'setups.id');
     }
 
     public function getRowsProperty()
