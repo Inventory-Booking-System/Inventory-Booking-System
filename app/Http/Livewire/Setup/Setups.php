@@ -169,7 +169,11 @@ class Setups extends Component
 
         //Send the email to the user
         $user = User::find($setup->loan->user_id);
-        Mail::to($user->email)->queue(new SetupOrder($this->editing, $this->editing->wasRecentlyCreated));
+        if (env('MAIL_CC_ADDRESS')) {
+            Mail::to($user->email)->cc(env('MAIL_CC_ADDRESS'))->queue(new SetupOrder($this->editing, $this->editing->wasRecentlyCreated));
+        } else {
+            Mail::to($user->email)->queue(new SetupOrder($this->editing, $this->editing->wasRecentlyCreated));
+        }
     }
 
     public function resetFilters()
@@ -331,7 +335,11 @@ class Setups extends Component
 
         //Send the email to the user
         $user = User::find($setup->loan->user_id);
-        Mail::to($user->email)->queue(new SetupOrder($setup, $this->editing->wasRecentlyCreated));
+        if (env('MAIL_CC_ADDRESS')) {
+            Mail::to($user->email)->cc(env('MAIL_CC_ADDRESS'))->queue(new SetupOrder($setup, $this->editing->wasRecentlyCreated));
+        } else {
+            Mail::to($user->email)->queue(new SetupOrder($setup, $this->editing->wasRecentlyCreated));
+        }        
     }
 
     public function updatedEquipmentId($id)
