@@ -200,7 +200,7 @@ class Setups extends Component
                 // Loan ID
                 $query->when($this->filters['search'], fn($query, $search) =>
                     // Handle searching by ID if the user has entered a leading #
-                    $query->orWhere(DB::raw("CONCAT(setups.id, ' ', setups.title)"), 'like', '%'.str_replace('#', '', $search).'%'))
+                    $query->where(DB::raw("CONCAT(setups.id, ' ', setups.title)"), 'like', '%'.str_replace('#', '', $search).'%'))
 
                 // User
                 ->when($this->filters['search'], fn($query, $search) =>
