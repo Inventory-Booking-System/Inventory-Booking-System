@@ -331,7 +331,11 @@ class Loans extends Component
 
         //Send the email to the user
         $user = User::find($loan->user_id);
-        Mail::to($user->email)->queue(new LoanOrder($loan, $this->editing->wasRecentlyCreated));
+        if (env('MAIL_CC_ADDRESS')) {
+            Mail::to($user->email)->cc(env('MAIL_CC_ADDRESS'))->queue(new LoanOrder($loan, $this->editing->wasRecentlyCreated, true));
+        } else {
+            Mail::to($user->email)->queue(new LoanOrder($loan, $this->editing->wasRecentlyCreated, true));
+        }
     }
 
     public function updatedEquipmentId($id)
