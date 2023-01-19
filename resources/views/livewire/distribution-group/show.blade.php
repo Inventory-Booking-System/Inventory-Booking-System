@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="col-lg-8">
+    <div wire:poll.10s class="col-lg-8">
         <div class="row">
             <div class="col-lg-3 mb-3">
                 <x-input.text wire:model="filters.search" placeholder="Search Loans & Setups..." />
