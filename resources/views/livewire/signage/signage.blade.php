@@ -127,7 +127,7 @@
                 
                 const intervalId = setInterval(() => {
                     get();
-                }, 2000);
+                }, 10000);
 
                 return () => clearInterval(intervalId);
             }, []);
