@@ -35,3 +35,5 @@ mix.combine([
         'resources/css/app.css'
     ], 'public/css/app.css')
     .sourceMaps();
+
+mix.js('resources/js/signage.js', 'js');
