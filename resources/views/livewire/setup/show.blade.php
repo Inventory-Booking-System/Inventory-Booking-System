@@ -3,7 +3,7 @@
         <div class="row">
             <div class="card w-100 mr-3">
                 <div class="card-header bg-primary text-center">
-                    <h1>Setup #{{ $setup->loan->id }} {{ $setup->loan->user->forename }} {{ $setup->loan->user->surname }}</h1>
+                    <h1>Setup #{{ $setup->id }} {{ $setup->loan->user->forename }} {{ $setup->loan->user->surname }}</h1>
                 </div>
                 <div wire:poll.10s class="card-body">
                     <div class="row">
@@ -25,7 +25,7 @@
                                     @foreach($setup->loan->assets as $asset)
                                         @if (!$asset->pivot->returned)
                                             <li>
-                                                <x-link route="assets" id="{{ $setup->loan->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
+                                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
                                             </li>
                                         @endif
                                     @endforeach
@@ -37,7 +37,7 @@
                                     @foreach($setup->loan->assets as $asset)
                                         @if ($asset->pivot->returned)
                                             <li>
-                                                <x-link route="assets" id="{{ $setup->loan->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
+                                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
                                             </li>
                                         @endif
                                     @endforeach
