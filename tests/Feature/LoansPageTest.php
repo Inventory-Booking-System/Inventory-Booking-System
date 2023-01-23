@@ -66,9 +66,9 @@ class LoansPageTest extends TestCase
     /** @test */
     public function can_see_created_loan_in_table()
     {
-        Artisan::call('db:seed');
         $this->actingAs(User::factory()->create());
         $id = User::first()->id;
+        Asset::factory()->create();
 
         //Create Loan
         Livewire::test('loan.loans')
