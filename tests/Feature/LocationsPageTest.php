@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use Livewire\Livewire;
 use App\Models\Role;
+use App\Models\Location;
 
 class LocationsPageTest extends TestCase
 {
@@ -28,5 +29,20 @@ class LocationsPageTest extends TestCase
             ->assertRedirect('/loans');
 
         $this->get('/locations')->assertSeeLivewire('location.locations');
+    }
+
+    /**
+     * @test
+     * @group locations-search
+     */
+    public function search_by_details()
+    {
+        $this->seed();
+
+        Livewire::test('location.locations')
+            ->set('filters.search', Location::first()->name)
+            ->assertDontSee('No locations found')
+            ->assertSee(Location::first()->name)
+            ->assertDontSee(Location::skip(1)->first()->name);
     }
 }
