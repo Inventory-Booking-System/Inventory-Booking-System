@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //Make admin user
-        $userAdmin = User::factory()->count(1)->withSuperAdmin()->create()->first();
+        $userAdmin = User::factory()->count(1)->withPasswordSet()->create()->first();
         Role::factory()->count(1)->withUser($userAdmin)->create();
 
         User::factory()->count(100)->create();
@@ -40,9 +40,12 @@ class DatabaseSeeder extends Seeder
          * Each user will have two loans, the first is a real loan, the second
          * is associated with a setup, with a random location.
          */
+        $assetIndex = 0;
         foreach($users as $user){
             Role::factory()->count(1)->withUser($user)->create();
-            Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->create();
+            $loan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->create()->first();
+            $loan->assets()->attach(Asset::skip($assetIndex)->first());
+            $assetIndex++;
 
             $setupLoan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStatusId(3)->create()->first();
             Setup::factory()->count(1)->withLoan($setupLoan)->withLocation($locations[array_rand($locations)])->create();
