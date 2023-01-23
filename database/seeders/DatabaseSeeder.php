@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //Make admin user
-        $userAdmin = User::factory()->count(1)->withSuperAdmin()->create()->first();
+        $userAdmin = User::factory()->count(1)->withPasswordSet()->create()->first();
         Role::factory()->count(1)->withUser($userAdmin)->create();
 
         User::factory()->count(100)->create();

@@ -20,9 +20,7 @@ class AssetPageTest extends TestCase
     /** @test */
     public function assets_page_contains_livewire_component()
     {
-        //Make user
-        $user = User::factory()->withPasswordSet()->create();
-        Role::factory()->withUser($user)->create();
+        $this->seed();
 
         //Perform Login
         Livewire::test('auth.login')
@@ -31,7 +29,7 @@ class AssetPageTest extends TestCase
             ->call('login')
             ->assertRedirect('/loans');
 
-        $this->get('/assets')->assertSeeLivewire('asset.show', ['asset' => Asset::first()->id]);
+        $this->get('/assets/'.Asset::first()->id)->assertSeeLivewire('asset.show', ['asset' => Asset::first()->id]);
     }
 
     /**
