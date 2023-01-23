@@ -56,22 +56,22 @@ function Entry({ item }) {
             <div class="card ${cardClass} w-100">
                 <div class="card-header text-center">${user.forename} ${user.surname} : ${start_date_time.split(' ')[3]}</div>
                 <div class="card-body p-1 ">
-                    <div class="row">
-                        <div class="col-12 text-center">
+                    <div class="row mb-2">
+                        <div class="col-12 text-center truncate">
                             ${details}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-6">
-                            <ul style="list-style-type: none;" class="text-center">
-                                ${assets.map((asset, index) => index % 2 === 0 ? (asset.pivot.returned ? html`<li style="text-decoration: line-through;">${asset.name} (${asset.tag})</li>` : html`<li>${asset.name} (${asset.tag})</li>`) : null)}
-                            </ul>
+                            <div style="list-style-type: none;" class="text-center">
+                                ${assets.map((asset, index) => index % 2 === 0 ? (asset.pivot.returned ? html`<div style="text-decoration: line-through;">${asset.name} (${asset.tag})</div>` : html`<div>${asset.name} (${asset.tag})</div>`) : null)}
+                            </div>
                         </div>
                         <div class="col-6">
-                            <ul style="list-style-type: none;" class="text-center">
-                                ${assets.map((asset, index) => !(index % 2 === 0) ? (asset.pivot.returned ? html`<li style="text-decoration: line-through;">${asset.name} (${asset.tag})</li>` : html`<li>${asset.name} (${asset.tag})</li>`) : null)}
-                            </ul>
+                            <div style="list-style-type: none;" class="text-center">
+                                ${assets.map((asset, index) => !(index % 2 === 0) ? (asset.pivot.returned ? html`<div style="text-decoration: line-through;">${asset.name} (${asset.tag})</div>` : html`<div>${asset.name} (${asset.tag})</div>`) : null)}
+                            </div>
                         </div>
                     </div>
                 </div>
