@@ -41,7 +41,7 @@
                                     @foreach($loan->assets as $asset)
                                         @if (!$asset->pivot->returned)
                                             <li>
-                                                <x-link route="assets" id="{{ $loan->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
+                                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
                                             </li>
                                         @endif
                                     @endforeach
@@ -53,7 +53,7 @@
                                     @foreach($loan->assets as $asset)
                                         @if ($asset->pivot->returned)
                                             <li>
-                                                <x-link route="assets" id="{{ $loan->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
+                                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
                                             </li>
                                         @endif
                                     @endforeach
