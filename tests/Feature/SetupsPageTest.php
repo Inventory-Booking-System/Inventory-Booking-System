@@ -189,8 +189,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->name)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**

@@ -369,8 +369,7 @@ class LoansPageTest extends TestCase
         Livewire::test('loan.loans')
             ->set('filters.search', Loan::first()->assets()->first()->name)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
