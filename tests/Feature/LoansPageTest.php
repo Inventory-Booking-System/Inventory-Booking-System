@@ -358,6 +358,51 @@ class LoansPageTest extends TestCase
             ->assertSee(Loan::first()->details);
     }
 
+    /**
+     * @test
+     * @group loans-search
+     */
+    public function search_by_asset_name()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', Loan::first()->assets()->first()->name)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-search
+     */
+    public function search_by_asset_tag()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', Loan::first()->assets()->first()->tag)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-search
+     */
+    public function search_by_asset_name_and_tag()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.search', Loan::first()->assets()->first()->name.' ('.Loan::first()->assets()->first()->tag.')')
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
     // /** @test */
     // public function equipment_id_exists_in_assets_table()
     // {

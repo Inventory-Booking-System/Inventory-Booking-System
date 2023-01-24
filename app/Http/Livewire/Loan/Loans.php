@@ -234,7 +234,13 @@ class Loans extends Component
 
                 // Details
                 ->when($this->filters['search'], fn($query, $search) =>
-                      $query->orWhere('loans.details', 'like', '%'.$search.'%'));
+                    $query->orWhere('loans.details', 'like', '%'.$search.'%'))
+
+                // Assets
+                ->when($this->filters['search'], fn($query, $search) => 
+                    $query->orWhereHas('assets', function ($query) use ($search) {
+                        $query->where(DB::raw("CONCAT(name, ' ', '(', tag, ')')"), 'like', '%'.$search.'%');
+                    }));
             });
 
         return $this->applySorting($query, 'start_date_time', 'asc');
