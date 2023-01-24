@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\DistributionGroup;
 
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
@@ -154,7 +155,18 @@ class DistributionGroups extends Component
     {
         $query = DistributionGroup::query()
             ->with('users')
-            ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name));
+            ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
+            ->where(function($query) { // Search
+                // Name
+                $query->when($this->filters['search'], fn($query, $search) =>
+                    $query->where('name', 'like', '%'.$search.'%'))
+
+                // Users
+                ->when($this->filters['search'], fn($query, $search) => 
+                    $query->orWhereHas('users', function ($query) use ($search) {
+                        $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%');
+                    }));
+            });
 
         return $this->applySorting($query);
     }
@@ -168,26 +180,6 @@ class DistributionGroups extends Component
     {
         if($this->selectAll){
            $this->selectPageRows();
-        }
-
-        if ($this->filters['search']) {
-            foreach($this->rows as $key => $distributionGroup) {
-                $matchesQuery = false;
-
-                if(str_contains(strtolower($distributionGroup->name), strtolower($this->filters['search']))) {
-                    $matchesQuery = true;
-                }
-
-                foreach($distributionGroup->users as $user) {
-                    if (str_contains(strtolower($user->forename.' '.$user->surname), strtolower($this->filters['search']))) {
-                        $matchesQuery = true;
-                    }
-                }
-
-                if (!$matchesQuery) {
-                    unset($this->rows[$key]);
-                }
-            }
         }
 
         return view('livewire.distribution-group.distribution-groups', [
