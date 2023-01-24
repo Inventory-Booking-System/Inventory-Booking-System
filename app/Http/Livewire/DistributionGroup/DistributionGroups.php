@@ -154,8 +154,7 @@ class DistributionGroups extends Component
     {
         $query = DistributionGroup::query()
             ->with('users')
-            ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'));
+            ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name));
 
         return $this->applySorting($query);
     }
@@ -169,6 +168,26 @@ class DistributionGroups extends Component
     {
         if($this->selectAll){
            $this->selectPageRows();
+        }
+
+        if ($this->filters['search']) {
+            foreach($this->rows as $key => $distributionGroup) {
+                $matchesQuery = false;
+
+                if(str_contains(strtolower($distributionGroup->name), strtolower($this->filters['search']))) {
+                    $matchesQuery = true;
+                }
+
+                foreach($distributionGroup->users as $user) {
+                    if (str_contains(strtolower($user->forename.' '.$user->surname), strtolower($this->filters['search']))) {
+                        $matchesQuery = true;
+                    }
+                }
+
+                if (!$matchesQuery) {
+                    unset($this->rows[$key]);
+                }
+            }
         }
 
         return view('livewire.distribution-group.distribution-groups', [
