@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
             $assetIndex++;
 
             $setupLoan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStatusId(3)->create()->first();
+            $setupLoan->assets()->attach(Asset::skip($assetIndex)->first());
             Setup::factory()->count(1)->withLoan($setupLoan)->withLocation($locations[array_rand($locations)])->create();
         }
 
