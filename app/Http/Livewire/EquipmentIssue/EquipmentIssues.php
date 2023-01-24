@@ -123,7 +123,15 @@ class EquipmentIssues extends Component
         $query = EquipmentIssue::query()
             ->when($this->filters['title'], fn($query, $name) => $query->where('title', $name))
             ->when($this->filters['cost'], fn($query, $name) => $query->where('cost', $name))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('title', 'like', '%'.$search.'%'));
+            ->where(function($query) { // Search
+                // Title
+                $query->when($this->filters['search'], fn($query, $search) => 
+                    $query->where('title', 'like', '%'.$search.'%'))
+
+                // Cost
+                ->when($this->filters['search'], fn($query, $search) => 
+                    $query->orWhere('cost', 'like', '%'.$search.'%'));
+            });
 
         return $this->applySorting($query);
     }

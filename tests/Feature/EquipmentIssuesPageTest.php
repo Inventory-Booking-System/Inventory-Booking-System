@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use Livewire\Livewire;
 use App\Models\Role;
+use App\Models\EquipmentIssue;
 
 class EquipmentIssuesPageTest extends TestCase
 {
@@ -28,5 +29,35 @@ class EquipmentIssuesPageTest extends TestCase
             ->assertRedirect('/loans');
 
         $this->get('/equipmentIssues')->assertSeeLivewire('equipment-issue.equipment-issues');
+    }
+
+    /**
+     * @test
+     * @group equipment-issues-search
+     */
+    public function search_by_title()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.equipment-issues')
+            ->set('filters.search', EquipmentIssue::first()->title)
+            ->assertDontSee('No equipment issues found')
+            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"')
+            ->assertDontSeeHtml('"/equipmentIssues/'.EquipmentIssue::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issues-search
+     */
+    public function search_by_cost()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.equipment-issues')
+            ->set('filters.search', EquipmentIssue::first()->cost)
+            ->assertDontSee('No equipment issues found')
+            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"')
+            ->assertDontSeeHtml('"/equipmentIssues/'.EquipmentIssue::skip(1)->first()->id.'"');
     }
 }
