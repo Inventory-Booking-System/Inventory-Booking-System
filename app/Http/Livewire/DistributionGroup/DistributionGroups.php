@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\DistributionGroup;
 
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
@@ -155,7 +156,17 @@ class DistributionGroups extends Component
         $query = DistributionGroup::query()
             ->with('users')
             ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'));
+            ->where(function($query) { // Search
+                // Name
+                $query->when($this->filters['search'], fn($query, $search) =>
+                    $query->where('name', 'like', '%'.$search.'%'))
+
+                // Users
+                ->when($this->filters['search'], fn($query, $search) => 
+                    $query->orWhereHas('users', function ($query) use ($search) {
+                        $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%');
+                    }));
+            });
 
         return $this->applySorting($query);
     }
