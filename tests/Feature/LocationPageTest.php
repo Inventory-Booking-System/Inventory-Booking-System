@@ -114,4 +114,48 @@ class LocationPageTest extends TestCase
             ->assertDontSee('No loans found')
             ->assertSee(Setup::first()->loan()->first()->details);
     }
+
+    /**
+     * @test
+     * @group location-search
+     */
+    public function search_by_asset_name()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->name)
+            ->assertDontSee('No setups found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-search
+     */
+    public function search_by_asset_tag()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->tag)
+            ->assertDontSee('No setups found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
+            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-search
+     */
+    public function search_by_asset_name_and_tag()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->name.' ('.Setup::first()->loan()->first()->assets()->first()->tag.')')
+            ->assertDontSee('No setups found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
+            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+    }
 }

@@ -35,7 +35,7 @@ class LocationsPageTest extends TestCase
      * @test
      * @group locations-search
      */
-    public function search_by_details()
+    public function search_by_name()
     {
         $this->seed();
 
