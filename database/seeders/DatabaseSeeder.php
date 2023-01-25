@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 use App\Models\Asset;
 use App\Models\User;
 use App\Models\Location;
@@ -40,15 +41,13 @@ class DatabaseSeeder extends Seeder
          * Each user will have two loans, the first is a real loan, the second
          * is associated with a setup, with a random location.
          */
-        $assetIndex = 0;
-        foreach($users as $user){
+        foreach($users as $index => $user){
             Role::factory()->count(1)->withUser($user)->create();
-            $loan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->create()->first();
-            $loan->assets()->attach(Asset::skip($assetIndex)->first());
-            $assetIndex++;
+            $loan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStartDateTime(Carbon::now()->add($index, 'hour'))->withEndDateTime(Carbon::now()->add($index + 1, 'hour'))->create()->first();
+            $loan->assets()->attach(Asset::skip($index)->first());
 
-            $setupLoan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStatusId(3)->create()->first();
-            $setupLoan->assets()->attach(Asset::skip($assetIndex)->first());
+            $setupLoan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStatusId(3)->withStartDateTime(Carbon::now()->add($index, 'hour'))->withEndDateTime(Carbon::now()->add($index + 1, 'hour'))->create()->first();
+            $setupLoan->assets()->attach(Asset::skip($index)->first());
             Setup::factory()->count(1)->withLoan($setupLoan)->withLocation($locations[array_rand($locations)])->create();
         }
 

@@ -323,9 +323,9 @@ class LoansPageTest extends TestCase
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', Carbon::now()->isoFormat('D MMM YYYY'))
+            ->set('filters.search', (new Carbon(Loan::first()->start_date_time))->isoFormat('D MMM YYYY'))
             ->assertDontSee('No loans found')
-            ->assertSee(Carbon::now()->isoFormat('D MMM YYYY'));
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -337,9 +337,9 @@ class LoansPageTest extends TestCase
         $this->seed();
 
         Livewire::test('loan.loans')
-            ->set('filters.search', Carbon::now()->isoFormat('HH:mm'))
+            ->set('filters.search', (new Carbon(Loan::first()->start_date_time))->isoFormat('HH:mm'))
             ->assertDontSee('No loans found')
-            ->assertSee(Carbon::now()->isoFormat('HH:mm'));
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -358,7 +358,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group loans-search
+     * @group loans-searcha
      */
     public function search_by_asset_name()
     {

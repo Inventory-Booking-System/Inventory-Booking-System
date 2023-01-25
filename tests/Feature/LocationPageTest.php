@@ -81,10 +81,10 @@ class LocationPageTest extends TestCase
     {
         $this->seed();
 
-        Livewire::test('location.show', ['location' => Location::first()->id])
-            ->set('filters.search', Carbon::now()->isoFormat('D MMM YYYY'))
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.search', (new Carbon(Setup::first()->loan()->first()->start_date_time))->isoFormat('D MMM YYYY'))
             ->assertDontSee('No loans found')
-            ->assertSee(Carbon::now()->isoFormat('D MMM YYYY'));
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -95,10 +95,10 @@ class LocationPageTest extends TestCase
     {
         $this->seed();
 
-        Livewire::test('location.show', ['location' => Location::first()->id])
-            ->set('filters.search', Carbon::now()->isoFormat('HH:mm'))
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.search', (new Carbon(Setup::first()->loan()->first()->start_date_time))->isoFormat('HH:mm'))
             ->assertDontSee('No loans found')
-            ->assertSee(Carbon::now()->isoFormat('HH:mm'));
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**

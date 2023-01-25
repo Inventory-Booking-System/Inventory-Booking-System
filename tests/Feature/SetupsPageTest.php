@@ -145,9 +145,9 @@ class SetupsPageTest extends TestCase
         $this->seed();
 
         Livewire::test('setup.setups')
-            ->set('filters.search', Carbon::now()->isoFormat('D MMM YYYY'))
+            ->set('filters.search', (new Carbon(Setup::first()->loan()->first()->start_date_time))->isoFormat('D MMM YYYY'))
             ->assertDontSee('No setups found')
-            ->assertSee(Carbon::now()->isoFormat('D MMM YYYY'));
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -159,9 +159,9 @@ class SetupsPageTest extends TestCase
         $this->seed();
 
         Livewire::test('setup.setups')
-            ->set('filters.search', Carbon::now()->isoFormat('HH:mm'))
+            ->set('filters.search', (new Carbon(Setup::first()->loan()->first()->start_date_time))->isoFormat('HH:mm'))
             ->assertDontSee('No setups found')
-            ->assertSee(Carbon::now()->isoFormat('HH:mm'));
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
