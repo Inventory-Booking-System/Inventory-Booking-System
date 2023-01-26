@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -179,8 +178,6 @@ class EquipmentIssuePageTest extends TestCase
         $this->seed();
 
         $issue = EquipmentIssue::first()->incidents()->first()->issues()->first();
-
-        Log::emergency('x'.$issue->pivot->quantity.' '.$issue->title.' (£'.$issue->cost.')');
 
         Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
             ->set('filters.search', 'x'.$issue->pivot->quantity.' '.$issue->title.' (£'.$issue->cost.')')
