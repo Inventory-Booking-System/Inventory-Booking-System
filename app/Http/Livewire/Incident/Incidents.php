@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Incident;
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
@@ -16,6 +17,7 @@ use App\Models\DistributionGroup;
 use App\Models\EquipmentIssue;
 use App\Models\EquipmentIssueIncident;
 use App\Mail\Incident\IncidentOrder;
+use App\Helpers\SQL;
 use Carbon\Carbon;
 
 class Incidents extends Component
@@ -186,13 +188,53 @@ class Incidents extends Component
     public function getRowsQueryProperty()
     {
         $query = Incident::query()
+            ->select('incidents.*')
+            ->join('locations', 'incidents.location_id', '=', 'locations.id') // Join locations table so we can search by location name
+            ->join('distribution_groups', 'incidents.distribution_id', '=', 'distribution_groups.id') // Join distribution_groups table so we can search by distribution group name
             ->where('status_id', '=', '0')
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
             ->when($this->filters['location_id'], fn($query, $location_id) => $query->where('location_id', $location_id))
             ->when($this->filters['distribution_id'], fn($query, $distribution_id) => $query->where('distribution_id', $distribution_id))
             ->when($this->filters['evidence'], fn($query, $evidence) => $query->where('evidence', $evidence))
             ->when($this->filters['details'], fn($query, $details) => $query->where('details', $details))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('details', 'like', '%'.$search.'%'));
+            //->when($this->filters['search'], fn($query, $search) => $query->where('details', 'like', '%'.$search.'%'));
+            ->when($this->filters['search'], fn($query, $search) =>
+                $query->where(function($query) use ($search) { // Search
+                    $search = SQL::escapeLikeString($search);
+
+                    // Incident ID
+                    // Handle searching by ID if the user has entered a leading #
+                    $query->where('incidents.id', 'like', '%'.str_replace('#', '', $search).'%');
+
+                    // Start Date
+                    try {
+                        $dateTimeString = Carbon::parse($search);
+                        $dateString = explode(' ', $dateTimeString)[0];
+                        $timeString = explode(' ', $dateTimeString)[1];
+                        $query->orWhere('incidents.start_date_time', 'like', '%'.$dateString.'%');
+                        $query->orWhere('incidents.start_date_time', 'like', '%'.$timeString.'%');
+                    } catch(\Throwable $e) {
+                        // Search string is not a date
+                    }
+
+                    // Location
+                    $query->orWhere('locations.name', 'like', '%'.$search.'%');
+
+                    // Distribution group
+                    $query->orWhere('distribution_groups.name', 'like', '%'.$search.'%');
+
+                    // Equipment issues
+                    $query->orWhereHas('issues', function ($query) use ($search) {
+                        $query->where(DB::raw("CONCAT('x', equipment_issue_incident.quantity, ' ', equipment_issues.title)"), 'like', '%'.$search.'%');
+                    });
+
+                    // Evidence
+                    $query->orWhere('incidents.evidence', 'like', '%'.$search.'%');
+
+                    // Details
+                    $query->orWhere('incidents.details', 'like', '%'.$search.'%');
+                })
+            );
 
         return $this->applySorting($query);
     }
