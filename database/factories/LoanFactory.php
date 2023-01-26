@@ -51,4 +51,18 @@ class LoanFactory extends Factory
             'status_id' => $statusId
         ]);
     }
+
+    public function withStartDateTime($date)
+    {
+        return $this->state([
+            'start_date_time' => $date
+        ]);
+    }
+
+    public function withEndDateTime($date)
+    {
+        return $this->state([
+            'end_date_time' => $date
+        ]);
+    }
 }
