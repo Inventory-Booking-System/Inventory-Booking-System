@@ -13,6 +13,7 @@ use App\Models\EquipmentIssue;
 use App\Models\Role;
 use App\Models\Loan;
 use App\Models\Setup;
+use App\Models\Incident;
 
 class DatabaseSeeder extends Seeder
 {
@@ -51,7 +52,7 @@ class DatabaseSeeder extends Seeder
             Setup::factory()->count(1)->withLoan($setupLoan)->withLocation($locations[array_rand($locations)])->create();
         }
 
-        foreach ($distributionGroups as $distributionGroup) {
+        foreach ($distributionGroups as $index => $distributionGroup) {
             $numUsers = rand(2, 3);
 
             $usersToAssign = $users->random($numUsers);
@@ -61,6 +62,9 @@ class DatabaseSeeder extends Seeder
                     'user_id' => $user->id,
                 ]);
             }
+            
+            $incident = Incident::factory()->withLocation($locations[array_rand($locations)])->withDistributionGroup($distributionGroup)->withCreator($userAdmin)->create()->first();
+            $incident->issues()->attach(EquipmentIssue::skip($index)->first());
         }
 
     }

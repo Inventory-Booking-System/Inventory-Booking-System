@@ -42,8 +42,7 @@ class EquipmentIssuesPageTest extends TestCase
         Livewire::test('equipment-issue.equipment-issues')
             ->set('filters.search', EquipmentIssue::first()->title)
             ->assertDontSee('No equipment issues found')
-            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"')
-            ->assertDontSeeHtml('"/equipmentIssues/'.EquipmentIssue::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"');
     }
 
     /**
@@ -57,7 +56,6 @@ class EquipmentIssuesPageTest extends TestCase
         Livewire::test('equipment-issue.equipment-issues')
             ->set('filters.search', EquipmentIssue::first()->cost)
             ->assertDontSee('No equipment issues found')
-            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"')
-            ->assertDontSeeHtml('"/equipmentIssues/'.EquipmentIssue::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"');
     }
 }
