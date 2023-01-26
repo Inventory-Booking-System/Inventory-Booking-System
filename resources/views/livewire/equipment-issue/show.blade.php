@@ -58,7 +58,7 @@
             <x-slot name="body">
                 @forelse ($incidents as $incident)
                     <x-table.row wire:key="row-{{ $incident->id }}">
-                        <x-table.cell class="col-1"><x-link route="loans" id="{{ $incident->id }}" value="#{{ $incident->id }}"></x-link></x-table.cell>
+                        <x-table.cell class="col-1"><x-link route="incidents" id="{{ $incident->id }}" value="#{{ $incident->id }}"></x-link></x-table.cell>
                         <x-table.cell class="col-2"><x-link route="equipmentIssue" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></x-table.cell>
                         <x-table.cell class="col-1"><span class="badge badge-pill badge-{{ $incident->status_type }}">{{ $incident->status }}</span></x-table.cell>
                         <x-table.cell class="col-2">{{ $incident->start_date_time }}</x-table.cell>
@@ -73,7 +73,7 @@
                     <x-table.row>
                         <x-table.cell width="12">
                             <div class="d-flex justify-content-center">
-                                No loans found
+                                No incidents found
                             </div>
                         </x-table.cell>
                     </x-table.row>

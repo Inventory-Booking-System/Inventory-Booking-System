@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Incident extends Model
 {
@@ -45,14 +46,26 @@ class Incident extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public static function getStatusIds()
+    {
+        return [
+            '0' => 'Outstanding',
+            '1' => 'Resolved',
+        ];
+    }
+
     /**
      * Convert status id to name
      */
     public function getStatusAttribute()
     {
-        return [
-            '0' => 'Outstanding',
-            '1' => 'Resolved',
-        ][$this->status_id] ?? 'Error';
+        return $this->getStatusIds()[$this->status_id] ?? 'Error';
+    }
+
+    public function getStartDateTimeAttribute($value)
+    {
+        $date = Carbon::parse($value);
+
+        return $date->format('d M Y H:i');
     }
 }
