@@ -135,7 +135,7 @@
 
                         <!-- Users -->
                         <x-input.group label="Users" for="user_id" :error="$errors->first('editing.loan.user_id')">
-                            <x-input.select wire:model="editing.loan.user_id" id="user_id" placeholder="Select User">
+                            <x-input.select wire:model="editing.loan.user_id" id="user_id" placeholder="Select User" style="width: 100%">
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
                                 @endforeach
@@ -144,7 +144,7 @@
 
                         <!-- Location -->
                         <x-input.group label="Location" for="location_id" :error="$errors->first('editing.location_id')">
-                            <x-input.select wire:model="editing.location_id" id="location_id" placeholder="Select Location">
+                            <x-input.select wire:model="editing.location_id" id="location_id" placeholder="Select Location" style="width: 100%">
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
@@ -153,7 +153,7 @@
 
                         <!-- Equipment -->
                         <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
-                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected refreshData iteration="{{ $iteration }}" placeholder="Select Equipment">
+                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected refreshData iteration="{{ $iteration }}" placeholder="Select Equipment" style="width: 100%">
                                 @foreach ($equipmentList as $equipment)
                                 @if($equipment['avaliable'] == true)
                                     <option value="{{ $equipment['id'] }}">{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
