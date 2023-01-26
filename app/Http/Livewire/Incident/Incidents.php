@@ -197,7 +197,6 @@ class Incidents extends Component
             ->when($this->filters['distribution_id'], fn($query, $distribution_id) => $query->where('distribution_id', $distribution_id))
             ->when($this->filters['evidence'], fn($query, $evidence) => $query->where('evidence', $evidence))
             ->when($this->filters['details'], fn($query, $details) => $query->where('details', $details))
-            //->when($this->filters['search'], fn($query, $search) => $query->where('details', 'like', '%'.$search.'%'));
             ->when($this->filters['search'], fn($query, $search) =>
                 $query->where(function($query) use ($search) { // Search
                     $search = SQL::escapeLikeString($search);
