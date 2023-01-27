@@ -388,4 +388,8 @@ class Setups extends Component
         $this->getBookableEquipment($this->editing->loan->start_date_time, $this->editing->loan->end_date_time);
         $this->iteration ++;
     }
+
+    public function updated() {
+        $this->validateOnly('editing.loan.end_date_time');
+    }
 }

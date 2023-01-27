@@ -384,4 +384,8 @@ class Loans extends Component
         $this->getBookableEquipment($this->editing->start_date_time, $this->editing->end_date_time);
         $this->iteration ++;
     }
+
+    public function updated() {
+        $this->validateOnly('editing.end_date_time');
+    }
 }
