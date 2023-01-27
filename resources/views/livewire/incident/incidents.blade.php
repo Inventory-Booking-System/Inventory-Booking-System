@@ -70,8 +70,28 @@
                                 @endforeach
                             </x-table.cell>
 
-                            <x-table.cell class="col">{{ $incident->evidence }}</x-table.cell>
-                            <x-table.cell class="col">{{ $incident->details }}</x-table.cell>
+                            <x-table.cell class="col" title="{{ $incident->evidence }}">
+                                @if(strlen($incident->evidence) > 300 && !in_array('evidence-'.$incident->id, $expandedCells))
+                                    {{ substr($incident->evidence, 0, 297) }}...
+                                    <div><x-button.link wire:click.prevent="expandCell('evidence-{{ $incident->id }}')">Show more</x-button.link></div>
+                                @elseif(in_array('evidence-'.$incident->id, $expandedCells))
+                                    {{ $incident->evidence }}
+                                    <div><x-button.link wire:click.prevent="collapseCell('evidence-{{ $incident->id }}')">Show less</x-button.link></div>
+                                @else
+                                    {{ $incident->evidence }}
+                                @endif
+                            </x-table.cell>
+                            <x-table.cell class="col" title="{{ $incident->details }}">
+                                @if(strlen($incident->details) > 300 && !in_array('details-'.$incident->id, $expandedCells))
+                                    {{ substr($incident->details, 0, 297) }}...
+                                    <div><x-button.link wire:click.prevent="expandCell('details-{{ $incident->id }}')">Show more</x-button.link></div>
+                                @elseif(in_array('details-'.$incident->id, $expandedCells))
+                                    {{ $incident->details }}
+                                    <div><x-button.link wire:click.prevent="collapseCell('details-{{ $incident->id }}')">Show less</x-button.link></div>
+                                @else
+                                    {{ $incident->details }}
+                                @endif
+                            </x-table.cell>
                             <x-table.cell class="col-2">
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <x-button.primary wire:click="edit({{ $incident->id }})" ><x-loading wire:target="edit({{ $incident->id }})" />Edit</x-button.primary>

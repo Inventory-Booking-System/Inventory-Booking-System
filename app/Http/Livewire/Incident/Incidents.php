@@ -36,6 +36,7 @@ class Incidents extends Component
         'evidence' => null,
         'details' => null,
     ];
+    public $expandedCells = [];
 
     public Incident $editing;               #Data relating to the current incident
     public $equipment_id;                   #Used to trigger update on the select2 dropdown as we cannot use wire:model due to wire:ignore in place
@@ -183,6 +184,19 @@ class Incidents extends Component
     public function resetFilters()
     {
         $this->reset('filters');
+    }
+
+    public function expandCell($cellId)
+    {
+        array_push($this->expandedCells, $cellId);
+        array_unique($this->expandedCells);
+    }
+
+    public function collapseCell($cellId)
+    {
+        if (($key = array_search($cellId, $this->expandedCells)) !== false) {
+            unset($this->expandedCells[$key]);
+        }
     }
 
     public function getRowsQueryProperty()
