@@ -12,6 +12,8 @@ class Setup extends Model
     protected $fillable = ['title', 'location_id'];
 
     protected $with = ['loan','location'];
+    
+    protected $primaryKey = "id";
 
     /**
      * A setup belongs to a loan
