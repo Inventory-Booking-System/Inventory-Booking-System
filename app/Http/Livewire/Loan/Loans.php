@@ -34,6 +34,7 @@ class Loans extends Component
         'details' => null,
         'assets' => null,
     ];
+    public $expandedCells = [];
 
     public Loan $editing;                           #Data relating to the current loan excluding any assets
     public $equipment_id;                           #Used to trigger update on the select2 dropdown as we cannot use wire:model due to wire:ignore in place
@@ -318,6 +319,19 @@ class Loans extends Component
 
     public function complete($id){
         $this->updateLoanStatus($id, 5, true);
+    }
+
+    public function expandCell($cellId)
+    {
+        array_push($this->expandedCells, $cellId);
+        array_unique($this->expandedCells);
+    }
+
+    public function collapseCell($cellId)
+    {
+        if (($key = array_search($cellId, $this->expandedCells)) !== false) {
+            unset($this->expandedCells[$key]);
+        }
     }
 
     protected function updateLoanStatus($id, $status, $setAssetsReturned)

@@ -53,7 +53,17 @@
                             </x-table.cell>
                             <x-table.cell class="col-3"><x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }}"></x-link></x-table.cell>
                             <x-table.cell class="col-1">{{ $asset->tag }}</x-table.cell>
-                            <x-table.cell class="col">{{ $asset->description }}</x-table.cell>
+                            <x-table.cell class="col" title="{{ $asset->description }}">
+                                @if(strlen($asset->description) > 300 && !in_array('description-'.$asset->id, $expandedCells))
+                                    {{ substr($asset->description, 0, 297) }}...
+                                    <div><x-button.link wire:click.prevent="expandCell('description-{{ $asset->id }}')">Show more</x-button.link></div>
+                                @elseif(in_array('description-'.$asset->id, $expandedCells))
+                                    {{ $asset->description }}
+                                    <div><x-button.link wire:click.prevent="collapseCell('description-{{ $asset->id }}')">Show less</x-button.link></div>
+                                @else
+                                    {{ $asset->description }}
+                                @endif
+                            </x-table.cell>
                             <x-table.cell class="col-2">
                                 <x-button.primary wire:click="edit({{ $asset->id }})" ><x-loading wire:target="edit({{ $asset->id }})" />Edit</x-button.primary>
                             </x-table.cell>

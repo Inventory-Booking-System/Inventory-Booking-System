@@ -22,6 +22,7 @@ class Assets extends Component
         'tag' => null,
         'description' => null,
     ];
+    public $expandedCells = [];
 
     public $counter = 0;
     public Asset $editing;
@@ -101,6 +102,19 @@ class Assets extends Component
     public function resetFilters()
     {
         $this->reset('filters');
+    }
+
+    public function expandCell($cellId)
+    {
+        array_push($this->expandedCells, $cellId);
+        array_unique($this->expandedCells);
+    }
+
+    public function collapseCell($cellId)
+    {
+        if (($key = array_search($cellId, $this->expandedCells)) !== false) {
+            unset($this->expandedCells[$key]);
+        }
     }
 
     public function getRowsQueryProperty()
