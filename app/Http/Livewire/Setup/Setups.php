@@ -375,7 +375,7 @@ class Setups extends Component
         $this->iteration ++;
     }
 
-    public function updated($propertyName) {
+    public function updated() {
         $this->validateOnly('editing.loan.end_date_time');
     }
 }
