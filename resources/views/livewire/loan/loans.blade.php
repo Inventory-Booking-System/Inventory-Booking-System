@@ -67,10 +67,10 @@
                             <x-table.cell class="col-2" title="{{ $loan->details }}">
                                 @if(strlen($loan->details) > 300 && !in_array('details-'.$loan->id, $expandedCells))
                                     {{ substr($loan->details, 0, 297) }}...
-                                    <div><a href="" wire:click.prevent="expandCell('details-{{ $loan->id }}')">Show more</a></div>
+                                    <div><x-button.link wire:click.prevent="expandCell('details-{{ $loan->id }}')">Show more</x-button.link></div>
                                 @elseif(in_array('details-'.$loan->id, $expandedCells))
                                     {{ $loan->details }}
-                                    <div><a href="" wire:click.prevent="condenseCell('details-{{ $loan->id }}')">Show less</a></div>
+                                    <div><x-button.link wire:click.prevent="collapseCell('details-{{ $loan->id }}')">Show less</x-button.link></div>
                                 @else
                                     {{ $loan->details }}
                                 @endif

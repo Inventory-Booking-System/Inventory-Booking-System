@@ -64,7 +64,17 @@
                         <x-table.cell class="col-1"><x-link route="locations" id="{{ $setup->location->id }}" value="{{ $setup->location->name }}"></x-link></x-table.cell>
                         <x-table.cell class="col-1">{{ $setup->loan->start_date_time }}</x-table.cell>
                         <x-table.cell class="col-1">{{ $setup->loan->end_date_time }}</x-table.cell>
-                        <x-table.cell class="col-2">{{ $setup->loan->details }}</x-table.cell>
+                        <x-table.cell class="col-2" title="{{ $setup->loan->details }}">
+                            @if(strlen($setup->loan->details) > 300 && !in_array('details-'.$setup->id, $expandedCells))
+                                {{ substr($setup->loan->details, 0, 297) }}...
+                                <div><x-button.link wire:click.prevent="expandCell('details-{{ $setup->id }}')">Show more</x-button.link></div>
+                            @elseif(in_array('details-'.$setup->id, $expandedCells))
+                                {{ $setup->loan->details }}
+                                <div><x-button.link wire:click.prevent="collapseCell('details-{{ $setup->id }}')">Show less</x-button.link></div>
+                            @else
+                                {{ $setup->loan->details }}
+                            @endif
+                        </x-table.cell>
                         <x-table.cell class="col-2">
                             @foreach($setup->loan->assets as $asset)
                                 <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" style="{{ $asset->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $asset->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
