@@ -327,7 +327,7 @@ class Loans extends Component
         array_unique($this->expandedCells);
     }
 
-    public function condenseCell($cellId)
+    public function collapseCell($cellId)
     {
         if (($key = array_search($cellId, $this->expandedCells)) !== false) {
             unset($this->expandedCells[$key]);
