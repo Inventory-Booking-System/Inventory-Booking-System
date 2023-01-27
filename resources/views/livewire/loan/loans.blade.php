@@ -64,7 +64,17 @@
                             <x-table.cell class="col-1"><span class="badge badge-pill badge-{{ $loan->status_type }}">{{ $loan->status }}</span></x-table.cell>
                             <x-table.cell class="col-1">{{ $loan->start_date_time }}</x-table.cell>
                             <x-table.cell class="col-1">{{ $loan->end_date_time }}</x-table.cell>
-                            <x-table.cell class="col-2">{{ $loan->details }}</x-table.cell>
+                            <x-table.cell class="col-2" title="{{ $loan->details }}">
+                                @if(strlen($loan->details) > 300 && !in_array('details-'.$loan->id, $expandedCells))
+                                    {{ substr($loan->details, 0, 297) }}...
+                                    <div><a href="" wire:click.prevent="expandCell('details-{{ $loan->id }}')">Show more</a></div>
+                                @elseif(in_array('details-'.$loan->id, $expandedCells))
+                                    {{ $loan->details }}
+                                    <div><a href="" wire:click.prevent="condenseCell('details-{{ $loan->id }}')">Show less</a></div>
+                                @else
+                                    {{ $loan->details }}
+                                @endif
+                            </x-table.cell>
                             <x-table.cell class="col-2">
                                 @foreach($loan->assets as $asset)
                                     <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" style="{{ $asset->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $asset->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
