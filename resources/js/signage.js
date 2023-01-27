@@ -31,7 +31,7 @@ function Header() {
 }
 
 function Entry({ item }) {
-    const { assets, details, status_id, start_date_time, user } = item;
+    const { assets, details, status_id, start_date_time, user, setup } = item;
     
     const cardClass = useMemo(() => {
         switch(status_id) {
@@ -57,6 +57,9 @@ function Entry({ item }) {
                 <div class="card-header text-center">${user.forename} ${user.surname} : ${start_date_time.split(' ')[3]}</div>
                 <div class="card-body p-1 ">
                     <div class="row mb-2">
+                        ${setup?.location?.name && html`<div class="col-12 text-center truncate">
+                            ${setup.location.name}
+                        </div>`}
                         <div class="col-12 text-center truncate">
                             ${details}
                         </div>

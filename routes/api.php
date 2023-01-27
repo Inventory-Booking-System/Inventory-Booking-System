@@ -22,7 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/signage', function (Request $request) {
-    return Loan::where(function($query){
+    return Loan::with('setup')
+        ->where(function($query){
             $query->whereDate('start_date_time', '=', Carbon::today())
                   ->whereIn('status_id', [0, 1, 2, 3]);
         })->orWhere(function($query){
