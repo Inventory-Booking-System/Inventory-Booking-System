@@ -108,7 +108,7 @@
 
                         <!-- Users -->
                         <x-input.group label="Users" for="user_id" :error="$errors->first('user_id')">
-                            <x-input.select wire:model="user_id" id="user_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select User" style="width: 100%">
+                            <x-input.select wire:model="user_id" id="user_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select User" fullWidth>
                                 @foreach ($equipmentList as $user)
                                     @if($user['avaliable'] == true)
                                         <option value="{{ $user['id'] }}">{{ $user['forename'] }} {{ $user['surname'] }}</option>

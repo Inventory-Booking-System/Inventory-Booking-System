@@ -4,6 +4,7 @@
     'disabledSelected' => null,
     'refreshData' => null,
     'iteration' => null,
+    'fullWidth' => false
 ])
 
 @if($iteration)<div wire:key='"select-field-version-{{ $iteration }}'>@endif
@@ -58,7 +59,10 @@
     <select
         x-bind:value="{{ $attributes->get('id') }}"
         x-ref="select"
-        {{ $attributes }} class="form-control">
+        {{ $attributes }}
+        class="form-control"
+        @if($fullWidth) style="width: 100%" @endif
+    >
         @if ($placeholder)
             <option></option>
         @endif
