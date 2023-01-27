@@ -18,6 +18,7 @@ class CreateSetupsTable extends Migration
             $table->integer("loan_id")->references('id')->on('loans');
             $table->string('title');
             $table->string('location_id')->references('id')->on('locations');
+            $table->boolean('email_reminder_sent')->default(false);
             $table->timestamps();
         });
     }
