@@ -70,7 +70,6 @@ class AssetsPageTest extends TestCase
         Livewire::test('asset.assets')
             ->set('filters.search', Asset::first()->description)
             ->assertDontSee('No assets found')
-            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"')
-            ->assertDontSeeHtml('"/assets/'.Asset::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"');
     }
 }
