@@ -55,7 +55,7 @@ function Entry({ item }) {
     return html`
         <div class="col-md-4">
             <div class="card ${cardClass} w-100">
-                <div class="card-header text-center">${user.forename} ${user.surname} : ${status_id === 2 ? (new Date(end_date_time)).toDateString() : start_date_time.split(' ')[3]}</div>
+                <div class="card-header text-center">${user.forename} ${user.surname} : ${status_id === 2 ? end_date_time : start_date_time.split(' ')[3]}</div>
                 <div class="card-body p-1 ">
                     <div class="row mb-2">
                         ${setup?.location?.name && html`<div class="col-12 text-center truncate">
