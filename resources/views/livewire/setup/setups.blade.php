@@ -123,7 +123,7 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal" class="modal-xl">
-            <x-slot name="title">{{ $modalType }}</x-slot>
+            <x-slot name="title">{{ $modalType }} Setup</x-slot>
 
             <x-slot name="content">
                 <div class="row">

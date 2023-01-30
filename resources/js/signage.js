@@ -2,6 +2,8 @@ import Masonry from 'masonry-layout';
 import { render } from 'preact';
 import { useState, useEffect, useMemo } from 'preact/hooks';
 import { html } from 'htm/preact';
+import PropTypes from 'prop-types';
+import '../css/signage.css';
 
 function dateToString() {
     return (new Date()).toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'medium' });
@@ -32,7 +34,7 @@ function Header() {
 
 function Entry({ item }) {
     const { assets, details, status_id, start_date_time, user, setup } = item;
-    
+
     const cardClass = useMemo(() => {
         switch(status_id) {
             case 0:
@@ -82,7 +84,25 @@ function Entry({ item }) {
         </div>
     `;
 }
-    
+
+Entry.propTypes = {
+    item: PropTypes.shape({
+        assets: PropTypes.array,
+        details: PropTypes.string,
+        status_id: PropTypes.number,
+        start_date_time: PropTypes.string,
+        user: PropTypes.shape({
+            forename: PropTypes.string,
+            surname: PropTypes.string
+        }),
+        setup: PropTypes.shape({
+            location: PropTypes.shape({
+                name: PropTypes.string
+            })
+        })
+    })
+};
+
 function App() {
     const [masonry] = useState(new Masonry(document.querySelector('#masonry'), {
         percentPosition: true,
@@ -100,7 +120,7 @@ function App() {
             }
         }
         get();
-        
+
         const intervalId = setInterval(() => {
             get();
         }, 10000);
@@ -111,7 +131,6 @@ function App() {
     useEffect(() => {
         masonry.reloadItems();
         masonry.layout();
-        
     }, [masonry, items]);
 
     return html`

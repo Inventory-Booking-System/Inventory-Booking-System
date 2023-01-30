@@ -153,7 +153,7 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal" class="modal-xl">
-            <x-slot name="title">Edit Incident</x-slot>
+            <x-slot name="title">{{ $modalType }} Incident</x-slot>
 
             <x-slot name="content">
                 <div class="row">

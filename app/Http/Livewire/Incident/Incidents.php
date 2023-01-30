@@ -109,7 +109,7 @@ class Incidents extends Component
         }
         $this->makeBlankIncident();
 
-        $this->modalType = "create";
+        $this->modalType = "Create";
         $this->emit('showModal', 'create');
     }
 
@@ -130,7 +130,7 @@ class Incidents extends Component
         });
 
         //Display the modal to the user
-        $this->modalType = "edit";
+        $this->modalType = "Edit";
         $this->emit('showModal', 'edit');
 
         $this->updateItemCostInCart();
@@ -174,7 +174,7 @@ class Incidents extends Component
         }
         $incident->issues()->sync($ids);
 
-        $this->emit('hideModal', $this->modalType);
+        $this->emit('hideModal', strtolower($this->modalType));
 
         //Send the email to the user
         $users = $incident->group->users->pluck('email');

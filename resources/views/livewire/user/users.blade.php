@@ -93,7 +93,7 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal">
-            <x-slot name="title">Edit Asset</x-slot>
+            <x-slot name="title">{{ $modalType }} User</x-slot>
 
             <x-slot name="content">
                 <x-input.group for="forename" label="Forename" :error="$errors->first('editing.forename')">

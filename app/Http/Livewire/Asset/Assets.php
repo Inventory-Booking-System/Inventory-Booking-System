@@ -28,6 +28,7 @@ class Assets extends Component
     public Asset $editing;
 
     protected $queryString = [];
+    public $modalType;
 
     public function rules()
     {
@@ -74,6 +75,8 @@ class Assets extends Component
 
     public function create()
     {
+        $this->modalType = "Create";
+
         if ($this->editing->getKey()){
             $this->makeBlankAsset();
         }
@@ -83,6 +86,8 @@ class Assets extends Component
 
     public function edit(Asset $asset)
     {
+        $this->modalType = "Edit";
+
         if($this->editing->isNot($asset)){
             $this->editing = $asset;
         }
