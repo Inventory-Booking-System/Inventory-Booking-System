@@ -65,6 +65,7 @@ class Users extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankUser();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');

@@ -89,6 +89,7 @@ class Incidents extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankIncident();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');

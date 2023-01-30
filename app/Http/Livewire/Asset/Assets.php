@@ -61,6 +61,7 @@ class Assets extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankAsset();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');

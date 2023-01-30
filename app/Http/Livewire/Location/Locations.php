@@ -56,6 +56,7 @@ class Locations extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankLocation();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');
