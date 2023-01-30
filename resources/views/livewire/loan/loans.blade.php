@@ -70,7 +70,6 @@
                                     <div><x-button.link wire:click.prevent="expandCell('details-{{ $loan->id }}')"><strong>Show more</strong></x-button.link></div>
                                 @elseif(in_array('details-'.$loan->id, $expandedCells))
                                     {{ $loan->details }}
-                                    <hr/>
                                     <div><x-button.link wire:click.prevent="collapseCell('details-{{ $loan->id }}')"><strong>Show less</strong></x-button.link></div>
                                 @else
                                     {{ $loan->details }}
