@@ -78,7 +78,11 @@
                             </x-table.cell>
                             <x-table.cell class="col-2">
                                 
-                                @if(count($loan->assets) > 9 && !in_array('assets-'.$loan->id, $expandedCells))
+                                @if(
+                                    ( !(new Carbon\Carbon($loan->start_date_time))->isCurrentDay() && !(new Carbon\Carbon($loan->end_date_time))->isCurrentDay() ) && 
+                                    count($loan->assets) > 9 && 
+                                    !in_array('assets-'.$loan->id, $expandedCells)
+                                )
                                     @for($i = 0; $i < 9; $i++)
                                         <x-link route="assets" id="{{ $loan->assets[$i]->id }}" value="{{ $loan->assets[$i]->name }} ({{ $loan->assets[$i]->tag }})" style="{{ $loan->assets[$i]->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $loan->assets[$i]->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
                                     @endfor
