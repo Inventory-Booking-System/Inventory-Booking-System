@@ -67,18 +67,33 @@
                             <x-table.cell class="col-2" title="{{ $loan->details }}">
                                 @if(strlen($loan->details) > 300 && !in_array('details-'.$loan->id, $expandedCells))
                                     {{ substr($loan->details, 0, 297) }}...
-                                    <div><x-button.link wire:click.prevent="expandCell('details-{{ $loan->id }}')">Show more</x-button.link></div>
+                                    <div><x-button.link wire:click.prevent="expandCell('details-{{ $loan->id }}')"><strong>Show more</strong></x-button.link></div>
                                 @elseif(in_array('details-'.$loan->id, $expandedCells))
                                     {{ $loan->details }}
-                                    <div><x-button.link wire:click.prevent="collapseCell('details-{{ $loan->id }}')">Show less</x-button.link></div>
+                                    <hr/>
+                                    <div><x-button.link wire:click.prevent="collapseCell('details-{{ $loan->id }}')"><strong>Show less</strong></x-button.link></div>
                                 @else
                                     {{ $loan->details }}
                                 @endif
                             </x-table.cell>
                             <x-table.cell class="col-2">
-                                @foreach($loan->assets as $asset)
-                                    <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" style="{{ $asset->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $asset->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
-                                @endforeach
+                                
+                                @if(count($loan->assets) > 9 && !in_array('assets-'.$loan->id, $expandedCells))
+                                    @for($i = 0; $i < 9; $i++)
+                                        <x-link route="assets" id="{{ $loan->assets[$i]->id }}" value="{{ $loan->assets[$i]->name }} ({{ $loan->assets[$i]->tag }})" style="{{ $loan->assets[$i]->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $loan->assets[$i]->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
+                                    @endfor
+                                    <div><x-button.link wire:click.prevent="expandCell('assets-{{ $loan->id }}')"><strong>Show {{ count($loan->assets) - 9 }} more</strong></x-button.link></div>
+                                @elseif(in_array('assets-'.$loan->id, $expandedCells))
+                                    @foreach($loan->assets as $asset)
+                                        <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" style="{{ $asset->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $asset->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
+                                    @endforeach
+                                    <div><x-button.link wire:click.prevent="collapseCell('assets-{{ $loan->id }}')"><strong>Show less</strong></x-button.link></div>
+                                @else
+                                    @foreach($loan->assets as $asset)
+                                        <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" style="{{ $asset->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $asset->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
+                                    @endforeach
+                                @endif
+
                             </x-table.cell>
                             <x-table.cell class="col">
                                 <div class="btn-group" role="group" aria-label="Basic example">
