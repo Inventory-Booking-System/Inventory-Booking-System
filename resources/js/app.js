@@ -1,3 +1,5 @@
+/*global $*/
+
 //This function will update the corresponding label on the form control to let the user
 //know they have inputted data incorrectly into this field
 function OutputDataEntryError(id,message){
@@ -50,4 +52,11 @@ document.addEventListener('livewire:load', function () {
                 break;
         }
     });
+});
+
+/**
+ * Fix for Select2 search box auto focus when using jQuery 3.6.0
+ */
+$(document).on('select2:open', () => {
+    document.querySelector('.select2-container--open .select2-search__field').focus();
 });
