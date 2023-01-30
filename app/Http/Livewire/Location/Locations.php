@@ -23,6 +23,7 @@ class Locations extends Component
 
     public $counter = 0;
     public Location $editing;
+    public $modalType;
 
     protected $queryString = [];
 
@@ -69,6 +70,8 @@ class Locations extends Component
 
     public function create()
     {
+        $this->modalType = 'Create';
+
         if ($this->editing->getKey()){
             $this->makeBlankLocation();
         }
@@ -78,6 +81,8 @@ class Locations extends Component
 
     public function edit(Location $location)
     {
+        $this->modalType = 'Edit';
+
         if($this->editing->isNot($location)){
             $this->editing = $location;
         }
