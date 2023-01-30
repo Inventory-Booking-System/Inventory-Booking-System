@@ -29,6 +29,7 @@ class Users extends Component
 
     public $counter = 0;
     public User $editing;
+    public $modalType;
 
     protected $queryString = [];
 
@@ -78,6 +79,8 @@ class Users extends Component
 
     public function create()
     {
+        $this->modalType = 'Create';
+
         if ($this->editing->getKey()){
             $this->makeBlankUser();
         }
@@ -87,6 +90,8 @@ class Users extends Component
 
     public function edit(User $user)
     {
+        $this->modalType = 'Edit';
+
         if($this->editing->isNot($user)){
             $this->editing = $user;
         }
