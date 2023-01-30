@@ -2,6 +2,8 @@ import Masonry from 'masonry-layout';
 import { render } from 'preact';
 import { useState, useEffect, useMemo } from 'preact/hooks';
 import { html } from 'htm/preact';
+import '../css/signage.css';
+
 
 function dateToString() {
     return (new Date()).toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'medium' });
