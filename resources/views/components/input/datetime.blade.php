@@ -4,7 +4,14 @@
 
 <div
     x-data="{ {{ $id }}: @entangle($attributes->wire('model'))}"
-    x-init="picker = new tempusDominus.TempusDominus(document.getElementById('picker{{ $id }}'), {display: {sideBySide: true,}}); picker.dates.formatInput = date => moment(date).format('DD MMM yyyy HH:mm')"
+    x-init="
+      if (typeof window.pickers === 'undefined') window.pickers = {};
+      pickers['{{ $id }}'] = new tempusDominus.TempusDominus(document.getElementById('picker{{ $id }}'), {display: {sideBySide: true,}});
+      pickers['{{ $id }}'].dates.formatInput = date => moment(date).format('DD MMM yyyy HH:mm');
+      document.addEventListener('datetime-clear', () => {
+        pickers['{{ $id }}'].dates.setValue(tempusDominus.DateTime.convert(new Date()));
+      });
+    "
 >
     <div
         class='input-group'
