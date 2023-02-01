@@ -80,6 +80,7 @@ class Loans extends Component
         $equipment_id = null;
         $this->emptyCart();
         $this->iteration ++;
+        $this->dispatchBrowserEvent('datetime-clear');
     }
 
     public function deleteSelected()
