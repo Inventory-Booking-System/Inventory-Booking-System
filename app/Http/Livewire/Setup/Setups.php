@@ -91,6 +91,7 @@ class Setups extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankSetup();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');

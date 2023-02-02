@@ -85,6 +85,7 @@ class Loans extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankLoan();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');

@@ -61,6 +61,7 @@ class EquipmentIssues extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankEquipmentIssue();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');

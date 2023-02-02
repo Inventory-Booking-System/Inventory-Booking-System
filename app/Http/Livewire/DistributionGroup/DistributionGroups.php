@@ -68,6 +68,7 @@ class DistributionGroups extends Component
 
     public function deleteSelected()
     {
+        $this->makeBlankDistributionGroup();
         $this->selectedRowsQuery->delete();
 
         $this->emit('hideModal', 'confirm');
