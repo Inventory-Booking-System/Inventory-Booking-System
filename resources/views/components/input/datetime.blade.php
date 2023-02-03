@@ -9,7 +9,7 @@
       pickers['{{ $id }}'] = new tempusDominus.TempusDominus(document.getElementById('picker{{ $id }}'), {display: {sideBySide: true,}});
       pickers['{{ $id }}'].dates.formatInput = date => moment(date).format('DD MMM yyyy HH:mm');
       document.addEventListener('datetime-clear', () => {
-        pickers['{{ $id }}'].dates.setValue(tempusDominus.DateTime.convert(new Date()));
+        pickers['{{ $id }}'].dates.setValue('{{ $id }}'.includes('end') ? tempusDominus.DateTime.convert(new Date()).manipulate(1, 'hours') : tempusDominus.DateTime.convert(new Date()));
       });
     "
 >
