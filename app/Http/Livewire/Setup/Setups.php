@@ -79,14 +79,20 @@ class Setups extends Component
         $this->resetPage();
     }
 
-    public function makeBlankSetup()
+    public function makeBlankSetup($clearDateTime = false)
     {
         #We must preload an empty loan so @entangle doesnt error
         $this->editing = Setup::make()->setRelation('loan', Loan::make());
+        $this->editing->loan->start_date_time = Carbon::now();
+        $this->editing->loan->end_date_time = Carbon::now()->add(1, 'hour');
 
         $equipment_id = null;
         $this->emptyCart();
         $this->iteration ++;
+
+        if ($clearDateTime) {
+            $this->dispatchBrowserEvent('datetime-clear');
+        }
     }
 
     public function deleteSelected()
@@ -110,10 +116,13 @@ class Setups extends Component
         //I Removed for now as it wasen't resetting properly between editing/creating etc
         if ($this->editing->getKey()){
         }
-        $this->makeBlankSetup();
+        $this->makeBlankSetup(true);
 
         $this->modalType = "Create";
         $this->emit('showModal', 'create');
+
+        // Clear datetime errors from previous modals
+        $this->updated();
     }
 
     public function edit(Setup $setup)
@@ -140,12 +149,14 @@ class Setups extends Component
         //Populate equipment dropdown
         $this->getBookableEquipment($this->editing->loan->start_date_time, $this->editing->loan->end_date_time);
         $this->iteration ++;
+
+        // Clear datetime errors from previous modals
+        $this->updated();
     }
 
     public function save()
     {
         $this->validate();
-
 
         $this->editing->loan->start_date_time = carbon::parse($this->editing->loan->start_date_time);
         $this->editing->loan->end_date_time = carbon::parse($this->editing->loan->end_date_time);

@@ -74,13 +74,18 @@ class Loans extends Component
         $this->resetPage();
     }
 
-    public function makeBlankLoan()
+    public function makeBlankLoan($clearDateTime = false)
     {
         $this->editing = Loan::make();
+        $this->editing->start_date_time = Carbon::now();
+        $this->editing->end_date_time = Carbon::now()->add(1, 'hour');
         $equipment_id = null;
         $this->emptyCart();
         $this->iteration ++;
-        $this->dispatchBrowserEvent('datetime-clear');
+
+        if ($clearDateTime) {
+            $this->dispatchBrowserEvent('datetime-clear');
+        }
     }
 
     public function deleteSelected()
@@ -105,10 +110,13 @@ class Loans extends Component
         if ($this->editing->getKey()){
         }
 
-        $this->makeBlankLoan();
+        $this->makeBlankLoan(true);
 
         $this->modalType = "Create";
         $this->emit('showModal', 'create');
+
+        // Clear datetime errors from previous modals
+        $this->updated();
     }
 
     public function edit(Loan $loan)
@@ -135,6 +143,9 @@ class Loans extends Component
         //Populate equipment dropdown
         $this->getBookableEquipment($this->editing->start_date_time, $this->editing->end_date_time);
         $this->iteration ++;
+
+        // Clear datetime errors from previous modals
+        $this->updated();
     }
 
     public function save()
