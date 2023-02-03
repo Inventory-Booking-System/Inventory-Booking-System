@@ -115,7 +115,7 @@ class Loans extends Component
         $this->modalType = "Create";
         $this->emit('showModal', 'create');
 
-        // Clear any previous error
+        // Clear datetime errors from previous modals
         $this->updated();
     }
 
@@ -144,7 +144,7 @@ class Loans extends Component
         $this->getBookableEquipment($this->editing->start_date_time, $this->editing->end_date_time);
         $this->iteration ++;
 
-        // Clear any previous error
+        // Clear datetime errors from previous modals
         $this->updated();
     }
 
