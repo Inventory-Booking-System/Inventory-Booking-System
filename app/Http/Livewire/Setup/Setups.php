@@ -165,6 +165,12 @@ class Setups extends Component
 
         $this->editing->loan->save();
         $this->editing->loan_id = $this->editing->loan->id;
+        /**
+         * We must unset this when using defer on inputs, as otherwise it will
+         * try to insert the loan object into the setups table. Presumably this
+         * is a bug in Livewire?
+         */
+        unset($this->editing->loan);
         $this->editing->save();
 
         $setup = Setup::find($this->editing->id);
