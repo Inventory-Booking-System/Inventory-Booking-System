@@ -103,7 +103,7 @@
                     <div class="col-md-6">
                         <!-- Name -->
                         <x-input.group label="Name" for="name" :error="$errors->first('editing.name')">
-                            <x-input.text wire:model="editing.name" id="name" rows="8" />
+                            <x-input.text wire:model.defer="editing.name" id="name" rows="8" />
                         </x-input.group>
 
                         <!-- Users -->

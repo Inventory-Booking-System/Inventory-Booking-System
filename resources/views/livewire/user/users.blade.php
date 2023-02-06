@@ -97,19 +97,19 @@
 
             <x-slot name="content">
                 <x-input.group for="forename" label="Forename" :error="$errors->first('editing.forename')">
-                    <x-input.text wire:model="editing.forename" id="forename" />
+                    <x-input.text wire:model.defer="editing.forename" id="forename" />
                 </x-input.group>
 
                 <x-input.group for="surname" label="Surname" :error="$errors->first('editing.surname')">
-                    <x-input.text wire:model="editing.surname" id="surname" />
+                    <x-input.text wire:model.defer="editing.surname" id="surname" />
                 </x-input.group>
 
                 <x-input.group for="email" label="Email" :error="$errors->first('editing.email')">
-                    <x-input.text wire:model="editing.email" id="email" />
+                    <x-input.text wire:model.defer="editing.email" id="email" />
                 </x-input.group>
 
                 <x-input.group for="has_account" label="Has Account" :error="$errors->first('editing.has_account')">
-                    <x-input.checkbox wire:model="editing.has_account" id="has_account" />
+                    <x-input.checkbox wire:model.defer="editing.has_account" id="has_account" />
                 </x-input.group>
             </x-slot>
 

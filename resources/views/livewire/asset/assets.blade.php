@@ -107,15 +107,15 @@
 
             <x-slot name="content">
                 <x-input.group for="name" label="Name" :error="$errors->first('editing.name')">
-                    <x-input.text wire:model="editing.name" id="name" />
+                    <x-input.text wire:model.defer="editing.name" id="name" />
                 </x-input.group>
 
                 <x-input.group for="tag" label="Tag" :error="$errors->first('editing.tag')">
-                    <x-input.text wire:model="editing.tag" id="tag" />
+                    <x-input.text wire:model.defer="editing.tag" id="tag" />
                 </x-input.group>
 
                 <x-input.group for="description" label="Description" :error="$errors->first('editing.description')">
-                    <x-input.textarea wire:model="editing.description" id="description" />
+                    <x-input.textarea wire:model.defer="editing.description" id="description" />
                 </x-input.group>
             </x-slot>
 
