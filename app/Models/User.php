@@ -14,6 +14,8 @@ class User extends Authenticatable
 
     protected $fillable = ['forename', 'surname', 'email', 'has_account'];
 
+    protected $attributes = ['has_account' => false];
+
     protected $hidden = ['password,', 'remember_token'];
 
     protected $casts = ['email_verified_at' => 'datetime'];
