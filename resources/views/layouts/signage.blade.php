@@ -1,7 +1,7 @@
 <x-layouts.base>
     <div class="wrapper">
         <!-- Content Wrapper. Contains page content -->
-        <div style="background:#222; height:100vh">
+        <div style="background:#222; min-height:100vh">
             <div class="content-header">
                 <div class="container-fluid">
                 </div>
