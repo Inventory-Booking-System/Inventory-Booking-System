@@ -1,3 +1,29 @@
 html {
     cursor: none;
 }
+
+#header .row {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: linear-gradient(#222 80%, rgba(0, 0, 0, 0));
+    padding: 20px;
+}
+
+#masonry {
+    padding-top: 80px;
+}
+
+::-webkit-scrollbar {
+    width: 25px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+}
