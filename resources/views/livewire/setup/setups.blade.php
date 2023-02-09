@@ -130,12 +130,12 @@
                     <div class="col-md-6">
                         <!-- Title -->
                         <x-input.group label="Title" for="title" :error="$errors->first('editing.title')">
-                            <x-input.text wire:model="editing.title" id="title" />
+                            <x-input.text wire:model.defer="editing.title" id="title" />
                         </x-input.group>
 
                         <!-- Start Date Time -->
                         <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.loan.start_date_time')">
-                            <x-input.datetime wire:model.defer="editing.loan.start_date_time" id="start_date_time" />
+                            <x-input.datetime wire:model="editing.loan.start_date_time" id="start_date_time" />
                         </x-input.group>
 
                         <!-- End Date Time -->
@@ -145,7 +145,7 @@
 
                         <!-- Users -->
                         <x-input.group label="Users" for="user_id" :error="$errors->first('editing.loan.user_id')">
-                            <x-input.select wire:model="editing.loan.user_id" id="user_id" placeholder="Select User" fullWidth>
+                            <x-input.select wire:model.defer="editing.loan.user_id" id="user_id" placeholder="Select User" fullWidth>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
                                 @endforeach
@@ -154,7 +154,7 @@
 
                         <!-- Location -->
                         <x-input.group label="Location" for="location_id" :error="$errors->first('editing.location_id')">
-                            <x-input.select wire:model="editing.location_id" id="location_id" placeholder="Select Location" fullWidth>
+                            <x-input.select wire:model.defer="editing.location_id" id="location_id" placeholder="Select Location" fullWidth>
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
@@ -176,7 +176,7 @@
 
                         <!-- Details -->
                         <x-input.group label="Details" for="details" :error="$errors->first('editing.loan.details')">
-                            <x-input.textarea wire:model="editing.loan.details" id="details" rows="8" />
+                            <x-input.textarea wire:model.defer="editing.loan.details" id="details" rows="8" />
                         </x-input.group>
                     </div>
 

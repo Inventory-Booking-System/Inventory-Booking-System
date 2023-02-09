@@ -99,12 +99,12 @@
                     <div class="col-md-12">
                         <!-- Title -->
                         <x-input.group label="Title" for="title" :error="$errors->first('editing.title')">
-                            <x-input.text wire:model="editing.title" id="title" rows="8" />
+                            <x-input.text wire:model.defer="editing.title" id="title" rows="8" />
                         </x-input.group>
 
                         <!-- Cost -->
                         <x-input.group label="Cost" for="cost" :error="$errors->first('editing.cost')">
-                            <x-input.text wire:model="editing.cost" id="cost" rows="8" />
+                            <x-input.text wire:model.defer="editing.cost" id="cost" rows="8" />
                         </x-input.group>
                     </div>
                 </div>

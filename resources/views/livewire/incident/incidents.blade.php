@@ -160,12 +160,12 @@
                     <div class="col-md-6">
                         <!-- Start Date Time -->
                         <x-input.group for="start_date_time" label="Start Date & Time" :error="$errors->first('editing.start_date_time')">
-                            <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
+                            <x-input.datetime wire:model.defer="editing.start_date_time" id="start_date_time" />
                         </x-input.group>
 
                         <!-- Distribution Group -->
                         <x-input.group for="distribution_id" label="Alert" :error="$errors->first('editing.distribution_id')">
-                            <x-input.select wire:model="editing.distribution_id" id="distribution_id" placeholder="Select who to alert" fullWidth>
+                            <x-input.select wire:model.defer="editing.distribution_id" id="distribution_id" placeholder="Select who to alert" fullWidth>
                                 @foreach ($distributions as $distribution)
                                     <option value="{{ $distribution->id }}">{{ $distribution->name }}</option>
                                 @endforeach
@@ -174,7 +174,7 @@
 
                         <!-- Location -->
                         <x-input.group for="location_id" label="Location" :error="$errors->first('editing.location_id')">
-                            <x-input.select wire:model="editing.location_id" id="location_id" placeholder="Select Location" fullWidth>
+                            <x-input.select wire:model.defer="editing.location_id" id="location_id" placeholder="Select Location" fullWidth>
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
@@ -192,12 +192,12 @@
 
                         <!-- Evidence -->
                         <x-input.group for="evidence" label="Evidence" :error="$errors->first('editing.evidence')">
-                            <x-input.text wire:model="editing.evidence" id="evidence" />
+                            <x-input.text wire:model.defer="editing.evidence" id="evidence" />
                         </x-input.group>
 
                         <!-- Details -->
                         <x-input.group for="details" label="Details" :error="$errors->first('editing.details')">
-                            <x-input.textarea wire:model="editing.details" id="details" rows="8" />
+                            <x-input.textarea wire:model.defer="editing.details" id="details" rows="8" />
                         </x-input.group>
                     </div>
 
