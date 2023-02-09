@@ -140,3 +140,17 @@ function App() {
 
 render(html`<${Header} />`, document.querySelector('#header'));
 render(html`<${App} />`, document.querySelector('#masonry'));
+
+let scrollDirection = 1;
+async function pageScroll() {
+    window.scrollBy(0, scrollDirection);
+    if ( (window.scrollY === 0) || (window.innerHeight + window.scrollY) >= document.body.offsetHeight ) {
+        scrollDirection = -1 * scrollDirection;
+
+        await new Promise(resolve => {
+            setTimeout(resolve, 5000);
+        });
+    }
+    setTimeout(pageScroll, 10);
+}
+pageScroll();
