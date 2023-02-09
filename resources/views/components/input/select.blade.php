@@ -2,7 +2,6 @@
     'placeholder' => null,
     'clearSelection' => null,
     'disabledSelected' => null,
-    'refreshData' => null,
     'iteration' => null,
     'fullWidth' => false
 ])
@@ -44,11 +43,6 @@
             console.log('Recieved showModal event');
             console.log(data);
             console.log(@entangle('editing.loan.start_date_time'));
-            if(data == &quot;create&quot;){
-                @if($refreshData)
-                    $('#{{ $attributes->get('id') }}').select2().empty();
-                @endif
-            }
 
             //This allows us the wire:model initial value to be applied to the Select2 box.
             $('#{{ $attributes->get('id') }}').val(@entangle($attributes->wire('model')).initialValue).trigger('change');
