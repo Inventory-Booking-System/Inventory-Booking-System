@@ -1,5 +1,6 @@
 @props([
 	'name' => null,
+    'perPage' => 10
 ])
 
 <div class="row">
@@ -13,9 +14,9 @@
 
     <div class="col-lg-1" >
         <x-input.select wire:model="perPage" id="perPage" label="Per Page">
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
+            <option value="10" @if($perPage == 10) selected @endif>10</option>
+            <option value="25" @if($perPage == 25) selected @endif>25</option>
+            <option value="50" @if($perPage == 50) selected @endif>50</option>
         </x-input.select>
     </div>
 

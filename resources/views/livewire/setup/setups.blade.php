@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="Setup" />
+    <x-table.controls name="Setup" perPage="{{ $perPage }}" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
