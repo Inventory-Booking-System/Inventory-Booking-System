@@ -96,6 +96,10 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'cc' => [
+        'address' => env('MAIL_CC_ADDRESS')
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Markdown Mail Settings

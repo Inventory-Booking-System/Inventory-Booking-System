@@ -174,8 +174,8 @@ class Loans extends Component
 
         //Send the email to the user
         $user = User::find($loan->user_id);
-        if (env('MAIL_CC_ADDRESS')) {
-            Mail::to($user->email)->cc(env('MAIL_CC_ADDRESS'))->queue(new LoanOrder($this->editing, $this->editing->wasRecentlyCreated));
+        if (Config::get('mail.cc.address')) {
+            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($this->editing, $this->editing->wasRecentlyCreated));
         } else {
             Mail::to($user->email)->queue(new LoanOrder($this->editing, $this->editing->wasRecentlyCreated));
         }
@@ -364,8 +364,8 @@ class Loans extends Component
 
         //Send the email to the user
         $user = User::find($loan->user_id);
-        if (env('MAIL_CC_ADDRESS')) {
-            Mail::to($user->email)->cc(env('MAIL_CC_ADDRESS'))->queue(new LoanOrder($loan, $this->editing->wasRecentlyCreated, true));
+        if (Config::get('mail.cc.address')) {
+            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, $this->editing->wasRecentlyCreated, true));
         } else {
             Mail::to($user->email)->queue(new LoanOrder($loan, $this->editing->wasRecentlyCreated, true));
         }
