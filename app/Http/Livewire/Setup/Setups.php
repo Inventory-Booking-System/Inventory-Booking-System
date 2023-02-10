@@ -6,6 +6,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
