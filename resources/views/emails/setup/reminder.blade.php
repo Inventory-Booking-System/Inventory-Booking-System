@@ -18,7 +18,7 @@
                             @endforeach
                             <br>
                             <b>Additional Details</b><br>{{ $setup->loan->details }}<br><br>
-                            <center>If you have any queries about this {{ lcfirst($bookingTitle) }}, contact us at <a href="mailto:{{ Config::get('mail.reply-to.address') }}">{{ Config::get('mail.reply-to.address') }}</a></center>
+                            <center>If you have any queries about this {{ lcfirst($bookingTitle) }}, contact us at <a href="mailto:{{ Config::get('mail.reply_to.address') }}">{{ Config::get('mail.reply_to.address') }}</a></center>
                         </td>
                     </tr>
                     <tr>
