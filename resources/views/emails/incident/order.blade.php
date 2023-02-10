@@ -18,7 +18,7 @@
                             <br>
                             <b>Evidence</b><br>{{ $incident->evidence }}<br><br>
                             <b>Details</b><br>{{ $incident->details }}<br><br>
-                            <center>If you have any queries about this {{ lcfirst($bookingTitle) }}, contact us at <a href="mailto:"></a></center>
+                            <center>If you have any queries about this {{ lcfirst($bookingTitle) }}, contact us at <a href="mailto:{{ Config::get('mail.reply-to.address') }}">{{ Config::get('mail.reply-to.address') }}</a></center>
                         </td>
                     </tr>
                     <tr>
