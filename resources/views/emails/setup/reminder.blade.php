@@ -22,7 +22,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td valign="top" style="color:#999; padding:20px; text-align:center; font-size:12px; font-family:'Trebuchet MS',Arial,Helvetica,sans-serif"><p>{{ env('APP_NAME') }}</p></td>
+                        <td valign="top" style="color:#999; padding:20px; text-align:center; font-size:12px; font-family:'Trebuchet MS',Arial,Helvetica,sans-serif"><p>{{ Config::get('app.name') }}</p></td>
                     </tr>
                 </tbody>
             </table>
