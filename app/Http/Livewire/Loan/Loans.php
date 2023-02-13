@@ -297,15 +297,15 @@ class Loans extends Component
             ->when($this->filters['end_date_time'], fn($query, $search) => $this->searchByEndDate($query, $search))
             ->when($this->filters['details'], fn($query, $search) => $this->searchByDetails($query, $search))
             ->when($this->filters['assets'], fn($query, $search) => $this->searchByAssets($query, $search))
-            ->where(function($query) { // Search
-                $query->when($this->filters['search'], fn($query, $search) => $this->searchById($query, $search))
-                    ->when($this->filters['search'], fn($query, $search) => $this->searchByUser($query, $search, true))
-                    ->when($this->filters['search'], fn($query, $search) => $this->searchByStatus($query, $search, true))
-                    ->when($this->filters['search'], fn($query, $search) => $this->searchByStartDate($query, $search, true))
-                    ->when($this->filters['search'], fn($query, $search) => $this->searchByEndDate($query, $search, true))
-                    ->when($this->filters['search'], fn($query, $search) => $this->searchByDetails($query, $search, true))
-                    ->when($this->filters['search'], fn($query, $search) => $this->searchByAssets($query, $search, true));
-            });
+            ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
+                $this->searchById($query, $search);
+                $this->searchByUser($query, $search, true);
+                $this->searchByStatus($query, $search, true);
+                $this->searchByStartDate($query, $search, true);
+                $this->searchByEndDate($query, $search, true);
+                $this->searchByDetails($query, $search, true);
+                $this->searchByAssets($query, $search, true);
+            }));
 
         return $this->applySorting($query, 'start_date_time', 'asc');
     }
