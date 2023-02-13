@@ -82,9 +82,9 @@
                         </x-table.cell>
                         <x-table.cell class="col">
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <x-button.success wire:click="complete({{ $setup->id }})" ><x-loading wire:target="complete({{ $setup->loan->id }})" />Complete</x-button.success>
-                                <x-button.danger wire:click="cancel({{ $setup->id }})" ><x-loading wire:target="cancel({{ $setup->loan->id }})" />Cancel</x-button.danger>
-                                <x-button.primary wire:click="edit({{ $setup->id }})" ><x-loading wire:target="edit({{ $setup->loan->id }})" />Edit</x-button.primary>
+                                <x-button.success wire:click="complete({{ $setup->id }})" ><x-loading wire:target="complete({{ $setup->id }})" />Complete</x-button.success>
+                                <x-button.danger wire:click="cancel({{ $setup->id }})" ><x-loading wire:target="cancel({{ $setup->id }})" />Cancel</x-button.danger>
+                                <x-button.primary wire:click="edit({{ $setup->id }})" ><x-loading wire:target="edit({{ $setup->id }})" />Edit</x-button.primary>
                             </div>
                         </x-table.cell>
                     </x-table.row>
