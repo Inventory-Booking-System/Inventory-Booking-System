@@ -162,7 +162,7 @@
 
                         <!-- Users -->
                         <x-input.group label="Users" for="user_id" :error="$errors->first('editing.user_id')">
-                            <x-input.select wire:model.defer="editing.user_id" id="user_id" placeholder="Select User" fullWidth>
+                            <x-input.select wire:model.defer="editing.user_id" id="user_id" placeholder="Select User" fullWidth inModal>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
                                 @endforeach
@@ -171,7 +171,7 @@
 
                         <!-- Equipment -->
                         <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
-                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select Equipment" fullWidth>
+                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select Equipment" fullWidth inModal>
                                 @foreach ($equipmentList as $equipment)
                                 @if($equipment['avaliable'] == true)
                                     <option value="{{ $equipment['id'] }}">{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
