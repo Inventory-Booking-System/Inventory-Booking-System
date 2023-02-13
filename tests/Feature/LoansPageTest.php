@@ -358,7 +358,7 @@ class LoansPageTest extends TestCase
 
     /**
      * @test
-     * @group loans-searcha
+     * @group loans-search
      */
     public function search_by_asset_name()
     {
@@ -395,6 +395,221 @@ class LoansPageTest extends TestCase
 
         Livewire::test('loan.loans')
             ->set('filters.search', Loan::first()->assets()->first()->name.' ('.Loan::first()->assets()->first()->tag.')')
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_id_number()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.id', Loan::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_id_string()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.id', '#'.Loan::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_user_forename()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.user_id', User::skip(1)->first()->forename)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_user_surname()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.user_id', User::skip(1)->first()->surname)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_user_full_name()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.user_id', User::skip(1)->first()->forename.' '.User::skip(1)->first()->surname)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.User::skip(2)->first()->loans()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_status()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.status_id', 'booked')
+            ->assertDontSee('No loans found')
+            ->assertSee('Booked');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_partial_status()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.status_id', 'book')
+            ->assertDontSee('No loans found')
+            ->assertSee('Booked');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_start_date()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.start_date_time', (new Carbon(Loan::first()->start_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_start_time()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.start_date_time', (new Carbon(Loan::first()->start_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_end_date()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.end_date_time', (new Carbon(Loan::first()->end_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_end_time()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.end_date_time', (new Carbon(Loan::first()->end_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_details()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.details', Loan::first()->details)
+            ->assertDontSee('No loans found')
+            ->assertSee(Loan::first()->details);
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_asset_name()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.assets', Loan::first()->assets()->first()->name)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_asset_tag()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.assets', Loan::first()->assets()->first()->tag)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_asset_name_and_tag()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.assets', Loan::first()->assets()->first()->name.' ('.Loan::first()->assets()->first()->tag.')')
             ->assertDontSee('No loans found')
             ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
             ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
