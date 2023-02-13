@@ -13,7 +13,7 @@
     </div>
 
     <div class="col-lg-1" >
-        <x-input.select wire:model="perPage" id="perPage" label="Per Page">
+        <x-input.select wire:model="perPage" id="perPage" label="Per Page" noSearch>
             <option value="10" @if($perPage == 10) selected @endif>10</option>
             <option value="25" @if($perPage == 25) selected @endif>25</option>
             <option value="50" @if($perPage == 50) selected @endif>50</option>

@@ -5,6 +5,7 @@
     'iteration' => null,
     'fullWidth' => false,
     'inModal' => false,
+    'noSearch' => false
 ])
 
 @if($iteration)<div wire:key='"select-field-version-{{ $iteration }}'>@endif
@@ -18,6 +19,9 @@
             theme: 'bootstrap-5',
             placeholder: '{{ $placeholder }}',
             allowClear: true,
+            @if($noSearch)
+            minimumResultsForSearch: Infinity,
+            @endif
         });
 
         select2.on('select2:select', (event) => {
