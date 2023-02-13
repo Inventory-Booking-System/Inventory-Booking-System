@@ -38,6 +38,10 @@
                         <x-input.text class="form-control-full-width" wire:model="mail.cc_address" id="cc_address" />
                     </x-input.group>
 
+                    <x-input.group class="" for="reply_to_address" label="Reply To Address" :error="$errors->first('mail.reply_to_address')">
+                        <x-input.text class="form-control-full-width" wire:model="mail.reply_to_address" id="reply_to_address" />
+                    </x-input.group>
+
                 </div>
             </div>
         </div>

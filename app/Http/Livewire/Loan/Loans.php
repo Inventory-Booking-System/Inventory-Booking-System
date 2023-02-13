@@ -116,6 +116,8 @@ class Loans extends Component
         $this->modalType = "Create";
         $this->emit('showModal', 'create');
 
+        $this->updatedEditingEndDateTime();
+
         // Clear datetime errors from previous modals
         $this->updated();
     }

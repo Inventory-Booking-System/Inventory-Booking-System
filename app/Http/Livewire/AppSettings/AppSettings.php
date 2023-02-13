@@ -23,6 +23,7 @@ class AppSettings extends Component
             'mail.encryption' => 'string|in:ssl,tls,starttls,null',
             'mail.from_address' => 'required|email',
             'mail.cc_address' => 'email',
+            'mail.reply_to_address' => 'email',
             'notification' => 'array',
             'notification.overdue_emails' => 'boolean',
             'notification.setup_emails' => 'boolean',
@@ -42,6 +43,7 @@ class AppSettings extends Component
         DotenvEditor::setKey('MAIL_ENCRYPTION', $this->mail['encryption']);
         DotenvEditor::setKey('MAIL_FROM_ADDRESS', $this->mail['from_address']);
         DotenvEditor::setKey('MAIL_CC_ADDRESS', $this->mail['cc_address']);
+        DotenvEditor::setKey('MAIL_REPLY_TO_ADDRESS', $this->mail['reply_to_address']);
 
         //Notifications Settings
         DotenvEditor::setKey('NOTIFICATION_OVERDUE_EMAILS', $this->notification['overdue_emails']);
@@ -61,6 +63,7 @@ class AppSettings extends Component
         $this->mail['encryption'] = DotenvEditor::getValue('MAIL_ENCRYPTION');
         $this->mail['from_address'] = DotenvEditor::getValue('MAIL_FROM_ADDRESS');
         $this->mail['cc_address'] = DotenvEditor::getValue('MAIL_CC_ADDRESS');
+        $this->mail['reply_to_address'] = DotenvEditor::getValue('MAIL_REPLY_TO_ADDRESS');
 
         //Notifications Settings
         $this->notification['overdue_emails'] = DotenvEditor::getValue('NOTIFICATION_OVERDUE_EMAILS');
