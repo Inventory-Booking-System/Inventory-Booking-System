@@ -190,11 +190,34 @@ class Loans extends Component
         $this->reset('filters');
     }
 
-    private function searchByStatus($query, $search) {
+    private function searchById($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        // Handle searching by ID if the user has entered a leading #
+        if ($orWhere) {
+            $query->where('loans.id', 'like', '%'.str_replace('#', '', $search).'%');
+        } else {
+            $query->where('loans.id', 'like', '%'.str_replace('#', '', $search).'%');
+        }
+    }
+
+    private function searchByUser($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%');
+        } else {
+            $query->where(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByStatus($query, $search, $orWhere = false) {
         $search = SQL::escapeLikeString($search);
         foreach (Loan::getStatusIds() as $id => $status) {
             if (str_contains(strtolower($status), strtolower($search))) {
-                $query->where('loans.status_id', $id);
+                if ($orWhere) {
+                    $query->orWhere('loans.status_id', $id);
+                } else {
+                    $query->where('loans.status_id', $id);
+                }
             }
         }
     }
@@ -209,24 +232,16 @@ class Loans extends Component
             ->where('loans.status_id', '<>', 3) #Setups
             ->where('loans.status_id', '<>', 4) #Cancelled bookings
             ->where('loans.status_id', '<>', 5) #Completed bookings
-            ->when($this->filters['id'], fn($query, $id) => $query->where('loans.id', 'like', '%'.str_replace('#', '', $id).'%'))
-            ->when($this->filters['user_id'], fn($query, $user_id) => $query->where(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$user_id.'%'))
+            ->when($this->filters['id'], fn($query, $search) => $this->searchById($query, $search))
+            ->when($this->filters['user_id'], fn($query, $search) => $this->searchByUser($query, $search))
             ->when($this->filters['status_id'], fn($query, $search) => $this->searchByStatus($query, $search))
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('loans.start_date_time', $start_date_time))
             ->when($this->filters['end_date_time'], fn($query, $end_date_time) => $query->where('loans.end_date_time', $end_date_time))
             ->when($this->filters['details'], fn($query, $details) => $query->where('loans.details', $details))
             ->where(function($query) { // Search
-                // Loan ID
-                $query->when($this->filters['search'], fn($query, $search) =>
-                    // Handle searching by ID if the user has entered a leading #
-                    $query->where('loans.id', 'like', '%'.str_replace('#', '', $search).'%'))
-
-                // User
-                ->when($this->filters['search'], fn($query, $search) =>
-                    $query->orWhere(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%'))
-
-                // Status
-                ->when($this->filters['search'], fn($query, $search) => $this->searchByStatus($query, $search))
+                $query->when($this->filters['search'], fn($query, $search) => $this->searchById($query, $search))
+                    ->when($this->filters['search'], fn($query, $search) => $this->searchByUser($query, $search, true))
+                    ->when($this->filters['search'], fn($query, $search) => $this->searchByStatus($query, $search, true))
 
                 // Start Date
                 ->when($this->filters['search'], function($query, $search) {
