@@ -121,6 +121,8 @@ class Setups extends Component
         $this->modalType = "Create";
         $this->emit('showModal', 'create');
 
+        $this->updatedEditingLoanEndDateTime();
+
         // Clear datetime errors from previous modals
         $this->updated();
     }
