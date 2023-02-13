@@ -430,6 +430,49 @@ class LoansPageTest extends TestCase
             ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
     }
 
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_user_forename()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.user_id', User::skip(1)->first()->forename)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_user_surname()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.user_id', User::skip(1)->first()->surname)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_user_full_name()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.user_id', User::skip(1)->first()->forename.' '.User::skip(1)->first()->surname)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.User::skip(1)->first()->loans()->first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.User::skip(2)->first()->loans()->first()->id.'"');
+    }
+
     // /** @test */
     // public function equipment_id_exists_in_assets_table()
     // {
