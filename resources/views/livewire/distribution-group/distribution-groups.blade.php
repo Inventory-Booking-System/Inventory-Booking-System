@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="Distribution Group" />
+    <x-table.controls name="Distribution Group" perPage="{{ $perPage }}" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -108,7 +108,7 @@
 
                         <!-- Users -->
                         <x-input.group label="Users" for="user_id" :error="$errors->first('user_id')">
-                            <x-input.select wire:model="user_id" id="user_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select User" fullWidth>
+                            <x-input.select wire:model="user_id" id="user_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select User" fullWidth inModal>
                                 @foreach ($equipmentList as $user)
                                     @if($user['avaliable'] == true)
                                         <option value="{{ $user['id'] }}">{{ $user['forename'] }} {{ $user['surname'] }}</option>

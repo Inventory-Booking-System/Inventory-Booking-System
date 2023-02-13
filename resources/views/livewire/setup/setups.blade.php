@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="Setup" />
+    <x-table.controls name="Setup" perPage="{{ $perPage }}" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -145,7 +145,7 @@
 
                         <!-- Users -->
                         <x-input.group label="Users" for="user_id" :error="$errors->first('editing.loan.user_id')">
-                            <x-input.select wire:model.defer="editing.loan.user_id" id="user_id" placeholder="Select User" fullWidth>
+                            <x-input.select wire:model.defer="editing.loan.user_id" id="user_id" placeholder="Select User" fullWidth inModal>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
                                 @endforeach
@@ -154,7 +154,7 @@
 
                         <!-- Location -->
                         <x-input.group label="Location" for="location_id" :error="$errors->first('editing.location_id')">
-                            <x-input.select wire:model.defer="editing.location_id" id="location_id" placeholder="Select Location" fullWidth>
+                            <x-input.select wire:model.defer="editing.location_id" id="location_id" placeholder="Select Location" fullWidth inModal>
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
@@ -163,7 +163,7 @@
 
                         <!-- Equipment -->
                         <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
-                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select Equipment" fullWidth>
+                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select Equipment" fullWidth inModal>
                                 @foreach ($equipmentList as $equipment)
                                 @if($equipment['avaliable'] == true)
                                     <option value="{{ $equipment['id'] }}">{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>

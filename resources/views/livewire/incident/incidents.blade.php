@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="Incident" />
+    <x-table.controls name="Incident" perPage="{{ $perPage }}" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -165,7 +165,7 @@
 
                         <!-- Distribution Group -->
                         <x-input.group for="distribution_id" label="Alert" :error="$errors->first('editing.distribution_id')">
-                            <x-input.select wire:model.defer="editing.distribution_id" id="distribution_id" placeholder="Select who to alert" fullWidth>
+                            <x-input.select wire:model.defer="editing.distribution_id" id="distribution_id" placeholder="Select who to alert" fullWidth inModal>
                                 @foreach ($distributions as $distribution)
                                     <option value="{{ $distribution->id }}">{{ $distribution->name }}</option>
                                 @endforeach
@@ -174,7 +174,7 @@
 
                         <!-- Location -->
                         <x-input.group for="location_id" label="Location" :error="$errors->first('editing.location_id')">
-                            <x-input.select wire:model.defer="editing.location_id" id="location_id" placeholder="Select Location" fullWidth>
+                            <x-input.select wire:model.defer="editing.location_id" id="location_id" placeholder="Select Location" fullWidth inModal>
                                 @foreach ($locations as $location)
                                     <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
@@ -183,7 +183,7 @@
 
                         <!-- Equipment Issues -->
                         <x-input.group for="equipment_id" label="Equipment Issues"  :error="$errors->first('equipment_id')">
-                            <x-input.select wire:model="equipment_id" id="equipment_id" placeholder="Select Issue" clearSelection fullWidth>
+                            <x-input.select wire:model="equipment_id" id="equipment_id" placeholder="Select Issue" clearSelection fullWidth inModal>
                                 @foreach ($equipmentIssues as $equipment)
                                     <option value="{{ $equipment->id }}">{{ $equipment->title }}</option>
                                 @endforeach
