@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Asset;
 use App\Models\AssetLoan;
 use App\Mail\Loan\LoanOrder;
+use App\Helpers\SQL;
 use Carbon\Carbon;
 
 class Loans extends Component
@@ -189,6 +190,15 @@ class Loans extends Component
         $this->reset('filters');
     }
 
+    private function searchByStatus($query, $search) {
+        $search = SQL::escapeLikeString($search);
+        foreach (Loan::getStatusIds() as $id => $status) {
+            if (str_contains(strtolower($status), strtolower($search))) {
+                $query->where('loans.status_id', $id);
+            }
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = Loan::query()
@@ -201,7 +211,7 @@ class Loans extends Component
             ->where('loans.status_id', '<>', 5) #Completed bookings
             ->when($this->filters['id'], fn($query, $id) => $query->where('loans.id', 'like', '%'.str_replace('#', '', $id).'%'))
             ->when($this->filters['user_id'], fn($query, $user_id) => $query->where(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$user_id.'%'))
-            ->when($this->filters['status_id'], fn($query, $status_id) => $query->where('loans.status_id', $status_id))
+            ->when($this->filters['status_id'], fn($query, $search) => $this->searchByStatus($query, $search))
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('loans.start_date_time', $start_date_time))
             ->when($this->filters['end_date_time'], fn($query, $end_date_time) => $query->where('loans.end_date_time', $end_date_time))
             ->when($this->filters['details'], fn($query, $details) => $query->where('loans.details', $details))
@@ -216,13 +226,7 @@ class Loans extends Component
                     $query->orWhere(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%'))
 
                 // Status
-                ->when($this->filters['search'], function($query, $search) {
-                    foreach (Loan::getStatusIds() as $id => $status) {
-                        if (str_contains(strtolower($status), strtolower($search))) {
-                            $query->orWhere('loans.status_id', $id);
-                        }
-                    }
-                })
+                ->when($this->filters['search'], fn($query, $search) => $this->searchByStatus($query, $search))
 
                 // Start Date
                 ->when($this->filters['search'], function($query, $search) {
