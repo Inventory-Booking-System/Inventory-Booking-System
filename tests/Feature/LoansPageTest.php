@@ -400,6 +400,36 @@ class LoansPageTest extends TestCase
             ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
     }
 
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_id_number()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.id', Loan::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_id_string()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.id', '#'.Loan::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
+            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+    }
+
     // /** @test */
     // public function equipment_id_exists_in_assets_table()
     // {

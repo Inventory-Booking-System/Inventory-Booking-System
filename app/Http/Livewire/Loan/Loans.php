@@ -199,6 +199,7 @@ class Loans extends Component
             ->where('loans.status_id', '<>', 3) #Setups
             ->where('loans.status_id', '<>', 4) #Cancelled bookings
             ->where('loans.status_id', '<>', 5) #Completed bookings
+            ->when($this->filters['id'], fn($query, $id) => $query->where('loans.id', 'like', '%'.str_replace('#', '', $id).'%'))
             ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('loans.user_id', $user_id))
             ->when($this->filters['status_id'], fn($query, $status_id) => $query->where('loans.status_id', $status_id))
             ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('loans.start_date_time', $start_date_time))
