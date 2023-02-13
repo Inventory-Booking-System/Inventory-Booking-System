@@ -267,6 +267,19 @@ class Loans extends Component
         }
     }
 
+    private function searchByAssets($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhereHas('assets', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT(name, ' ', '(', tag, ')')"), 'like', '%'.$search.'%');
+            });
+        } else {
+            $query->whereHas('assets', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT(name, ' ', '(', tag, ')')"), 'like', '%'.$search.'%');
+            });
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = Loan::query()
@@ -283,6 +296,7 @@ class Loans extends Component
             ->when($this->filters['start_date_time'], fn($query, $search) => $this->searchByStartDate($query, $search))
             ->when($this->filters['end_date_time'], fn($query, $search) => $this->searchByEndDate($query, $search))
             ->when($this->filters['details'], fn($query, $search) => $this->searchByDetails($query, $search))
+            ->when($this->filters['assets'], fn($query, $search) => $this->searchByAssets($query, $search))
             ->where(function($query) { // Search
                 $query->when($this->filters['search'], fn($query, $search) => $this->searchById($query, $search))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByUser($query, $search, true))
@@ -290,12 +304,7 @@ class Loans extends Component
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByStartDate($query, $search, true))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByEndDate($query, $search, true))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByDetails($query, $search, true))
-
-                // Assets
-                ->when($this->filters['search'], fn($query, $search) => 
-                    $query->orWhereHas('assets', function ($query) use ($search) {
-                        $query->where(DB::raw("CONCAT(name, ' ', '(', tag, ')')"), 'like', '%'.$search.'%');
-                    }));
+                    ->when($this->filters['search'], fn($query, $search) => $this->searchByAssets($query, $search, true));
             });
 
         return $this->applySorting($query, 'start_date_time', 'asc');
