@@ -41,8 +41,8 @@ class SendSetupReminderEmails extends Command
         foreach($setups as $setup){
             $user = User::find($setup->loan->user_id);
 
-            if (env('MAIL_CC_ADDRESS')) {
-                Mail::to($user->email)->cc(env('MAIL_CC_ADDRESS'))->queue(new SetupReminder($setup));
+            if (Config::get('mail.cc.address')) {
+                Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new SetupReminder($setup));
             } else {
                 Mail::to($user->email)->queue(new SetupReminder($setup));
             }

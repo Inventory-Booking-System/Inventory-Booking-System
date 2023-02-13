@@ -40,8 +40,8 @@ class SendOverdueBookingsEmails extends Command
             $loan->save();
             
             $user = User::find($loan->user_id);
-            if (env('MAIL_CC_ADDRESS')) {
-                Mail::to($user->email)->cc(env('MAIL_CC_ADDRESS'))->queue(new LoanOverdue($loan));
+            if (Config::get('mail.cc.address')) {
+                Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOverdue($loan));
             } else {
                 Mail::to($user->email)->queue(new LoanOverdue($loan));
             }
