@@ -473,6 +473,34 @@ class LoansPageTest extends TestCase
             ->assertDontSeeHtml('"/loans/'.User::skip(2)->first()->loans()->first()->id.'"');
     }
 
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_status()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.status_id', 'booked')
+            ->assertDontSee('No loans found')
+            ->assertSee('Booked');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_partial_status()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.status_id', 'book')
+            ->assertDontSee('No loans found')
+            ->assertSee('Booked');
+    }
+
     // /** @test */
     // public function equipment_id_exists_in_assets_table()
     // {
