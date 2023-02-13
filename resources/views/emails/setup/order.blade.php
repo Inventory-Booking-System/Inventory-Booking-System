@@ -14,7 +14,11 @@
                             <b>End Date</b><br>{{ $setup->loan->end_date_time }}<br><br>
                             <b>Resources</b><br>
                             @foreach ($setup->loan->assets as $asset)
-                                {{ $asset->name }} ({{ $asset->tag }})<br>
+                                @if($asset->pivot->returned)
+                                    <s>{{ $asset->name }} ({{ $asset->tag }})</s><br>
+                                @else
+                                    {{ $asset->name }} ({{ $asset->tag }})<br>
+                                @endif
                             @endforeach
                             <br>
                             <b>Additional Details</b><br>{{ $setup->loan->details }}<br><br>
