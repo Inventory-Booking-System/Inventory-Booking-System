@@ -222,6 +222,42 @@ class Loans extends Component
         }
     }
 
+    private function searchByStartDate($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        try {
+            $dateTimeString = Carbon::parse($search);
+            $dateString = explode(' ', $dateTimeString)[0];
+            $timeString = explode(' ', $dateTimeString)[1];
+            if ($orWhere) {
+                $query->orWhere('loans.start_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.start_date_time', 'like', '%'.$timeString.'%');
+            } else {
+                $query->where('loans.start_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.start_date_time', 'like', '%'.$timeString.'%');
+            }
+        } catch(\Throwable $e) {
+            // Search string is not a date
+        }
+    }
+
+    private function searchByEndDate($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        try {
+            $dateTimeString = Carbon::parse($search);
+            $dateString = explode(' ', $dateTimeString)[0];
+            $timeString = explode(' ', $dateTimeString)[1];
+            if ($orWhere) {
+                $query->orWhere('loans.end_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.end_date_time', 'like', '%'.$timeString.'%');
+            } else {                
+                $query->where('loans.end_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.end_date_time', 'like', '%'.$timeString.'%');
+            }
+        } catch(\Throwable $e) {
+            // Search string is not a date
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = Loan::query()
@@ -235,39 +271,15 @@ class Loans extends Component
             ->when($this->filters['id'], fn($query, $search) => $this->searchById($query, $search))
             ->when($this->filters['user_id'], fn($query, $search) => $this->searchByUser($query, $search))
             ->when($this->filters['status_id'], fn($query, $search) => $this->searchByStatus($query, $search))
-            ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('loans.start_date_time', $start_date_time))
-            ->when($this->filters['end_date_time'], fn($query, $end_date_time) => $query->where('loans.end_date_time', $end_date_time))
+            ->when($this->filters['start_date_time'], fn($query, $search) => $this->searchByStartDate($query, $search))
+            ->when($this->filters['end_date_time'], fn($query, $search) => $this->searchByEndDate($query, $search))
             ->when($this->filters['details'], fn($query, $details) => $query->where('loans.details', $details))
             ->where(function($query) { // Search
                 $query->when($this->filters['search'], fn($query, $search) => $this->searchById($query, $search))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByUser($query, $search, true))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByStatus($query, $search, true))
-
-                // Start Date
-                ->when($this->filters['search'], function($query, $search) {
-                    try {
-                        $dateTimeString = Carbon::parse($search);
-                        $dateString = explode(' ', $dateTimeString)[0];
-                        $timeString = explode(' ', $dateTimeString)[1];
-                        $query->orWhere('loans.start_date_time', 'like', '%'.$dateString.'%');
-                        $query->orWhere('loans.start_date_time', 'like', '%'.$timeString.'%');
-                    } catch(\Throwable $e) {
-                        // Search string is not a date
-                    }
-                })
-
-                // End Date
-                ->when($this->filters['search'], function($query, $search) {
-                    try {
-                        $dateTimeString = Carbon::parse($search);
-                        $dateString = explode(' ', $dateTimeString)[0];
-                        $timeString = explode(' ', $dateTimeString)[1];
-                        $query->orWhere('loans.end_date_time', 'like', '%'.$dateString.'%');
-                        $query->orWhere('loans.end_date_time', 'like', '%'.$timeString.'%');
-                    } catch(\Throwable $e) {
-                        // Search string is not a date
-                    }
-                })
+                    ->when($this->filters['search'], fn($query, $search) => $this->searchByStartDate($query, $search, true))
+                    ->when($this->filters['search'], fn($query, $search) => $this->searchByEndDate($query, $search, true))
 
                 // Details
                 ->when($this->filters['search'], fn($query, $search) =>

@@ -501,6 +501,62 @@ class LoansPageTest extends TestCase
             ->assertSee('Booked');
     }
 
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_start_date()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.start_date_time', (new Carbon(Loan::first()->start_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_start_time()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.start_date_time', (new Carbon(Loan::first()->start_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_end_date()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.end_date_time', (new Carbon(Loan::first()->end_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_end_time()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.end_date_time', (new Carbon(Loan::first()->end_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
+    }
+
     // /** @test */
     // public function equipment_id_exists_in_assets_table()
     // {
