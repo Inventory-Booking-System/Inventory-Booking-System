@@ -258,6 +258,15 @@ class Loans extends Component
         }
     }
 
+    private function searchByDetails($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('loans.details', 'like', '%'.$search.'%');
+        } else {
+            $query->where('loans.details', 'like', '%'.$search.'%');
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = Loan::query()
@@ -273,17 +282,14 @@ class Loans extends Component
             ->when($this->filters['status_id'], fn($query, $search) => $this->searchByStatus($query, $search))
             ->when($this->filters['start_date_time'], fn($query, $search) => $this->searchByStartDate($query, $search))
             ->when($this->filters['end_date_time'], fn($query, $search) => $this->searchByEndDate($query, $search))
-            ->when($this->filters['details'], fn($query, $details) => $query->where('loans.details', $details))
+            ->when($this->filters['details'], fn($query, $search) => $this->searchByDetails($query, $search))
             ->where(function($query) { // Search
                 $query->when($this->filters['search'], fn($query, $search) => $this->searchById($query, $search))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByUser($query, $search, true))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByStatus($query, $search, true))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByStartDate($query, $search, true))
                     ->when($this->filters['search'], fn($query, $search) => $this->searchByEndDate($query, $search, true))
-
-                // Details
-                ->when($this->filters['search'], fn($query, $search) =>
-                    $query->orWhere('loans.details', 'like', '%'.$search.'%'))
+                    ->when($this->filters['search'], fn($query, $search) => $this->searchByDetails($query, $search, true))
 
                 // Assets
                 ->when($this->filters['search'], fn($query, $search) => 

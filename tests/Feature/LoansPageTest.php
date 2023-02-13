@@ -557,6 +557,20 @@ class LoansPageTest extends TestCase
             ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
+    /**
+     * @test
+     * @group loans-filter
+     */
+    public function filter_by_details()
+    {
+        $this->seed();
+
+        Livewire::test('loan.loans')
+            ->set('filters.details', Loan::first()->details)
+            ->assertDontSee('No loans found')
+            ->assertSee(Loan::first()->details);
+    }
+
     // /** @test */
     // public function equipment_id_exists_in_assets_table()
     // {
