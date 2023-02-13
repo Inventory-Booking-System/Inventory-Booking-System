@@ -14,7 +14,7 @@
                             @foreach ($incident->issues as $issue)
                                 x{{ $issue->pivot->quantity }} {{ $issue->title }} (£{{ ($issue->cost * $issue->pivot->quantity) }})<br>
                             @endforeach
-                            <b>Total Cost:</b> £{{ $incident->totalCost }}<br>
+                            <br><b>Total Cost:</b> £{{ $shoppingCost }}<br>
                             <br>
                             <b>Evidence</b><br>{{ $incident->evidence }}<br><br>
                             <b>Details</b><br>{{ $incident->details }}<br><br>

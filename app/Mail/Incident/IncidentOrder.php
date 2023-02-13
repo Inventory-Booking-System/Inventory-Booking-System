@@ -16,6 +16,7 @@ class IncidentOrder extends Mailable
     public $incident;                           #Eloquent Model with all the information and relations about the loan
     public $bookingType;                        #Whether the booking/reservation was created or modified
     public $bookingTitle;                       #Whether we are dealing with a booking or reservation
+    public $shoppingCost;                       #Total cost of the incident
 
     /**
      * Create a new message instance.
@@ -25,7 +26,7 @@ class IncidentOrder extends Mailable
     public function __construct(Incident $incident, $status, $cost)
     {
         $this->incident = $incident;
-        $this->incident->totalCost = (string)$cost;
+        $this->shoppingCost = $cost;
         $this->bookingTitle = "Incident";
 
         switch($incident->status_id){

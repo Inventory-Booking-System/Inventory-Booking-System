@@ -164,7 +164,6 @@ class Incidents extends Component
 
         $this->editing->save();
 
-
         $incident = Incident::find($this->editing->id);
 
         //Add equipment issues into equipment_issue_incidents
