@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Mail\Auth\NewUser;
 use App\Models\User;
+use App\Helpers\SQL;
 
 class Users extends Component
 {
@@ -122,15 +123,33 @@ class Users extends Component
         $this->reset('filters');
     }
 
+    private function searchByUser($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%');
+        } else {
+            $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByEmail($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('email', 'like', '%'.$search.'%');
+        } else {
+            $query->where('email', 'like', '%'.$search.'%');
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = User::query()
-            ->when($this->filters['user_id'], fn($query, $user_id) => $query->where('user_id', $user_id))
-            ->when($this->filters['email'], fn($query, $email) => $query->where('email', $email))
-            ->where(function($query) { // Search
-                $query->when($this->filters['search'], fn($query, $search) => $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%'))
-                      ->when($this->filters['search'], fn($query, $search) => $query->orWhere('email', 'like', '%'.$search.'%'));
-            });
+            ->when($this->filters['user_id'], fn($query, $search) => $this->searchByUser($query, $search))
+            ->when($this->filters['email'], fn($query, $search) => $this->searchByEmail($query, $search))
+            ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
+                $this->searchByUser($query, $search);
+                $this->searchByEmail($query, $search, true);
+            }));
 
         return $this->applySorting($query);
     }
