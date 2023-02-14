@@ -72,4 +72,46 @@ class AssetsPageTest extends TestCase
             ->assertDontSee('No assets found')
             ->assertSeeHtml('"/assets/'.Asset::first()->id.'"');
     }
+
+    /**
+     * @test
+     * @group assets-filter
+     */
+    public function filter_by_name()
+    {
+        $this->seed();
+
+        Livewire::test('asset.assets')
+            ->set('filters.name', Asset::first()->name)
+            ->assertDontSee('No assets found')
+            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group assets-filter
+     */
+    public function filter_by_tag()
+    {
+        $this->seed();
+
+        Livewire::test('asset.assets')
+            ->set('filters.tag', Asset::first()->tag)
+            ->assertDontSee('No assets found')
+            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group assets-filter
+     */
+    public function filter_by_description()
+    {
+        $this->seed();
+
+        Livewire::test('asset.assets')
+            ->set('filters.description', Asset::first()->description)
+            ->assertDontSee('No assets found')
+            ->assertSeeHtml('"/assets/'.Asset::first()->id.'"');
+    }
 }
