@@ -7,6 +7,7 @@ use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Models\Location;
+use App\Helpers\SQL;
 
 class Locations extends Component
 {
@@ -105,11 +106,16 @@ class Locations extends Component
         $this->reset('filters');
     }
 
+    private function searchByName($query, $search) {
+        $search = SQL::escapeLikeString($search);
+        $query->where('name', 'like', '%'.$search.'%');
+    }
+
     public function getRowsQueryProperty()
     {
         $query = Location::query()
-            ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
-            ->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'));
+            ->when($this->filters['name'], fn($query, $search) => $this->searchByName($query, $search))
+            ->when($this->filters['search'], fn($query, $search) => $this->searchByName($query, $search));
 
         return $this->applySorting($query);
     }

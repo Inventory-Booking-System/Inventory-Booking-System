@@ -45,4 +45,19 @@ class LocationsPageTest extends TestCase
             ->assertSee(Location::first()->name)
             ->assertDontSee(Location::skip(1)->first()->name);
     }
+
+    /**
+     * @test
+     * @group locations-filter
+     */
+    public function filter_by_name()
+    {
+        $this->seed();
+
+        Livewire::test('location.locations')
+            ->set('filters.name', Location::first()->name)
+            ->assertDontSee('No locations found')
+            ->assertSee(Location::first()->name)
+            ->assertDontSee(Location::skip(1)->first()->name);
+    }
 }
