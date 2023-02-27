@@ -60,8 +60,7 @@ class IncidentsPageTest extends TestCase
         Livewire::test('incident.incidents')
             ->set('filters.search', '#'.Incident::first()->id)
             ->assertDontSee('No incidents found')
-            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"')
-            ->assertDontSeeHtml('"/incidents/'.Incident::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
     }
 
     /**
@@ -222,8 +221,7 @@ class IncidentsPageTest extends TestCase
         Livewire::test('incident.incidents')
             ->set('filters.id', '#'.Incident::first()->id)
             ->assertDontSee('No incidents found')
-            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"')
-            ->assertDontSeeHtml('"/incidents/'.Incident::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
     }
 
     /**

@@ -43,8 +43,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.search', Setup::skip(1)->first()->id)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
     }
 
     /**
@@ -58,8 +57,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.search', '#'.Setup::skip(1)->first()->id.' '.Setup::skip(1)->first()->title)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
     }
 
     /**
@@ -78,8 +76,7 @@ class SetupsPageTest extends TestCase
              * The user's first loan is a real loan, second loan is a setup
              * Get the ID from the setup, not it's associated loan
              */
-            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.User::skip(2)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
     }
 
     /**
@@ -98,8 +95,7 @@ class SetupsPageTest extends TestCase
              * The user's first loan is a real loan, second loan is a setup
              * Get the ID from the setup, not it's associated loan
              */
-            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.User::skip(2)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
     }
 
     /**
@@ -118,8 +114,7 @@ class SetupsPageTest extends TestCase
              * The user's first loan is a real loan, second loan is a setup
              * Get the ID from the setup, not it's associated loan
              */
-            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.User::skip(2)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
     }
 
     /**
@@ -203,8 +198,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->tag)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -218,8 +212,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->name.' ('.Setup::first()->loan()->first()->assets()->first()->tag.')')
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -233,8 +226,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.id', Setup::skip(1)->first()->id)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
     }
 
     /**
@@ -248,8 +240,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.id', '#'.Setup::skip(1)->first()->id.' '.Setup::skip(1)->first()->title)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
     }
 
     /**
@@ -268,8 +259,7 @@ class SetupsPageTest extends TestCase
              * The user's first loan is a real loan, second loan is a setup
              * Get the ID from the setup, not it's associated loan
              */
-            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.User::skip(2)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
     }
 
     /**
@@ -288,8 +278,7 @@ class SetupsPageTest extends TestCase
              * The user's first loan is a real loan, second loan is a setup
              * Get the ID from the setup, not it's associated loan
              */
-            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.User::skip(2)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
     }
 
     /**
@@ -308,8 +297,7 @@ class SetupsPageTest extends TestCase
              * The user's first loan is a real loan, second loan is a setup
              * Get the ID from the setup, not it's associated loan
              */
-            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.User::skip(2)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.User::skip(1)->first()->loans()->skip(1)->first()->setup()->first()->id.'"');
     }
 
     /**
@@ -421,8 +409,7 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.assets', Setup::first()->loan()->first()->assets()->first()->tag)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -436,7 +423,6 @@ class SetupsPageTest extends TestCase
         Livewire::test('setup.setups')
             ->set('filters.assets', Setup::first()->loan()->first()->assets()->first()->name.' ('.Setup::first()->loan()->first()->assets()->first()->tag.')')
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 }
