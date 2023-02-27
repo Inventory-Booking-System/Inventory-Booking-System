@@ -10,6 +10,7 @@ use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Http\Livewire\ShoppingCart\WithShoppingCart;
 use App\Models\DistributionGroup;
 use App\Models\User;
+use App\Helpers\SQL;
 
 class DistributionGroups extends Component
 {
@@ -152,22 +153,38 @@ class DistributionGroups extends Component
         $this->reset('filters');
     }
 
+    private function searchByName($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->where('name', 'like', '%'.$search.'%');
+        } else {
+            $query->orWhere('name', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByUsers($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhereHas('users', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%');
+            });
+        } else {
+            $query->whereHas('users', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%');
+            });
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = DistributionGroup::query()
             ->with('users')
-            ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
-            ->where(function($query) { // Search
-                // Name
-                $query->when($this->filters['search'], fn($query, $search) =>
-                    $query->where('name', 'like', '%'.$search.'%'))
-
-                // Users
-                ->when($this->filters['search'], fn($query, $search) => 
-                    $query->orWhereHas('users', function ($query) use ($search) {
-                        $query->where(DB::raw("CONCAT(forename, ' ', surname)"), 'like', '%'.$search.'%');
-                    }));
-            });
+            ->when($this->filters['name'], fn($query, $search) => $this->searchByName($query, $search))
+            ->when($this->filters['users'], fn($query, $search) => $this->searchByUsers($query, $search))
+            ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
+                $this->searchByName($query, $search);
+                $this->searchByUsers($query, $search, true);
+            }));
 
         return $this->applySorting($query);
     }
