@@ -58,4 +58,32 @@ class EquipmentIssuesPageTest extends TestCase
             ->assertDontSee('No equipment issues found')
             ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"');
     }
+
+    /**
+     * @test
+     * @group equipment-issues-filter
+     */
+    public function filter_by_title()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.equipment-issues')
+            ->set('filters.title', EquipmentIssue::first()->title)
+            ->assertDontSee('No equipment issues found')
+            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issues-filter
+     */
+    public function filter_by_cost()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.equipment-issues')
+            ->set('filters.cost', EquipmentIssue::first()->cost)
+            ->assertDontSee('No equipment issues found')
+            ->assertSeeHtml('"/equipmentIssues/'.EquipmentIssue::first()->id.'"');
+    }
 }

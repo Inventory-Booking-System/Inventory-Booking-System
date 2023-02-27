@@ -9,6 +9,7 @@ use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Http\Livewire\ShoppingCart\WithShoppingCart;
 use App\Models\EquipmentIssue;
 use App\Models\User;
+use App\Helpers\SQL;
 
 class EquipmentIssues extends Component
 {
@@ -119,20 +120,33 @@ class EquipmentIssues extends Component
         $this->reset('filters');
     }
 
+    private function searchByTitle($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('title', 'like', '%'.$search.'%');
+        } else {
+            $query->where('title', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByCost($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('cost', 'like', '%'.$search.'%');
+        } else {
+            $query->where('cost', 'like', '%'.$search.'%');
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = EquipmentIssue::query()
-            ->when($this->filters['title'], fn($query, $name) => $query->where('title', $name))
-            ->when($this->filters['cost'], fn($query, $name) => $query->where('cost', $name))
-            ->where(function($query) { // Search
-                // Title
-                $query->when($this->filters['search'], fn($query, $search) => 
-                    $query->where('title', 'like', '%'.$search.'%'))
-
-                // Cost
-                ->when($this->filters['search'], fn($query, $search) => 
-                    $query->orWhere('cost', 'like', '%'.$search.'%'));
-            });
+            ->when($this->filters['title'], fn($query, $search) => $this->searchByTitle($query, $search))
+            ->when($this->filters['cost'], fn($query, $search) => $this->searchByCost($query, $search))
+            ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
+                $this->searchByTitle($query, $search);
+                $this->searchByCost($query, $search, true);
+            }));
 
         return $this->applySorting($query);
     }
