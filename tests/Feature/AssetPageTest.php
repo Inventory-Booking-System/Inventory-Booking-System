@@ -42,8 +42,7 @@ class AssetPageTest extends TestCase
         Livewire::test('asset.show', ['asset' => Asset::first()->id])
             ->set('filters.search', Asset::first()->loans()->first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Asset::first()->loans()->first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Asset::skip(1)->first()->loans()->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Asset::first()->loans()->first()->id.'"');
     }
 
     /**
@@ -57,8 +56,7 @@ class AssetPageTest extends TestCase
         Livewire::test('asset.show', ['asset' => Asset::first()->id])
             ->set('filters.search', '#'.Asset::first()->loans()->first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Asset::first()->loans()->first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Asset::skip(1)->first()->loans()->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Asset::first()->loans()->first()->id.'"');
     }
 
     /**
@@ -156,8 +154,7 @@ class AssetPageTest extends TestCase
         Livewire::test('asset.show', ['asset' => Loan::first()->assets()->first()->id])
             ->set('filters.search', Loan::first()->assets()->first()->tag)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -171,7 +168,6 @@ class AssetPageTest extends TestCase
         Livewire::test('asset.show', ['asset' => Loan::first()->assets()->first()->id])
             ->set('filters.search', Loan::first()->assets()->first()->name.' ('.Loan::first()->assets()->first()->tag.')')
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 }

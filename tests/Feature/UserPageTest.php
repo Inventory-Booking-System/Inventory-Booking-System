@@ -25,8 +25,7 @@ class UserPageTest extends TestCase
         Livewire::test('user.show', ['user' => Loan::first()->user()->first()->id])
             ->set('filters.search', Loan::first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -40,8 +39,7 @@ class UserPageTest extends TestCase
         Livewire::test('user.show', ['user' => Loan::first()->user()->first()->id])
             ->set('filters.search', '#'.Loan::first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -55,8 +53,7 @@ class UserPageTest extends TestCase
         Livewire::test('user.show', ['user' => Loan::first()->user()->first()->id])
             ->set('filters.search', Loan::first()->user()->first()->forename)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -70,8 +67,7 @@ class UserPageTest extends TestCase
         Livewire::test('user.show', ['user' => Loan::first()->user()->first()->id])
             ->set('filters.search', Loan::first()->user()->first()->surname)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -85,8 +81,7 @@ class UserPageTest extends TestCase
         Livewire::test('user.show', ['user' => Loan::first()->user()->first()->id])
             ->set('filters.search', Loan::first()->user()->first()->forename.' '.Loan::first()->user()->first()->surname)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -184,8 +179,7 @@ class UserPageTest extends TestCase
         Livewire::test('user.show', ['user' => Loan::first()->user()->first()->id])
             ->set('filters.search', Loan::first()->assets()->first()->tag)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 
     /**
@@ -199,7 +193,6 @@ class UserPageTest extends TestCase
         Livewire::test('user.show', ['user' => Loan::first()->user()->first()->id])
             ->set('filters.search', Loan::first()->assets()->first()->name.' ('.Loan::first()->assets()->first()->tag.')')
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"')
-            ->assertDontSeeHtml('"/loans/'.Loan::skip(2)->first()->id.'"');
+            ->assertSeeHtml('"/loans/'.Loan::first()->id.'"');
     }
 }

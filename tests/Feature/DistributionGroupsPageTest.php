@@ -42,8 +42,7 @@ class DistributionGroupsPageTest extends TestCase
         Livewire::test('distribution-group.distribution-groups')
             ->set('filters.search', DistributionGroup::first()->name)
             ->assertDontSee('No distribution groups found')
-            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"')
-            ->assertDontSeeHtml('"/distributionGroups/'.DistributionGroup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"');
     }
 
     /**

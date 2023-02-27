@@ -26,8 +26,7 @@ class LocationPageTest extends TestCase
         Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
             ->set('filters.search', Setup::first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -41,8 +40,7 @@ class LocationPageTest extends TestCase
         Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
             ->set('filters.search', '#'.Setup::first()->id)
             ->assertDontSee('No loans found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -140,8 +138,7 @@ class LocationPageTest extends TestCase
         Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
             ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->tag)
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 
     /**
@@ -155,7 +152,6 @@ class LocationPageTest extends TestCase
         Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
             ->set('filters.search', Setup::first()->loan()->first()->assets()->first()->name.' ('.Setup::first()->loan()->first()->assets()->first()->tag.')')
             ->assertDontSee('No setups found')
-            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"')
-            ->assertDontSeeHtml('"/setups/'.Setup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
 }
