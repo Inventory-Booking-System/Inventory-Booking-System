@@ -154,4 +154,172 @@ class LocationPageTest extends TestCase
             ->assertDontSee('No setups found')
             ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
     }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_id_number()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.id', Setup::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_id_string()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.id', '#'.Setup::first()->id)
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_status()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Location::first()->id])
+            ->set('filters.status_id', 'setup')
+            ->assertDontSee('No loans found')
+            ->assertSee('Setup');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_partial_status()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Location::first()->id])
+            ->set('filters.status_id', 'set')
+            ->assertDontSee('No loans found')
+            ->assertSee('Setup');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_start_date()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.start_date_time', (new Carbon(Setup::first()->loan()->first()->start_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_end_date()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.end_date_time', (new Carbon(Setup::first()->loan()->first()->end_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_start_time()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.start_date_time', (new Carbon(Setup::first()->loan()->first()->start_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_end_time()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.end_date_time', (new Carbon(Setup::first()->loan()->first()->end_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No loans found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_details()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.details', Setup::first()->loan()->first()->details)
+            ->assertDontSee('No loans found')
+            ->assertSee(Setup::first()->loan()->first()->details);
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_asset_name()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.assets', Setup::first()->loan()->first()->assets()->first()->name)
+            ->assertDontSee('No setups found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_asset_tag()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.assets', Setup::first()->loan()->first()->assets()->first()->tag)
+            ->assertDontSee('No setups found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group location-filter
+     */
+    public function filter_by_asset_name_and_tag()
+    {
+        $this->seed();
+
+        Livewire::test('location.show', ['location' => Setup::first()->location()->first()->id])
+            ->set('filters.assets', Setup::first()->loan()->first()->assets()->first()->name.' ('.Setup::first()->loan()->first()->assets()->first()->tag.')')
+            ->assertDontSee('No setups found')
+            ->assertSeeHtml('"/setups/'.Setup::first()->id.'"');
+    }
 }
