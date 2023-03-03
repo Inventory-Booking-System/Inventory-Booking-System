@@ -194,7 +194,7 @@ class Loans extends Component
         $search = SQL::escapeLikeString($search);
         // Handle searching by ID if the user has entered a leading #
         if ($orWhere) {
-            $query->where('loans.id', 'like', '%'.str_replace('#', '', $search).'%');
+            $query->orWhere('loans.id', 'like', '%'.str_replace('#', '', $search).'%');
         } else {
             $query->where('loans.id', 'like', '%'.str_replace('#', '', $search).'%');
         }
