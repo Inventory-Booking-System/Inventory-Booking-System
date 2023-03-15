@@ -6,6 +6,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
@@ -178,8 +179,12 @@ class Incidents extends Component
         $this->emit('hideModal', strtolower($this->modalType));
 
         //Send the email to the user
-        $users = $incident->group->users->pluck('email');
-        Mail::to($users)->queue(new IncidentOrder($this->editing, $this->editing->wasRecentlyCreated, $this->shoppingCost));
+        $users = $incident->group->users->pluck('email');        
+        if (Config::get('mail.cc.address')) {
+            Mail::to($users)->cc(Config::get('mail.cc.address'))->queue(new IncidentOrder($this->editing, $this->editing->wasRecentlyCreated, $this->shoppingCost));
+        } else {
+            Mail::to($users)->queue(new IncidentOrder($this->editing, $this->editing->wasRecentlyCreated, $this->shoppingCost));
+        }
     }
 
     public function resetFilters()
