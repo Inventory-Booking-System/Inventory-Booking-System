@@ -2,8 +2,9 @@
     <div class="row h-100 justify-content-center align-items-center">
         <div class="col-6">
             <div class="card">
-                <div class="card-header text-center"><strong>Inventory Booking System Register</strong></div>
+                <div class="card-header text-center"><strong>Password reset</strong></div>
                 <div class="card-body">
+                    <p>You are required to reset your password. Please enter a new password below</p>
                     <form wire:submit.prevent="login" action="#" method="POST">
                         <div class="form-group">
                             <label for="InputPassword">Password</label>
