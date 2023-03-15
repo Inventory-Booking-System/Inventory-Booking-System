@@ -33,6 +33,7 @@ class Incidents extends Component
         'start_date_time' => null,
         'location_id' => null,
         'distribution_id' => null,
+        'equipment_id' => null,
         'evidence' => null,
         'details' => null,
     ];
@@ -199,6 +200,82 @@ class Incidents extends Component
         }
     }
 
+    private function searchById($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('incidents.id', 'like', '%'.str_replace('#', '', $search).'%');
+        } else {            
+            $query->where('incidents.id', 'like', '%'.str_replace('#', '', $search).'%');
+        }
+    }
+
+    private function searchByStartDate($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        try {
+            $dateTimeString = Carbon::parse($search);
+            $dateString = explode(' ', $dateTimeString)[0];
+            $timeString = explode(' ', $dateTimeString)[1];
+            if ($orWhere) {
+                $query->orWhere('incidents.start_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('incidents.start_date_time', 'like', '%'.$timeString.'%');
+            } else {
+                $query->where('incidents.start_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('incidents.start_date_time', 'like', '%'.$timeString.'%');
+            }
+        } catch(\Throwable $e) {
+            // Search string is not a date
+        }
+    }
+
+    private function searchByLocation($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('locations.name', 'like', '%'.$search.'%');
+        } else {
+            $query->where('locations.name', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByDistributionGroup($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('distribution_groups.name', 'like', '%'.$search.'%');
+        } else {
+            $query->where('distribution_groups.name', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByEquipmentIssues($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhereHas('issues', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT('x', equipment_issue_incident.quantity, ' ', equipment_issues.title)"), 'like', '%'.$search.'%');
+            });
+        } else {
+            $query->whereHas('issues', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT('x', equipment_issue_incident.quantity, ' ', equipment_issues.title)"), 'like', '%'.$search.'%');
+            });
+        }
+    }
+
+    private function searchByEvidence($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('incidents.evidence', 'like', '%'.$search.'%');
+        } else {
+            $query->where('incidents.evidence', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByDetails($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('incidents.details', 'like', '%'.$search.'%');
+        } else {
+            $query->where('incidents.details', 'like', '%'.$search.'%');
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = Incident::query()
@@ -206,48 +283,22 @@ class Incidents extends Component
             ->join('locations', 'incidents.location_id', '=', 'locations.id') // Join locations table so we can search by location name
             ->join('distribution_groups', 'incidents.distribution_id', '=', 'distribution_groups.id') // Join distribution_groups table so we can search by distribution group name
             ->where('status_id', '=', '0')
-            ->when($this->filters['start_date_time'], fn($query, $start_date_time) => $query->where('start_date_time', $start_date_time))
-            ->when($this->filters['location_id'], fn($query, $location_id) => $query->where('location_id', $location_id))
-            ->when($this->filters['distribution_id'], fn($query, $distribution_id) => $query->where('distribution_id', $distribution_id))
-            ->when($this->filters['evidence'], fn($query, $evidence) => $query->where('evidence', $evidence))
-            ->when($this->filters['details'], fn($query, $details) => $query->where('details', $details))
-            ->when($this->filters['search'], fn($query, $search) =>
-                $query->where(function($query) use ($search) { // Search
-                    $search = SQL::escapeLikeString($search);
-
-                    // Incident ID
-                    // Handle searching by ID if the user has entered a leading #
-                    $query->where('incidents.id', 'like', '%'.str_replace('#', '', $search).'%');
-
-                    // Start Date
-                    try {
-                        $dateTimeString = Carbon::parse($search);
-                        $dateString = explode(' ', $dateTimeString)[0];
-                        $timeString = explode(' ', $dateTimeString)[1];
-                        $query->orWhere('incidents.start_date_time', 'like', '%'.$dateString.'%');
-                        $query->orWhere('incidents.start_date_time', 'like', '%'.$timeString.'%');
-                    } catch(\Throwable $e) {
-                        // Search string is not a date
-                    }
-
-                    // Location
-                    $query->orWhere('locations.name', 'like', '%'.$search.'%');
-
-                    // Distribution group
-                    $query->orWhere('distribution_groups.name', 'like', '%'.$search.'%');
-
-                    // Equipment issues
-                    $query->orWhereHas('issues', function ($query) use ($search) {
-                        $query->where(DB::raw("CONCAT('x', equipment_issue_incident.quantity, ' ', equipment_issues.title)"), 'like', '%'.$search.'%');
-                    });
-
-                    // Evidence
-                    $query->orWhere('incidents.evidence', 'like', '%'.$search.'%');
-
-                    // Details
-                    $query->orWhere('incidents.details', 'like', '%'.$search.'%');
-                })
-            );
+            ->when($this->filters['id'], fn($query, $search) => $this->searchById($query, $search))
+            ->when($this->filters['start_date_time'], fn($query, $search) => $this->searchByStartDate($query, $search))
+            ->when($this->filters['location_id'], fn($query, $search) => $this->searchByLocation($query, $search))
+            ->when($this->filters['distribution_id'], fn($query, $search) => $this->searchByDistributionGroup($query, $search))
+            ->when($this->filters['equipment_id'], fn($query, $search) => $this->searchByEquipmentIssues($query, $search))
+            ->when($this->filters['evidence'], fn($query, $search) => $this->searchByEvidence($query, $search))
+            ->when($this->filters['details'], fn($query, $search) => $this->searchByDetails($query, $search))
+            ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
+                $this->searchById($query, $search);
+                $this->searchByStartDate($query, $search, true);
+                $this->searchByLocation($query, $search, true);
+                $this->searchByDistributionGroup($query, $search, true);
+                $this->searchByEquipmentIssues($query, $search, true);
+                $this->searchByEvidence($query, $search, true);
+                $this->searchByDetails($query, $search, true);
+            }));
 
         return $this->applySorting($query);
     }

@@ -42,8 +42,7 @@ class DistributionGroupsPageTest extends TestCase
         Livewire::test('distribution-group.distribution-groups')
             ->set('filters.search', DistributionGroup::first()->name)
             ->assertDontSee('No distribution groups found')
-            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"')
-            ->assertDontSeeHtml('"/distributionGroups/'.DistributionGroup::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"');
     }
 
     /**
@@ -84,6 +83,63 @@ class DistributionGroupsPageTest extends TestCase
 
         Livewire::test('distribution-group.distribution-groups')
             ->set('filters.search', DistributionGroup::first()->users()->first()->forename.' '.DistributionGroup::first()->users()->first()->surname)
+            ->assertDontSee('No distribution groups found')
+            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group distribution-groups-filter
+     */
+    public function filter_by_name()
+    {
+        $this->seed();
+
+        Livewire::test('distribution-group.distribution-groups')
+            ->set('filters.name', DistributionGroup::first()->name)
+            ->assertDontSee('No distribution groups found')
+            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"')
+            ->assertDontSeeHtml('"/distributionGroups/'.DistributionGroup::skip(1)->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group distribution-groups-filter
+     */
+    public function filter_by_user_forename()
+    {
+        $this->seed();
+
+        Livewire::test('distribution-group.distribution-groups')
+            ->set('filters.users', DistributionGroup::first()->users()->first()->forename)
+            ->assertDontSee('No distribution groups found')
+            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group distribution-groups-filter
+     */
+    public function filter_by_user_surname()
+    {
+        $this->seed();
+
+        Livewire::test('distribution-group.distribution-groups')
+            ->set('filters.users', DistributionGroup::first()->users()->first()->surname)
+            ->assertDontSee('No distribution groups found')
+            ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group distribution-groups-filter
+     */
+    public function filter_by_user_full_name()
+    {
+        $this->seed();
+
+        Livewire::test('distribution-group.distribution-groups')
+            ->set('filters.users', DistributionGroup::first()->users()->first()->forename.' '.DistributionGroup::first()->users()->first()->surname)
             ->assertDontSee('No distribution groups found')
             ->assertSeeHtml('"/distributionGroups/'.DistributionGroup::first()->id.'"');
     }

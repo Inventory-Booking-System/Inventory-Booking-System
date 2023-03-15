@@ -12,7 +12,7 @@
                             <b>End Date</b><br>{{ $loan->end_date_time }}<br><br>
                             <b>Resources</b><br>
                             @foreach ($loan->assets as $asset)
-                                @if($asset->pivot->returned)
+                                @if($bookingType !== 'completed' && $asset->pivot->returned)
                                     <s>{{ $asset->name }} ({{ $asset->tag }})</s><br>
                                 @else
                                     {{ $asset->name }} ({{ $asset->tag }})<br>

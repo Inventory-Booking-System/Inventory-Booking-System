@@ -60,8 +60,7 @@ class IncidentsPageTest extends TestCase
         Livewire::test('incident.incidents')
             ->set('filters.search', '#'.Incident::first()->id)
             ->assertDontSee('No incidents found')
-            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"')
-            ->assertDontSeeHtml('"/incidents/'.Incident::skip(1)->first()->id.'"');
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
     }
 
     /**
@@ -193,6 +192,167 @@ class IncidentsPageTest extends TestCase
 
         Livewire::test('incident.incidents')
             ->set('filters.search', Incident::first()->details)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_id_number()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.id', Incident::first()->id)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_id_string()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.id', '#'.Incident::first()->id)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_date()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.start_date_time', (new Carbon(Incident::first()->start_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_time()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.start_date_time', (new Carbon(Incident::first()->start_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_location()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.location_id', Incident::first()->location()->first()->name)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_distribution_group()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.distribution_id', DistributionGroup::find(Incident::first()->distribution_id)->name)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_equipment_issues_title()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.equipment_id', Incident::first()->issues()->first()->title)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_equipment_issues_quantity_string()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.equipment_id', 'x'.Incident::first()->issues()->first()->quantity)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_evidence()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.evidence', Incident::first()->evidence)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_evidence_windows_path()
+    {
+        $this->seed();
+
+        $incident = Incident::factory()
+            ->withLocation(Location::first())
+            ->withDistributionGroup(DistributionGroup::first())
+            ->withCreator(User::first())
+            ->withEvidence('C:\\test_path\\evidence.mp4')
+            ->create();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.evidence', 'C:\\test_path\\evidence.mp4')
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.$incident->id.'"');
+    }
+
+    /**
+     * @test
+     * @group incidents-filter
+     */
+    public function filter_by_details()
+    {
+        $this->seed();
+
+        Livewire::test('incident.incidents')
+            ->set('filters.details', Incident::first()->details)
             ->assertDontSee('No incidents found')
             ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
     }

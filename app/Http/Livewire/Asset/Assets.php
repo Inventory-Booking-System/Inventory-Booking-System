@@ -7,6 +7,7 @@ use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
 use App\Models\Asset;
+use App\Helpers\SQL;
 
 class Assets extends Component
 {
@@ -123,17 +124,44 @@ class Assets extends Component
         }
     }
 
+    private function searchByName($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('name', 'like', '%'.$search.'%');
+        } else {
+            $query->where('name', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByTag($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('tag', 'like', '%'.$search.'%');
+        } else {            
+            $query->where('tag', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByDescription($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('description', 'like', '%'.$search.'%');
+        } else {            
+            $query->where('description', 'like', '%'.$search.'%');
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = Asset::query()
-            ->when($this->filters['name'], fn($query, $name) => $query->where('name', $name))
-            ->when($this->filters['tag'], fn($query, $tag) => $query->where('tag', $tag))
-            ->when($this->filters['description'], fn($query, $description) => $query->where('description', $description))
-            ->where(function($query) { // Search
-                $query->when($this->filters['search'], fn($query, $search) => $query->where('name', 'like', '%'.$search.'%'))
-                      ->when($this->filters['search'], fn($query, $search) => $query->orWhere('tag', 'like', '%'.$search.'%'))
-                      ->when($this->filters['search'], fn($query, $search) => $query->orWhere('description', 'like', '%'.$search.'%'));
-            });
+            ->when($this->filters['name'], fn($query, $search) => $this->searchByName($query, $search))
+            ->when($this->filters['tag'], fn($query, $search) => $this->searchByTag($query, $search))
+            ->when($this->filters['description'], fn($query, $search) => $this->searchByDescription($query, $search))
+            ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
+                $this->searchByName($query, $search);
+                $this->searchByTag($query, $search, true);
+                $this->searchByDescription($query, $search, true);
+            }));
 
         return $this->applySorting($query);
     }
