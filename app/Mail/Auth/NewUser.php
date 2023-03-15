@@ -12,6 +12,9 @@ class NewUser extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $tries = 3;
+    public $retryAfter = 60;
+
     public $user;
     public $password;
 

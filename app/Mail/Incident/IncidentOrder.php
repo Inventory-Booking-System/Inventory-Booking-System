@@ -13,6 +13,9 @@ class IncidentOrder extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $tries = 3;
+    public $retryAfter = 60;
+
     public $incident;                           #Eloquent Model with all the information and relations about the loan
     public $bookingType;                        #Whether the booking/reservation was created or modified
     public $bookingTitle;                       #Whether we are dealing with a booking or reservation

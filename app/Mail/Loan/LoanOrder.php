@@ -12,6 +12,9 @@ class LoanOrder extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $tries = 3;
+    public $retryAfter = 60;
+
     public $loan;                               #Eloquent Model with all the information and relations about the loan
     public $status_id;                          #Whether the record was created or modified
     public $bookingType;                        #Whether the booking/reservation was created or modified
