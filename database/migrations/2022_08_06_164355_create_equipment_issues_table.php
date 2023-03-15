@@ -17,6 +17,7 @@ class CreateEquipmentIssuesTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->decimal('cost');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
