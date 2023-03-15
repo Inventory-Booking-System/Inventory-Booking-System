@@ -12,7 +12,7 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
-    protected $fillable = ['forename', 'surname', 'email', 'has_account'];
+    protected $fillable = ['forename', 'surname', 'email', 'has_account', 'password_set'];
 
     protected $attributes = ['has_account' => false];
 

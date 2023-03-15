@@ -119,6 +119,13 @@ class Users extends Component
         $this->emit('hideModal', 'edit');
     }
 
+    public function resetPassword($id)
+    {
+        $user = User::find($id);
+        $user->password_set = false;
+        $user->save();
+    }
+
     public function resetFilters()
     {
         $this->reset('filters');
