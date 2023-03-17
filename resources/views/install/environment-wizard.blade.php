@@ -239,7 +239,7 @@
                     <label for="account_forename">
                         {{ trans('installer_messages.environment.wizard.form.app_tabs.account_forename_label') }}
                     </label>
-                    <input type="text" name="account_forename" id="account_forename" value="tech" />
+                    <input type="text" name="account_forename" id="account_forename" />
                     @if ($errors->has('account_forename'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -252,7 +252,7 @@
                     <label for="account_surname">
                         {{ trans('installer_messages.environment.wizard.form.app_tabs.account_surname_label') }}
                     </label>
-                    <input type="text" name="account_surname" id="account_surname" value="tech" />
+                    <input type="text" name="account_surname" id="account_surname" />
                     @if ($errors->has('account_surname'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -265,7 +265,7 @@
                     <label for="account_email">
                         {{ trans('installer_messages.environment.wizard.form.app_tabs.account_email_label') }}
                     </label>
-                    <input type="text" name="account_email" id="account_email" value="tech" />
+                    <input type="text" name="account_email" id="account_email" />
                     @if ($errors->has('account_email'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -278,7 +278,7 @@
                     <label for="account_password">
                         {{ trans('installer_messages.environment.wizard.form.app_tabs.account_password_label') }}
                     </label>
-                    <input type="password" name="account_password" id="account_password" value="password" />
+                    <input type="password" name="account_password" id="account_password" />
                     @if ($errors->has('account_password'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
