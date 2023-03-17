@@ -134,8 +134,10 @@ class EnvironmentManager
         'MAIL_PASSWORD='.$request->mail_password."\n".
         'MAIL_ENCRYPTION='.$request->mail_encryption."\n".
         'MAIL_FROM_ADDRESS='.$request->mail_from_address."\n".
-        'MAIL_FROM_NAME=${APP_NAME}'."\n\n".
+        'MAIL_FROM_NAME=${APP_NAME}'."\n".
+        'MAIL_CC_ADDRESS='."\n".
         'MAIL_REPLY_TO_ADDRESS='.$request->mail_from_address."\n".
+        'MAIL_REPLY_TO_NAME="${APP_NAME}"'."\n\n".
         'BACKUP_FAILED_NOTIFICATION=mail'."\n".
         'UNHEALTHY_BACKUP_WAS_NOT_FOUND_NOTIFICATION=mail'."\n".
         'CLEANUP_HAS_FAILED_NOTIFICATION=mail'."\n".

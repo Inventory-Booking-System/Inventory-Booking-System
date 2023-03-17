@@ -158,7 +158,7 @@ return [
                 ],
                 'buttons' => [
                     'setup_database' => 'Setup Database',
-                    'setup_application' => 'Setup Application',
+                    'setup_mail' => 'Setup Mail',
                     'setup_account' => 'Setup Account',
                     'install' => 'Install',
                 ],

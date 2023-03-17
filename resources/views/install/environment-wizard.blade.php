@@ -113,7 +113,7 @@
                     <label for="database_name">
                         {{ trans('installer_messages.environment.wizard.form.db_name_label') }}
                     </label>
-                    <input type="text" name="database_name" id="database_name" value="ashcombe" placeholder="{{ trans('installer_messages.environment.wizard.form.db_name_placeholder') }}" />
+                    <input type="text" name="database_name" id="database_name" placeholder="{{ trans('installer_messages.environment.wizard.form.db_name_placeholder') }}" />
                     @if ($errors->has('database_name'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -149,8 +149,8 @@
                 </div>
 
                 <div class="buttons">
-                    <button class="button" onclick="showApplicationSettings();return false">
-                        {{ trans('installer_messages.environment.wizard.form.buttons.setup_application') }}
+                    <button class="button" onclick="showMailSettings();return false">
+                        {{ trans('installer_messages.environment.wizard.form.buttons.setup_mail') }}
                         <i class="fa fa-angle-right fa-fw" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -176,7 +176,7 @@
                 </div>
                 <div class="form-group {{ $errors->has('mail_host') ? ' has-error ' : '' }}">
                     <label for="mail_host">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_label') }}</label>
-                    <input type="text" name="mail_host" id="mail_host" value="smtp.mailtrap.io" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
+                    <input type="text" name="mail_host" id="mail_host" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
                     @if ($errors->has('mail_host'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -186,7 +186,7 @@
                 </div>
                 <div class="form-group {{ $errors->has('mail_port') ? ' has-error ' : '' }}">
                     <label for="mail_port">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_label') }}</label>
-                    <input type="number" name="mail_port" id="mail_port" value="2525" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_placeholder') }}" />
+                    <input type="number" name="mail_port" id="mail_port" value="587" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_placeholder') }}" />
                     @if ($errors->has('mail_port'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -312,7 +312,7 @@
         function showDatabaseSettings() {
             document.getElementById('tab2').checked = true;
         }
-        function showApplicationSettings() {
+        function showMailSettings() {
             document.getElementById('tab3').checked = true;
         }
         function showAccountSettings() {
