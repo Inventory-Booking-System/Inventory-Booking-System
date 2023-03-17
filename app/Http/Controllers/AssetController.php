@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Validator;
 use Response;
 use App\Models\Asset;
 use Carbon\Carbon;
@@ -37,17 +38,23 @@ class AssetController extends Controller
      */
     public function getAll(Request $request)
     {
-        $startDateTime = $request->query('startDateTime');
-        $endDateTime = $request->query('endDateTime');
-        $loanId = $request->query('loanId');
+        $validator = Validator::make($request->all(), [
+            'startDateTime' => 'required|integer|lt:endDateTime',
+            'endDateTime' => 'required|integer|gt:startDateTime'
+        ]);
 
-        $assets = Asset::latest()->get();
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
+        }
+
+        $validated = $validator->validated();
 
         $validatedDate =[
-            'start_date_time' => Carbon::createFromTimestamp($startDateTime),
-            'end_date_time' => Carbon::createFromTimestamp($endDateTime),
-            'id' =>  $loanId ?? -1
+            'start_date_time' => Carbon::createFromTimestamp($validated['startDateTime']),
+            'end_date_time' => Carbon::createFromTimestamp($validated['endDateTime'])
         ];
+
+        $assets = Asset::latest()->get();
 
         //Get equipment that is available for booking
         $availableAssets = Asset::where(function($query) use($validatedDate){
@@ -56,16 +63,13 @@ class AssetController extends Controller
                         ->from('loans')
                         ->join('asset_loan','loans.id','asset_loan.loan_id')
                         ->whereRaw('`assets`.`id` = `asset_loan`.`asset_id`')
-                        ->where('loans.id', '!=', $validatedDate['id'])
                         ->where(function($query2) use($validatedDate){
                             $query2->where('loans.start_date_time', '>=', $validatedDate['start_date_time'])
-                                ->where('loans.start_date_time', '<=', $validatedDate['end_date_time'])
-                                ->where('loans.id', '!=', $validatedDate['id']);
+                                ->where('loans.start_date_time', '<=', $validatedDate['end_date_time']);
                         })
                         ->orWhere(function($query2) use($validatedDate){
                             $query2->where('loans.end_date_time', '>=', $validatedDate['start_date_time'])
-                                ->where('loans.end_date_time', '<=', $validatedDate['end_date_time'])
-                                ->where('loans.id', '!=', $validatedDate['id']);
+                                ->where('loans.end_date_time', '<=', $validatedDate['end_date_time']);
                         })
                         ->where('asset_loan.returned','=',0);
                 })
