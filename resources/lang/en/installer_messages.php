@@ -69,6 +69,7 @@ return [
                 'environment' => 'Environment',
                 'database' => 'Database',
                 'application' => 'Mail',
+                'account' => 'Account',
             ],
             'form' => [
                 'name_required' => 'An environment name is required.',
@@ -142,6 +143,11 @@ return [
                     'mail_encryption_label' => 'Mail Encryption',
                     'mail_encryption_placeholder' => 'Mail Encryption',
 
+                    'account_forename_label' => "Account Forename",
+                    'account_surname_label' => "Account Surname",
+                    'account_email_label' => "Account Email",
+                    'account_password_label' => "Account Password",
+
                     'pusher_label' => 'Pusher',
                     'pusher_app_id_label' => 'Pusher App Id',
                     'pusher_app_id_palceholder' => 'Pusher App Id',
@@ -153,6 +159,7 @@ return [
                 'buttons' => [
                     'setup_database' => 'Setup Database',
                     'setup_application' => 'Setup Application',
+                    'setup_account' => 'Setup Account',
                     'install' => 'Install',
                 ],
             ],
