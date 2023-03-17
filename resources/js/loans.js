@@ -234,7 +234,14 @@ function App() {
     useEffect(() => {
         async function getAssets() {
             setAssetsLoading(true);
-            const params = new URLSearchParams({ startDateTime: moment(startDate).unix(), endDateTime: moment(endDate).unix() });
+            const params = new URLSearchParams({
+                startDateTime: moment(startDate).unix(),
+                /**
+                 * If end date isn't set, use a time in the future so assets
+                 * list can be preloaded
+                 */
+                endDateTime: endDate ? moment(endDate).unix() : moment().add(1, 'day').unix()
+            });
             const resp = await fetch('/api/assets?'+params);
             const body = await resp.json();
 
