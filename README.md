@@ -1,8 +1,8 @@
-# Inventory Booking System
+![Inventory Booking System Logo](https://user-images.githubusercontent.com/6664974/225930143-0f33b85c-e915-4a11-bbb9-e6f900cff473.png)
 
 ## About
 
-Inventory Booking System is a web web-based bookings, loans and setups management system for IT departments.
+Inventory Booking System is a web based bookings, loans and setups management system for IT departments.
 
 - Keep a list of all bookable assets
 - Book assets out between two time periods for a specified user
@@ -13,7 +13,7 @@ Inventory Booking System is a web web-based bookings, loans and setups managemen
 
 ## Requirements
 - Composer (https://getcomposer.org/)
-- PHP >= 7.4 (https://windows.php.net/download/)
+- PHP >= 8.1 (https://windows.php.net/download/)
 - SQL Database (e.g Mysql)
 - Web Server (iis, apache etc)
 
