@@ -110,12 +110,20 @@ class Users extends Component
             $password = Str::random(8);
             $this->editing->password = Hash::make($password);
 
-            $this->editing->save();
-
             //Send Email Code
             Mail::to($this->editing->email)->queue(new NewUser($this->editing, $password));
         }
+
+        $this->editing->save();
+
         $this->emit('hideModal', 'edit');
+    }
+
+    public function resetPassword($id)
+    {
+        $user = User::find($id);
+        $user->password_set = false;
+        $user->save();
     }
 
     public function resetFilters()

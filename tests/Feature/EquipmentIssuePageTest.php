@@ -184,4 +184,174 @@ class EquipmentIssuePageTest extends TestCase
             ->assertDontSee('No incidents found')
             ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
     }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_id_number()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.id', EquipmentIssue::first()->incidents()->first()->id)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_id_string()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.id', '#'.EquipmentIssue::first()->incidents()->first()->id)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_distribution_group()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.user_id', DistributionGroup::find(EquipmentIssue::first()->incidents()->first()->distribution_id)->name)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_status()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.status_id', 'outstanding')
+            ->assertDontSee('No loans found')
+            ->assertSee('Outstanding');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_partial_status()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.status_id', 'outstand')
+            ->assertDontSee('No loans found')
+            ->assertSee('Outstanding');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_start_date()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.start_date_time', (new Carbon(EquipmentIssue::first()->incidents()->first()->start_date_time))->isoFormat('D MMM YYYY'))
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_start_time()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.start_date_time', (new Carbon(EquipmentIssue::first()->incidents()->first()->start_date_time))->isoFormat('HH:mm'))
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_details()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.details', Incident::first()->details)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.Incident::first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_equipment_issues_title()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.assets', EquipmentIssue::first()->incidents()->first()->issues()->first()->title)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_equipment_issues_quantity_string()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.assets', 'x'.EquipmentIssue::first()->incidents()->first()->issues()->first()->pivot->quantity)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_equipment_issues_cost()
+    {
+        $this->seed();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.assets', EquipmentIssue::first()->incidents()->first()->issues()->first()->cost)
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
+
+    /**
+     * @test
+     * @group equipment-issue-filter
+     */
+    public function filter_by_equipment_issues_full_string()
+    {
+        $this->seed();
+
+        $issue = EquipmentIssue::first()->incidents()->first()->issues()->first();
+
+        Livewire::test('equipment-issue.show', ['equipmentIssue' => EquipmentIssue::first()->id])
+            ->set('filters.assets', 'x'.$issue->pivot->quantity.' '.$issue->title.' (£'.$issue->cost.')')
+            ->assertDontSee('No incidents found')
+            ->assertSeeHtml('"/incidents/'.EquipmentIssue::first()->incidents()->first()->id.'"');
+    }
 }

@@ -18,6 +18,7 @@ class CreateAssetsTable extends Migration
             $table->string("name", 100);
             $table->unsignedInteger("tag");
             $table->text('description');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

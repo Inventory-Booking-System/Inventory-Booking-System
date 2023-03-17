@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
 use App\Models\Loan;
 use App\Models\User;

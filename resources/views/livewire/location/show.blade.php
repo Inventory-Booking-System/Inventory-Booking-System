@@ -68,7 +68,7 @@
                         <x-table.cell class="col-2">{{ $setup->loan->details }}</x-table.cell>
                         <x-table.cell class="col-2">
                             @foreach($setup->loan->assets as $asset)
-                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link><br>
+                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" lineThrough="{{ $asset->pivot->returned }}"></x-link><br>
                             @endforeach
                         </x-table.cell>
                     </x-table.row>

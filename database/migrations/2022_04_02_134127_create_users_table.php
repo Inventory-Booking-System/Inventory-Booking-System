@@ -24,6 +24,7 @@ class CreateUsersTable extends Migration
             $table->boolean('password_set')->default(0);
             $table->boolean('archived')->default(0);
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

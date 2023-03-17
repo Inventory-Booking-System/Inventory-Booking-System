@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
 use App\Models\Setup;
 use App\Models\User;
@@ -35,7 +36,8 @@ class SendSetupReminderEmails extends Command
         $setups = Setup::select('setups.*')->join('loans', 'setups.loan_id', '=', 'loans.id')
                         ->whereDate('start_date_time', '=', Carbon::today())
                         ->whereTime('start_date_time', '<=', Carbon::now()->addMinutes(30))
-                        ->where('email_reminder_sent', '=', 0)    
+                        ->where('email_reminder_sent', '=', 0)
+                        ->where('status_id', '=', 3)    
                         ->get();
 
         foreach($setups as $setup){
