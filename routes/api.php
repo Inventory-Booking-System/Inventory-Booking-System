@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use Carbon\Carbon;
 use App\Models\Loan;
 use App\Http\Controllers\SignageController;
+use App\Http\Controllers\AssetController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,4 +36,11 @@ Route::get('/signage', function (Request $request) {
             $query->orWhereDate('start_date_time', '<', Carbon::today())
                    ->where('status_id', '=', 2);
         })->orderBy('start_date_time', 'asc')->get();
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/assets', [AssetController::class, 'getAll']);
+    Route::get('/users', [UserController::class, 'getAll']);
+    Route::post('/loans', [LoanController::class, 'create']);
+    Route::put('/loans/{id}', [LoanController::class, 'put']);
 });

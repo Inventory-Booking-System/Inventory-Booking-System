@@ -317,6 +317,8 @@ class Loans extends Component
 
     public function render()
     {
+        $this->dispatchBrowserEvent('render');
+
         if($this->selectAll){
            $this->selectPageRows();
         }

@@ -31,4 +31,12 @@ class UserController extends Controller
             'user' => $id
         ]);
     }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getAll()
+    {
+        return User::latest()->get();
+    }
 }
