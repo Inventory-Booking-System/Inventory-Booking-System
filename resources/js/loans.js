@@ -14,7 +14,7 @@ import moment from 'moment';
 import UserSelect from './components/UserSelect';
 import AssetSelect from './components/AssetSelect';
 import ShoppingCart from './components/ShoppingCart';
-import { getCookie } from './utils/cookie';
+import { loans, users as usersApi } from './api';
 import 'tempusdominus-bootstrap/src/sass/tempusdominus-bootstrap-build.scss';
 
 const radios = [
@@ -140,20 +140,13 @@ function App() {
 
         try {
             setSubmitLoading(true);
-            const resp = await fetch('/api/loans', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-Token': decodeURIComponent(getCookie('XSRF-TOKEN'))
-                },
-                body: JSON.stringify({
-                    startDateTime: startDate.unix(),
-                    endDateTime: endDate.unix(),
-                    user: user.value,
-                    assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
-                    details,
-                    reservation: reservation === 'true'
-                })
+            const resp = await loans.create({
+                startDateTime: startDate.unix(),
+                endDateTime: endDate.unix(),
+                user: user.value,
+                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                details,
+                reservation: reservation === 'true'
             });
             setSubmitLoading(false);
 
@@ -176,20 +169,13 @@ function App() {
 
         try {
             setSubmitLoading(true);
-            const resp = await fetch('/api/loans/'+id, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-Token': decodeURIComponent(getCookie('XSRF-TOKEN'))
-                },
-                body: JSON.stringify({
-                    startDateTime: startDate.unix(),
-                    endDateTime: endDate.unix(),
-                    user: user.value,
-                    assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
-                    details,
-                    reservation: reservation === 'true'
-                })
+            const resp = await loans.update(id, {
+                startDateTime: startDate.unix(),
+                endDateTime: endDate.unix(),
+                user: user.value,
+                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                details,
+                reservation: reservation === 'true'
             });
             setSubmitLoading(false);
 
@@ -211,8 +197,7 @@ function App() {
     useEffect(() => {
         async function getUsers() {
             setUsersLoading(true);
-            const resp = await fetch('/api/users');
-            const body = await resp.json();
+            const body = await usersApi.getAll();
 
             setUsers(body.map(user => {
                 return {...user, value: user.id, label: user.forename+' '+user.surname};
