@@ -14,7 +14,7 @@ import moment from 'moment';
 import UserSelect from './components/UserSelect';
 import AssetSelect from './components/AssetSelect';
 import ShoppingCart from './components/ShoppingCart';
-import { loans, users as usersApi } from './api';
+import { assets as assetsApi, loans, users as usersApi } from './api';
 import 'tempusdominus-bootstrap/src/sass/tempusdominus-bootstrap-build.scss';
 
 const radios = [
@@ -215,7 +215,7 @@ function App() {
     useEffect(() => {
         async function getAssets() {
             setAssetsLoading(true);
-            const params = new URLSearchParams({
+            const body = await assetsApi.getAll({
                 startDateTime: moment(startDate).unix(),
                 /**
                  * If end date isn't set, use a time in the future so assets
@@ -223,8 +223,6 @@ function App() {
                  */
                 endDateTime: endDate ? moment(endDate).unix() : moment().add(1, 'day').unix()
             });
-            const resp = await fetch('/api/assets?'+params);
-            const body = await resp.json();
 
             setAssets(body.map(asset => {
                 return {...asset, value: asset.id, label: asset.name+' ('+asset.tag+')', isDisabled: !asset.available};

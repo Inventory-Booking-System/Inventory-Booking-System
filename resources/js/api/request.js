@@ -9,8 +9,8 @@ export default async function request(input, init) {
     return await fetch(input, {
         ...init,
         headers: {
-            'Content-Type': init.body ? 'application/json' : undefined,
+            'Content-Type': init && init.body ? 'application/json' : undefined,
             'X-XSRF-Token': decodeURIComponent(getCookie('XSRF-TOKEN'))
-        },
+        }
     });
 }
