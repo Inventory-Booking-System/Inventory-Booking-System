@@ -150,6 +150,8 @@ function App() {
             });
             setSubmitLoading(false);
 
+            window.Livewire.emit('render');
+
             if (resp.status === 201) {
                 handleClose();
                 return;
@@ -178,6 +180,8 @@ function App() {
                 reservation: reservation === 'true'
             });
             setSubmitLoading(false);
+
+            window.Livewire.emit('render');
 
             if (resp.status === 200) {
                 handleClose();
