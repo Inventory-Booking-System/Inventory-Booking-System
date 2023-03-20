@@ -67,7 +67,7 @@ function App() {
         setUser({ value: loan.user_id, label: loan.user.forename+' '+loan.user.surname });
         setDetails(loan.details);
         setReservation();
-        setShoppingCart(loan.assets);
+        setShoppingCart(loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned })));
 
         setModalAction('Edit');
         setOpen(true);
