@@ -85,11 +85,7 @@ function App() {
         setShoppingCart([...shoppingCart, assets.find(x => x.id === e.value)]);
     }, [shoppingCart, assets]);
 
-    const onShoppingCartRemove = useCallback(index => {
-        let updatedShoppingCart = [...shoppingCart];
-        updatedShoppingCart.splice(index, 1);
-        setShoppingCart(updatedShoppingCart);
-    }, [shoppingCart]);
+    const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
 
     const validate = useCallback(() => {
         setStartDateHelperText('');
@@ -389,8 +385,9 @@ function App() {
                     </Col>
                     <Col md={6}>
                         <ShoppingCart
+                            action={modalAction}
                             assets={shoppingCart}
-                            onRemove={onShoppingCartRemove}
+                            onChange={onShoppingCartChange}
                         />
                     </Col>
                 </Row>
