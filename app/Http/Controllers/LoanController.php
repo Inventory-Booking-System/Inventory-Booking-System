@@ -52,7 +52,8 @@ class LoanController extends Controller
             'details' => 'nullable|string',
             'reservation' => 'required|boolean',
             'assets' => 'required|array',
-            'assets.*' => 'integer',
+            'assets.*.id' => 'required|integer',
+            'assets.*.returned' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -69,7 +70,11 @@ class LoanController extends Controller
         $loan->status_id = $validated['reservation'] ? 1 : 0;
         $loan->created_by = $request->user()->id;
         $loan->push();
-        $loan->assets()->sync($validated['assets']);
+        $assets = [];
+        foreach($validated['assets'] as $key => $asset) {
+            $assets[$asset['id']] = ['returned' => $asset['returned']];
+        }
+        $loan->assets()->sync($assets);
 
         return $loan;
     }
@@ -83,7 +88,8 @@ class LoanController extends Controller
             'details' => 'nullable|string',
             'reservation' => 'required|boolean',
             'assets' => 'required|array',
-            'assets.*' => 'integer',
+            'assets.*.id' => 'required|integer',
+            'assets.*.returned' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -100,7 +106,11 @@ class LoanController extends Controller
         $loan->status_id = $validated['reservation'] ? 1 : 0;
         $loan->created_by = $request->user()->id;
         $loan->push();
-        $loan->assets()->sync($validated['assets']);
+        $assets = [];
+        foreach($validated['assets'] as $key => $asset) {
+            $assets[$asset['id']] = ['returned' => $asset['returned']];
+        }
+        $loan->assets()->sync($assets);
 
         return $loan;
     }

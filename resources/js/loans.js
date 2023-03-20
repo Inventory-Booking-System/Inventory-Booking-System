@@ -154,7 +154,7 @@ function App() {
                     startDateTime: startDate.unix(),
                     endDateTime: endDate.unix(),
                     user: user.value,
-                    assets: shoppingCart.map(asset => asset.id),
+                    assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
                     details,
                     reservation: reservation === 'true'
                 })
@@ -190,7 +190,7 @@ function App() {
                     startDateTime: startDate.unix(),
                     endDateTime: endDate.unix(),
                     user: user.value,
-                    assets: shoppingCart.map(asset => asset.id),
+                    assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
                     details,
                     reservation: reservation === 'true'
                 })
