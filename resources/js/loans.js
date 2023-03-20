@@ -15,6 +15,7 @@ import UserSelect from './components/UserSelect';
 import AssetSelect from './components/AssetSelect';
 import ShoppingCart from './components/ShoppingCart';
 import { assets as assetsApi, loans, users as usersApi } from './api';
+import * as livewire from './utils/livewire';
 import 'tempusdominus-bootstrap/src/sass/tempusdominus-bootstrap-build.scss';
 
 const radios = [
@@ -148,9 +149,8 @@ function App() {
                 details,
                 reservation: reservation === 'true'
             });
+            await livewire.render();
             setSubmitLoading(false);
-
-            window.Livewire.emit('render');
 
             if (resp.status === 201) {
                 handleClose();
@@ -179,9 +179,8 @@ function App() {
                 details,
                 reservation: reservation === 'true'
             });
+            await livewire.render();
             setSubmitLoading(false);
-
-            window.Livewire.emit('render');
 
             if (resp.status === 200) {
                 handleClose();
