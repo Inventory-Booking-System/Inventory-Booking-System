@@ -12,6 +12,17 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'js')
+    .extract([
+        'jquery',
+        'bootstrap',
+        'moment',
+        'bootbox',
+        'toastr',
+        'admin-lte',
+        'select2',
+        '@popperjs/core',
+        '@eonasdan/tempus-dominus'
+    ])
     .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .styles([
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
@@ -23,9 +34,8 @@ mix.js('resources/js/app.js', 'js')
         'node_modules/@eonasdan/tempus-dominus/dist/css/tempus-dominus.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
-    .sourceMaps();
-
-mix.js('resources/js/loans.js', 'js')
+    .sourceMaps()
+    .js('resources/js/loans.js', 'js')
     .js('resources/js/setups.js', 'js')
     .preact()
     .webpackConfig({
@@ -38,4 +48,5 @@ mix.js('resources/js/loans.js', 'js')
             },
         }
     });
+
 mix.js('resources/js/signage.js', 'js').preact();
