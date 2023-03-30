@@ -84,7 +84,7 @@
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <x-button.success wire:click="complete({{ $setup->id }})" ><x-loading wire:target="complete({{ $setup->id }})" />Complete</x-button.success>
                                 <x-button.danger wire:click="cancel({{ $setup->id }})" ><x-loading wire:target="cancel({{ $setup->id }})" />Cancel</x-button.danger>
-                                <x-button.primary wire:click="edit({{ $setup->id }})" ><x-loading wire:target="edit({{ $setup->id }})" />Edit</x-button.primary>
+                                <x-button.primary class="edit-button" data-setup="{{ $setup->toJSON() }}">Edit</x-button.primary>
                             </div>
                         </x-table.cell>
                     </x-table.row>
@@ -119,6 +119,8 @@
             </x-slot>
         </x-modal.dialog>
     </form>
+    
+    <div id="create-edit-modal"></div>
 
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
@@ -200,9 +202,5 @@
         </x-modal.dialog>
     </form>
 
-    <script>
-        $(document).ready(function() {
-            console.log(@entangle('editing.loan.start_date_time'));
-        })
-    </script>
+    <script src="{{ mix('js/setups.js') }}"></script>
 </div>
