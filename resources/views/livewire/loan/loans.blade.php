@@ -106,7 +106,7 @@
                                     @else
                                         <x-button.success wire:click="complete({{ $loan->id }})" ><x-loading wire:target="complete({{ $loan->id }})" />Complete</x-button.success>
                                     @endif
-                                    <x-button.primary class="edit-button" data-loan="{{ $loan }}"><x-loading wire:target="edit({{ $loan->id }})" />Edit</x-button.primary>
+                                    <x-button.primary class="edit-button" data-loan="{{ $loan->toJSON() }}">Edit</x-button.primary>
                                 </div>
                             </x-table.cell>
                         </x-table.row>
