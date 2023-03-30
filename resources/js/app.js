@@ -1,4 +1,21 @@
-/*global $*/
+import $ from 'jquery';
+import * as bootstrap from 'bootstrap';
+import moment from 'moment';
+import bootbox from 'bootbox';
+import toastr from 'toastr';
+import * as adminlte from 'admin-lte';
+import 'select2';
+import * as Popper from '@popperjs/core';
+import * as tempusDominus from '@eonasdan/tempus-dominus';
+
+window.$ = $;
+window.bootstrap = bootstrap;
+window.moment = moment;
+window.bootbox = bootbox;
+window.toastr = toastr;
+window.adminlte = adminlte;
+window.Popper = Popper;
+window.tempusDominus = tempusDominus;
 
 //This function will update the corresponding label on the form control to let the user
 //know they have inputted data incorrectly into this field

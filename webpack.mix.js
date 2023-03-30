@@ -11,18 +11,7 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.combine([
-    'node_modules/jquery/dist/jquery.min.js',
-    'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
-    'node_modules/moment/min/moment.min.js',
-    'node_modules/bootbox/dist/bootbox.min.js',
-    'node_modules/toastr/build/toastr.min.js',
-    'node_modules/admin-lte/dist/js/adminlte.min.js',
-    'node_modules/select2/dist/js/select2.full.min.js',
-    'node_modules/@popperjs/core/dist/umd/popper.min.js',
-    'node_modules/@eonasdan/tempus-dominus/dist/js/tempus-dominus.min.js',
-    'resources/js/app.js'
-], 'public/js/app.js')
+mix.js('resources/js/app.js', 'js')
     .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .styles([
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
@@ -37,6 +26,7 @@ mix.combine([
     .sourceMaps();
 
 mix.js('resources/js/loans.js', 'js')
+    .js('resources/js/setups.js', 'js')
     .preact()
     .webpackConfig({
         resolve: {
