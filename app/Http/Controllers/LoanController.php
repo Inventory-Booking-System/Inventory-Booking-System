@@ -76,7 +76,7 @@ class LoanController extends Controller
         }
         $loan->assets()->sync($assets);
 
-        return $loan;
+        return $loan->toJSON();
     }
 
     public function put(Request $request, $id)
@@ -112,6 +112,6 @@ class LoanController extends Controller
         }
         $loan->assets()->sync($assets);
 
-        return $loan;
+        return $loan->toJSON();
     }
 }
