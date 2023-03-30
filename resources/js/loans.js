@@ -42,6 +42,7 @@ function App() {
     const [userHelperText, setUserHelperText] = useState('');
     const [reservationHelperText, setReservationHelperText] = useState('');
     const [assetsHelperText, setAssetsHelperText] = useState('');
+    const [formHelperText, setFormHelperText] = useState('');
 
     const [usersLoading, setUsersLoading] = useState(true);
     const [assetsLoading, setAssetsLoading] = useState(true);
@@ -94,6 +95,7 @@ function App() {
         setUserHelperText('');
         setReservationHelperText('');
         setAssetsHelperText('');
+        setFormHelperText('');
 
         let success = true;
 
@@ -152,16 +154,17 @@ function App() {
             await livewire.render();
             setSubmitLoading(false);
 
-            if (resp.status === 201) {
+            if (resp.ok) {
                 handleClose();
                 return;
             }
-            if (resp.status === 400) {
-                console.log('invalid');
-            }
+            setFormHelperText('An unknown error has occurred. Please try again later.');
+            return;
         } catch(e) {
+            console.error(e);
             setSubmitLoading(false);
         }
+        setFormHelperText('An connection error has occurred. Please try again later.');
     }, [details, endDate, handleClose, reservation, shoppingCart, startDate, user, validate]);
 
     const handleEdit = useCallback(async () => {
@@ -182,16 +185,17 @@ function App() {
             await livewire.render();
             setSubmitLoading(false);
 
-            if (resp.status === 200) {
+            if (resp.ok) {
                 handleClose();
                 return;
             }
-            if (resp.status === 400) {
-                console.log('invalid');
-            }
+            setFormHelperText('An unknown error has occurred. Please try again later.');
+            return;
         } catch(e) {
+            console.error(e);
             setSubmitLoading(false);
         }
+        setFormHelperText('An connection error has occurred. Please try again later.');
     }, [details, endDate, handleClose, id, reservation, shoppingCart, startDate, user, validate]);
 
     /**
@@ -379,6 +383,9 @@ function App() {
                 </Row>
             </Modal.Body>
             <Modal.Footer>
+                <Form.Text className="text-danger">
+                    {formHelperText}
+                </Form.Text>
                 <Button variant="secondary" onClick={handleClose}>
                     Cancel
                 </Button>
