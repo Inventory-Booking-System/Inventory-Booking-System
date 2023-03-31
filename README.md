@@ -24,3 +24,10 @@ Inventory Booking System is a web based bookings, loans and setups management sy
 - (TODO) Run file to setup task scheduler etc
 - Point web Server to public folder
 - Navigate to http://<websitename>/install and follow instructions
+
+### IIS Setup
+
+- In IIS, navigate to your site and open `Handler Mappings`
+- Double click `php-8.x.x` then click `Request Restrictions...`
+- On the Verbs tab, select `All Verbs`.
+- When prompted with "Do you want to create a Fast CGI Application for this Executable", click Yes.

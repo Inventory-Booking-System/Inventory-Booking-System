@@ -32,10 +32,18 @@ jobs:
       run: |
         composer install --no-scripts
  
+    - name: Install Node dependencies
+      run: |
+        npm ci --include=dev
+ 
     - name: Prepare Laravel Application
       run: |
         cp .env.ci .env
         php artisan key:generate
+ 
+    - name: Generate JavaScript
+      run: |
+        npm run prod
  
     - name: Run Testsuite
       run: php artisan test tests/Feature

@@ -24,3 +24,17 @@
 .line-through {
     text-decoration: line-through;
 }
+
+.btn-warning:not(:disabled):not(.disabled).btn-active {
+    color: #1f2d3d;
+    background-color: #d39e00;
+    border-color: #c69500;
+    font-weight: bold;
+}
+
+.btn-success:not(:disabled):not(.disabled).btn-active {
+    color: #fff;
+    background-color: #1e7e34;
+    border-color: #1c7430;
+    font-weight: bold;
+}

@@ -31,4 +31,21 @@ class UserController extends Controller
             'user' => $id
         ]);
     }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getAll()
+    {
+        $data = [];
+        $users = User::latest()->get();
+        foreach($users as $key => $user) {
+            $data[] = [
+                'id' => $user['id'],
+                'forename' => $user['forename'],
+                'surname' => $user['surname']
+            ];
+        }
+        return $data;
+    }
 }
