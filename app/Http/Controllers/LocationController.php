@@ -30,4 +30,12 @@ class LocationController extends Controller
             'location' => $id
         ]);
     }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getAll()
+    {
+        return Location::latest()->get()->toJSON();
+    }
 }

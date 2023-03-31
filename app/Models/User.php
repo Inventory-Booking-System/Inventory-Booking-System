@@ -17,7 +17,7 @@ class User extends Authenticatable
 
     protected $attributes = ['has_account' => false];
 
-    protected $hidden = ['password,', 'remember_token'];
+    protected $hidden = ['password', 'remember_token'];
 
     protected $casts = ['email_verified_at' => 'datetime'];
 

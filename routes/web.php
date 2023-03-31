@@ -6,7 +6,6 @@ use App\Http\Controllers\Install\WelcomeController;
 use App\Http\Controllers\Install\EnvironmentController;
 use App\Http\Controllers\Install\RequirementsController;
 use App\Http\Controllers\Install\PermissionsController;
-use App\Http\Controllers\Install\DatabaseController;
 use App\Http\Controllers\Install\FinalController;
 
 use App\Http\Controllers\AssetController;
@@ -47,7 +46,6 @@ Route::middleware(['guest', 'canInstall'])->prefix('install')->namespace('Instal
 
     Route::get('requirements', [RequirementsController::class, 'requirements'])->name('requirements');
     Route::get('permissions', [PermissionsController::class, 'permissions'])->name('permissions');
-    Route::get('database', [DatabaseController::class, 'database'])->name('database');
     Route::get('final', [FinalController::class, 'finish'])->name('final');
 });
 

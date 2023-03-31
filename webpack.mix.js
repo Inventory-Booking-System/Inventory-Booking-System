@@ -11,18 +11,18 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.combine([
-        'node_modules/jquery/dist/jquery.min.js',
-        'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
-        'node_modules/moment/min/moment.min.js',
-        'node_modules/bootbox/dist/bootbox.min.js',
-        'node_modules/toastr/build/toastr.min.js',
-        'node_modules/admin-lte/dist/js/adminlte.min.js',
-        'node_modules/select2/dist/js/select2.full.min.js',
-        'node_modules/@popperjs/core/dist/umd/popper.min.js',
-        'node_modules/@eonasdan/tempus-dominus/dist/js/tempus-dominus.min.js',
-        'resources/js/app.js'
-    ], 'public/js/app.js')
+mix.js('resources/js/app.js', 'js')
+    .extract([
+        'jquery',
+        'bootstrap',
+        'moment',
+        'bootbox',
+        'toastr',
+        'admin-lte',
+        'select2',
+        '@popperjs/core',
+        '@eonasdan/tempus-dominus'
+    ])
     .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .styles([
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
@@ -34,6 +34,19 @@ mix.combine([
         'node_modules/@eonasdan/tempus-dominus/dist/css/tempus-dominus.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
-    .sourceMaps();
+    .sourceMaps()
+    .js('resources/js/loans.js', 'js')
+    .js('resources/js/setups.js', 'js')
+    .preact()
+    .webpackConfig({
+        resolve: {
+            alias: {
+                'react': 'preact/compat',
+                'react-dom/test-utils': 'preact/test-utils',
+                'react-dom': 'preact/compat',     // Must be below test-utils
+                'react/jsx-runtime': 'preact/jsx-runtime'
+            },
+        }
+    });
 
-mix.js('resources/js/signage.js', 'js');
+mix.js('resources/js/signage.js', 'js').preact();

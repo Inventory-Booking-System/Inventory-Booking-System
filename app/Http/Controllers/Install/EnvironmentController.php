@@ -75,18 +75,24 @@ class EnvironmentController extends Controller
             return $redirect->route('LaravelInstaller::environmentWizard')->withInput()->withErrors($validator->errors());
         }
 
+        $results = $this->EnvironmentManager->saveFileWizard($request);
+
+        $this->EnvironmentManager->createDatabase($request->input('database_name'));
+
         if (! $this->checkDatabaseConnection($request)) {
             return $redirect->route('LaravelInstaller::environmentWizard')->withInput()->withErrors([
                 'database_connection' => trans('installer_messages.environment.wizard.form.db_connection_failed'),
             ]);
         }
 
-        $results = $this->EnvironmentManager->saveFileWizard($request);
-
         event(new EnvironmentSaved($request));
 
-        return $redirect->route('LaravelInstaller::database')
-                        ->with(['results' => $results]);
+        $response = $this->EnvironmentManager->migrateAndSeed();
+
+        $this->EnvironmentManager->createGlobalAdmin($request);
+
+        return redirect()->route('LaravelInstaller::final')
+                         ->with(['message' => $response]);
     }
 
     /**
@@ -105,6 +111,7 @@ class EnvironmentController extends Controller
         config([
             'database' => [
                 'default' => $connection,
+                'migrations' => 'migrations',
                 'connections' => [
                     $connection => array_merge($settings, [
                         'driver' => $connection,

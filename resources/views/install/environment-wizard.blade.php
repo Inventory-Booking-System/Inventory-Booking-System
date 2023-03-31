@@ -33,6 +33,13 @@
             {{ trans('installer_messages.environment.wizard.tabs.application') }}
         </label>
 
+        <input id="tab4" type="radio" name="tabs" class="tab-input" />
+        <label for="tab4" class="tab-label">
+            <i class="fa fa-envelope fa-2x fa-fw" aria-hidden="true"></i>
+            <br />
+            {{ trans('installer_messages.environment.wizard.tabs.account') }}
+        </label>
+
         <form method="post" action="{{ route('LaravelInstaller::environmentSaveWizard') }}" class="tabs-wrap">
             <div class="tab" id="tab1content">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -106,7 +113,7 @@
                     <label for="database_name">
                         {{ trans('installer_messages.environment.wizard.form.db_name_label') }}
                     </label>
-                    <input type="text" name="database_name" id="database_name" value="" placeholder="{{ trans('installer_messages.environment.wizard.form.db_name_placeholder') }}" />
+                    <input type="text" name="database_name" id="database_name" placeholder="{{ trans('installer_messages.environment.wizard.form.db_name_placeholder') }}" />
                     @if ($errors->has('database_name'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -119,7 +126,7 @@
                     <label for="database_username">
                         {{ trans('installer_messages.environment.wizard.form.db_username_label') }}
                     </label>
-                    <input type="text" name="database_username" id="database_username" value="" placeholder="{{ trans('installer_messages.environment.wizard.form.db_username_placeholder') }}" />
+                    <input type="text" name="database_username" id="database_username" placeholder="{{ trans('installer_messages.environment.wizard.form.db_username_placeholder') }}" />
                     @if ($errors->has('database_username'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -132,7 +139,7 @@
                     <label for="database_password">
                         {{ trans('installer_messages.environment.wizard.form.db_password_label') }}
                     </label>
-                    <input type="password" name="database_password" id="database_password" value="" placeholder="{{ trans('installer_messages.environment.wizard.form.db_password_placeholder') }}" />
+                    <input type="password" name="database_password" id="database_password" placeholder="{{ trans('installer_messages.environment.wizard.form.db_password_placeholder') }}" />
                     @if ($errors->has('database_password'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -142,8 +149,8 @@
                 </div>
 
                 <div class="buttons">
-                    <button class="button" onclick="showApplicationSettings();return false">
-                        {{ trans('installer_messages.environment.wizard.form.buttons.setup_application') }}
+                    <button class="button" onclick="showMailSettings();return false">
+                        {{ trans('installer_messages.environment.wizard.form.buttons.setup_mail') }}
                         <i class="fa fa-angle-right fa-fw" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -169,7 +176,7 @@
                 </div>
                 <div class="form-group {{ $errors->has('mail_host') ? ' has-error ' : '' }}">
                     <label for="mail_host">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_label') }}</label>
-                    <input type="text" name="mail_host" id="mail_host" value="smtp.mailtrap.io" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
+                    <input type="text" name="mail_host" id="mail_host" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
                     @if ($errors->has('mail_host'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -179,7 +186,7 @@
                 </div>
                 <div class="form-group {{ $errors->has('mail_port') ? ' has-error ' : '' }}">
                     <label for="mail_port">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_label') }}</label>
-                    <input type="number" name="mail_port" id="mail_port" value="2525" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_placeholder') }}" />
+                    <input type="number" name="mail_port" id="mail_port" value="587" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_placeholder') }}" />
                     @if ($errors->has('mail_port'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -217,6 +224,69 @@
                         </span>
                     @endif
                 </div>
+
+                <div class="buttons">
+                    <button class="button" onclick="showAccountSettings();return false">
+                        {{ trans('installer_messages.environment.wizard.form.buttons.setup_account') }}
+                        <i class="fa fa-angle-right fa-fw" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="tab" id="tab4content">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+                <div class="form-group {{ $errors->has('account_forename') ? ' has-error ' : '' }}">
+                    <label for="account_forename">
+                        {{ trans('installer_messages.environment.wizard.form.app_tabs.account_forename_label') }}
+                    </label>
+                    <input type="text" name="account_forename" id="account_forename" />
+                    @if ($errors->has('account_forename'))
+                        <span class="error-block">
+                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                            {{ $errors->first('account_forename') }}
+                        </span>
+                    @endif
+                </div>
+
+                <div class="form-group {{ $errors->has('account_surname') ? ' has-error ' : '' }}">
+                    <label for="account_surname">
+                        {{ trans('installer_messages.environment.wizard.form.app_tabs.account_surname_label') }}
+                    </label>
+                    <input type="text" name="account_surname" id="account_surname" />
+                    @if ($errors->has('account_surname'))
+                        <span class="error-block">
+                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                            {{ $errors->first('account_surname') }}
+                        </span>
+                    @endif
+                </div>
+
+                <div class="form-group {{ $errors->has('account_email') ? ' has-error ' : '' }}">
+                    <label for="account_email">
+                        {{ trans('installer_messages.environment.wizard.form.app_tabs.account_email_label') }}
+                    </label>
+                    <input type="text" name="account_email" id="account_email" />
+                    @if ($errors->has('account_email'))
+                        <span class="error-block">
+                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                            {{ $errors->first('account_email') }}
+                        </span>
+                    @endif
+                </div>
+
+                <div class="form-group {{ $errors->has('account_password') ? ' has-error ' : '' }}">
+                    <label for="account_password">
+                        {{ trans('installer_messages.environment.wizard.form.app_tabs.account_password_label') }}
+                    </label>
+                    <input type="password" name="account_password" id="account_password" />
+                    @if ($errors->has('account_password'))
+                        <span class="error-block">
+                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                            {{ $errors->first('account_password') }}
+                        </span>
+                    @endif
+                </div>
+
                 <div class="buttons">
                     <button class="button" type="submit">
                         {{ trans('installer_messages.environment.wizard.form.buttons.install') }}
@@ -242,8 +312,11 @@
         function showDatabaseSettings() {
             document.getElementById('tab2').checked = true;
         }
-        function showApplicationSettings() {
+        function showMailSettings() {
             document.getElementById('tab3').checked = true;
+        }
+        function showAccountSettings() {
+            document.getElementById('tab4').checked = true;
         }
     </script>
 @endsection

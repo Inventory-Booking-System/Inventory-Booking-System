@@ -13,7 +13,7 @@ return [
     |
     */
     'core' => [
-        'minPhpVersion' => '7.3.0',
+        'minPhpVersion' => '8.1.0',
     ],
     'final' => [
         'key' => true,
@@ -73,6 +73,10 @@ return [
                 'mail_username'         => 'required|string|max:50',
                 'mail_password'         => 'required|string|max:50',
                 'mail_encryption'       => 'required|string|max:50',
+                'account_forename'      => 'required|string',
+                'account_surname'      => 'required|string',
+                'account_email'      => 'required|string',
+                'account_password'      => 'required|string',
             ],
         ],
     ],

@@ -24,6 +24,11 @@ class Setups extends Component
 {
     use WithPerPagePagination, WithSorting, WithBulkActions, WithShoppingCart;
 
+    /**
+     * Allow JS to re-render page on demand
+     */
+    protected $listeners = ['render'];
+
     protected $paginationTheme = 'bootstrap';       #Use boostrap theme when displaying data with pagination
     protected $queryString = [];                    #Use on tables when displaying data based on the user request
     public $showFilters = false;                    #These are displayed above each column in the table
@@ -342,6 +347,8 @@ class Setups extends Component
 
     public function render()
     {
+        $this->dispatchBrowserEvent('render');
+
         if($this->selectAll){
            $this->selectPageRows();
         }

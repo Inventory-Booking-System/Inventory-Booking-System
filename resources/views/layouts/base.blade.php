@@ -16,6 +16,8 @@
         <script src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
 
         <!-- JS Mix -->
+        <script src="{{ mix('js/manifest.js') }}"></script>
+        <script src="{{ mix('js/vendor.js') }}"></script>
         <script src="{{ mix('js/app.js') }}"></script>
 
         <!-- Livewire -->
