@@ -47,7 +47,18 @@ function App() {
     const [assetsLoading, setAssetsLoading] = useState(true);
     const [submitLoading, setSubmitLoading] = useState(false);
 
+    const clearHelperText = useCallback(() => {
+        setStartDateHelperText('');
+        setEndDateHelperText('');
+        setUserHelperText('');
+        setReservationHelperText('');
+        setAssetsHelperText('');
+        setFormHelperText('');
+    }, []);
+
     const handleCreateOpen = useCallback(() => {
+        clearHelperText();
+
         setStartDate(moment());
         setEndDate();
         setUser();
@@ -57,10 +68,12 @@ function App() {
 
         setModalAction('Create');
         setOpen(true);
-    }, []);
+    }, [clearHelperText]);
 
     const handleEditOpen = useCallback((e) => {
         const loan = JSON.parse(e.target.dataset.loan);
+
+        clearHelperText();
 
         setId(loan.id);
         setStartDate(moment(loan.start_date_time, 'DD MMM YYYY HH:mm'));
@@ -72,7 +85,7 @@ function App() {
 
         setModalAction('Edit');
         setOpen(true);
-    }, []);
+    }, [clearHelperText]);
 
     const handleClose = useCallback(() => setOpen(false), []);
 
@@ -92,12 +105,7 @@ function App() {
     const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
 
     const validate = useCallback(() => {
-        setStartDateHelperText('');
-        setEndDateHelperText('');
-        setUserHelperText('');
-        setReservationHelperText('');
-        setAssetsHelperText('');
-        setFormHelperText('');
+        clearHelperText();
 
         let success = true;
 
@@ -136,7 +144,7 @@ function App() {
         }
 
         return success;
-    }, [startDate, endDate, user, reservation, shoppingCart.length]);
+    }, [clearHelperText, startDate, endDate, user, reservation, shoppingCart.length]);
 
     const handleCreate = useCallback(async () => {
         if (!validate()) {

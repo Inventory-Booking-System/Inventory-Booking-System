@@ -52,6 +52,8 @@ function App() {
     const [submitLoading, setSubmitLoading] = useState(false);
 
     const handleCreateOpen = useCallback(() => {
+        clearHelperText();
+
         setTitle();
         setStartDate(moment());
         setEndDate();
@@ -62,10 +64,12 @@ function App() {
 
         setModalAction('Create');
         setOpen(true);
-    }, []);
+    }, [clearHelperText]);
 
     const handleEditOpen = useCallback((e) => {
         const setup = JSON.parse(e.target.dataset.setup);
+
+        clearHelperText();
 
         setId(setup.id);
         setTitle(setup.title);
@@ -78,7 +82,7 @@ function App() {
 
         setModalAction('Edit');
         setOpen(true);
-    }, []);
+    }, [clearHelperText]);
 
     const handleClose = useCallback(() => setOpen(false), []);
 
@@ -95,7 +99,7 @@ function App() {
 
     const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
 
-    const validate = useCallback(() => {
+    const clearHelperText = useCallback(() => {
         setTitleHelperText('');
         setStartDateHelperText('');
         setEndDateHelperText('');
@@ -103,6 +107,10 @@ function App() {
         setLocationHelperText('');
         setAssetsHelperText('');
         setFormHelperText('');
+    }, []);
+
+    const validate = useCallback(() => {
+        clearHelperText();
 
         let success = true;
 
@@ -146,7 +154,7 @@ function App() {
         }
 
         return success;
-    }, [title, startDate, endDate, user, location, shoppingCart.length]);
+    }, [clearHelperText, title, startDate, endDate, user, location, shoppingCart.length]);
 
     const handleCreate = useCallback(async () => {
         if (!validate()) {
@@ -213,7 +221,7 @@ function App() {
             setSubmitLoading(false);
         }
         setFormHelperText('A connection error has occurred. Please try again later.');
-    }, [details, endDate, handleClose, id, location.value, shoppingCart, startDate, title, user.value, validate]);
+    }, [details, endDate, handleClose, id, location, shoppingCart, startDate, title, user, validate]);
 
     /**
      * Load users when modal is opened
