@@ -8,7 +8,6 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import ToggleButton from 'react-bootstrap/ToggleButton';
 import { DateTimePicker } from 'react-tempusdominus-bootstrap';
 import moment from 'moment';
 import UserSelect from './components/UserSelect';
@@ -81,7 +80,10 @@ function App() {
     const handleEndDateChange = useCallback(e => setEndDate(e.date), []);
     const handleUserChange = useCallback(e => setUser(e), []);
     const handleDetailsChange = useCallback(e => setDetails(e.target.value), []);
-    const handleReservationChange = useCallback(e => setReservation(e.currentTarget.value), []);
+    const handleReservationChange = useCallback(e => {
+        e.preventDefault();
+        setReservation(e.currentTarget.value);
+    }, []);
 
     const handleAssetChange = useCallback(e => {
         setShoppingCart([...shoppingCart, assets.find(x => x.id === e.value)]);
@@ -353,18 +355,15 @@ function App() {
                             <Form.Group className="mb-3">
                                 <ButtonGroup>
                                     {radios.map((radio, idx) => (
-                                        <ToggleButton
+                                        <Button
                                             key={idx}
-                                            id={`radio-${idx}`}
-                                            type="radio"
                                             variant={radio.value === 'true' ? 'warning' : 'success'}
-                                            name="radio"
                                             value={radio.value}
-                                            checked={reservation === radio.value}
-                                            onChange={handleReservationChange}
+                                            className={reservation === radio.value ? 'btn-active' : ''}
+                                            onClick={handleReservationChange}
                                         >
                                             {radio.name}
-                                        </ToggleButton>
+                                        </Button>
                                     ))}
                                 </ButtonGroup>
                                 <Form.Text className="text-danger" style="min-height: 20px">
