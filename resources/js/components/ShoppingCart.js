@@ -39,6 +39,7 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
                             {action !== 'Create' && <Button
                                 variant={returned ? 'success' : 'light'}
                                 onClick={bookIn}
+                                size="sm"
                             >
                                 <i
                                     className="fa-sharp fa-solid fa-circle-check"
@@ -48,6 +49,7 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
                             <Button
                                 variant={returned ? 'success' : 'light'}
                                 onClick={remove}
+                                size="sm"
                             >
                                 <i className="fas fa-trash-alt"></i>
                             </Button>

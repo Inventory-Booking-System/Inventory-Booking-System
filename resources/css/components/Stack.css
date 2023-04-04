@@ -1,0 +1,30 @@
+.gap-1 {
+    gap: .25rem!important;
+}
+.gap-2 {
+    gap: .5rem!important;
+}
+.gap-3 {
+    gap: 1rem!important;
+}
+.gap-4 {
+    gap: 1.5rem!important;
+}
+.gap-5 {
+    gap: 3rem!important;
+}
+
+.vstack {
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+.hstack {
+    flex-direction: row;
+    align-items: center;
+}
+
+.hstack, .vstack {
+    display: flex;
+    align-self: stretch;
+}

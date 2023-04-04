@@ -1,0 +1,14 @@
+.form-label-stack {
+    margin-bottom: .5rem;
+    margin-top: .25rem;
+    justify-content: space-between;
+}
+
+.form-label-stack .form-label {
+    margin-bottom: 0;
+}
+
+.form-label-stack .form-text {
+    margin-top: 0;
+    align-self: flex-end;
+}
