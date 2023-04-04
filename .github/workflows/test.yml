@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: kirschbaumdevelopment/laravel-test-runner:8.1
- 
+
     services:
       mysql:
         image: mysql:5.7
@@ -22,30 +22,34 @@ jobs:
         ports:
           - 33306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
- 
+
     steps:
     - uses: actions/checkout@v1
+    - uses: "finnp/create-file-action@master"
+          env:
+            FILE_NAME: "storage/installed"
+            FILE_DATA: "Laravel Installer successfully INSTALLED"
     - uses: actions/setup-node@v3
       with:
         node-version: 16
         cache: 'npm'
- 
+
     - name: Install composer dependencies
       run: |
         composer install --no-scripts
- 
+
     - name: Install Node dependencies
       run: |
         apt install build-essential -y && npm ci --force
- 
+
     - name: Prepare Laravel Application
       run: |
         cp .env.ci .env
         php artisan key:generate
- 
+
     - name: Generate JavaScript
       run: |
         npm run prod
- 
+
     - name: Run Testsuite
       run: php artisan test tests/Feature
