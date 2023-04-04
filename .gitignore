@@ -17,3 +17,5 @@ yarn-error.log
 /storage/installed
 /storage/dotenv-editor
 /.env.testing
+/public/css
+/public/js
