@@ -10,7 +10,7 @@
 
 @section('container')
     <p class="text-center">
-      {{ trans('installer_messages.welcome.message') }}
+    <img src="img\IBS.png" alt="Picture of the Inventory Booking System" width="920">
     </p>
     <p class="text-center">
       <a href="{{ route('LaravelInstaller::requirements') }}" class="button">

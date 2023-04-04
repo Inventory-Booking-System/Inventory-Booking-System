@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>@if (trim($__env->yieldContent('template_title')))@yield('template_title') | @endif {{ trans('installer_messages.title') }}</title>
-        <link href="{{ asset('css/style.min.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('css/installer.min.css') }}" rel="stylesheet"/>
         @yield('style')
         <script>
             window.Laravel = <?php echo json_encode([
@@ -14,7 +14,10 @@
             ]); ?>
         </script>
     </head>
-    <body style="background-color:#3c9edf">
+    <body style="
+        background: rgb(2,0,36);
+        background: linear-gradient(360deg, rgb(43, 36, 175) 0%, rgba(60,158,223,1) 35%, rgba(0,212,255,1) 100%);
+    ">
         <div class="master">
             <div class="box">
                 <div class="header">

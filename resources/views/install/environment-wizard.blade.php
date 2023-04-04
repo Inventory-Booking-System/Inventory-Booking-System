@@ -11,7 +11,6 @@
 
 @section('container')
     <div class="tabs tabs-full">
-
         <input id="tab1" type="radio" name="tabs" class="tab-input" checked />
         <label for="tab1" class="tab-label">
             <i class="fa fa-cog fa-2x fa-fw" aria-hidden="true"></i>
@@ -65,37 +64,42 @@
                 </div>
             </div>
             <div class="tab" id="tab2content">
-                <div class="form-group {{ $errors->has('database_connection') ? ' has-error ' : '' }}">
-                    <label for="database_connection">
-                        {{ trans('installer_messages.environment.wizard.form.db_connection_label') }}
-                    </label>
-                    <select name="database_connection" id="database_connection">
-                        <option value="mysql" selected>{{ trans('installer_messages.environment.wizard.form.db_connection_label_mysql') }}</option>
-                        <option value="sqlite">{{ trans('installer_messages.environment.wizard.form.db_connection_label_sqlite') }}</option>
-                        <option value="pgsql">{{ trans('installer_messages.environment.wizard.form.db_connection_label_pgsql') }}</option>
-                        <option value="sqlsrv">{{ trans('installer_messages.environment.wizard.form.db_connection_label_sqlsrv') }}</option>
-                    </select>
-                    @if ($errors->has('database_connection'))
-                        <span class="error-block">
-                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                            {{ $errors->first('database_connection') }}
-                        </span>
-                    @endif
+                <div class="wrapper">
+                    <div class="left">
+                        <div class="form-group {{ $errors->has('database_connection') ? ' has-error ' : '' }}">
+                            <label for="database_connection">
+                                {{ trans('installer_messages.environment.wizard.form.db_connection_label') }}
+                            </label>
+                            <select name="database_connection" id="database_connection">
+                                <option value="mysql" selected>{{ trans('installer_messages.environment.wizard.form.db_connection_label_mysql') }}</option>
+                                <option value="sqlite">{{ trans('installer_messages.environment.wizard.form.db_connection_label_sqlite') }}</option>
+                                <option value="pgsql">{{ trans('installer_messages.environment.wizard.form.db_connection_label_pgsql') }}</option>
+                                <option value="sqlsrv">{{ trans('installer_messages.environment.wizard.form.db_connection_label_sqlsrv') }}</option>
+                            </select>
+                            @if ($errors->has('database_connection'))
+                                <span class="error-block">
+                                    <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                                    {{ $errors->first('database_connection') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="form-group {{ $errors->has('database_hostname') ? ' has-error ' : '' }}">
+                            <label for="database_hostname">
+                                {{ trans('installer_messages.environment.wizard.form.db_host_label') }}
+                            </label>
+                            <input type="text" name="database_hostname" id="database_hostname" value="{{ old('database_port', '127.0.0.1') }}" placeholder="{{ trans('installer_messages.environment.wizard.form.db_host_placeholder') }}" />
+                            @if ($errors->has('database_hostname'))
+                                <span class="error-block">
+                                    <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                                    {{ $errors->first('database_hostname') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-
-                <div class="form-group {{ $errors->has('database_hostname') ? ' has-error ' : '' }}">
-                    <label for="database_hostname">
-                        {{ trans('installer_messages.environment.wizard.form.db_host_label') }}
-                    </label>
-                    <input type="text" name="database_hostname" id="database_hostname" value="{{ old('database_port', '127.0.0.1') }}" placeholder="{{ trans('installer_messages.environment.wizard.form.db_host_placeholder') }}" />
-                    @if ($errors->has('database_hostname'))
-                        <span class="error-block">
-                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                            {{ $errors->first('database_hostname') }}
-                        </span>
-                    @endif
-                </div>
-
+                
                 <div class="form-group {{ $errors->has('database_port') ? ' has-error ' : '' }}">
                     <label for="database_port">
                         {{ trans('installer_messages.environment.wizard.form.db_port_label') }}
@@ -156,34 +160,41 @@
                 </div>
             </div>
             <div class="tab" id="tab3content">
-                <div class="form-group {{ $errors->has('mail_driver') ? ' has-error ' : '' }}">
-                    <label for="mail_driver">
-                        {{ trans('installer_messages.environment.wizard.form.app_tabs.mail_driver_label') }}
-                        <sup>
-                            <a href="https://laravel.com/docs/5.4/mail" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
-                                <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
-                                <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
-                            </a>
-                        </sup>
-                    </label>
-                    <input type="text" name="mail_driver" id="mail_driver" value="{{ old('mail_driver', 'smtp') }}" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_driver_placeholder') }}" />
-                    @if ($errors->has('mail_driver'))
-                        <span class="error-block">
-                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                            {{ $errors->first('mail_driver') }}
-                        </span>
-                    @endif
+                <div class="wrapper">
+                    <div class="left">
+                        <div class="form-group {{ $errors->has('mail_driver') ? ' has-error ' : '' }}">
+                            <label for="mail_driver">
+                                {{ trans('installer_messages.environment.wizard.form.app_tabs.mail_driver_label') }}
+                                <sup>
+                                    <a href="https://laravel.com/docs/5.4/mail" target="_blank" title="{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}">
+                                        <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
+                                        <span class="sr-only">{{ trans('installer_messages.environment.wizard.form.app_tabs.more_info') }}</span>
+                                    </a>
+                                </sup>
+                            </label>
+                            <input type="text" name="mail_driver" id="mail_driver" value="{{ old('mail_driver', 'smtp') }}" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_driver_placeholder') }}" />
+                            @if ($errors->has('mail_driver'))
+                                <span class="error-block">
+                                    <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                                    {{ $errors->first('mail_driver') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="form-group {{ $errors->has('mail_host') ? ' has-error ' : '' }}">
+                            <label for="mail_host">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_label') }}</label>
+                            <input type="text" name="mail_host" id="mail_host" value="{{ old('mail_host') }}" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
+                            @if ($errors->has('mail_host'))
+                                <span class="error-block">
+                                    <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                                    {{ $errors->first('mail_host') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group {{ $errors->has('mail_host') ? ' has-error ' : '' }}">
-                    <label for="mail_host">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_label') }}</label>
-                    <input type="text" name="mail_host" id="mail_host" value="{{ old('mail_host') }}" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_host_placeholder') }}" />
-                    @if ($errors->has('mail_host'))
-                        <span class="error-block">
-                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                            {{ $errors->first('mail_host') }}
-                        </span>
-                    @endif
-                </div>
+
                 <div class="form-group {{ $errors->has('mail_port') ? ' has-error ' : '' }}">
                     <label for="mail_port">{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_label') }}</label>
                     <input type="number" name="mail_port" id="mail_port" value="{{ old('mail_port', '587') }}" placeholder="{{ trans('installer_messages.environment.wizard.form.app_tabs.mail_port_placeholder') }}" />

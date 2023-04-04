@@ -108,9 +108,9 @@ class EnvironmentManager
 
         $envFileData =
         'APP_NAME="Inventory Booking System"'."\n".
-        'APP_ENV=local'."\n".
+        'APP_ENV=production'."\n".
         'APP_KEY='.'base64:'.base64_encode(Str::random(32))."\n".
-        'APP_DEBUG=true'."\n".
+        'APP_DEBUG=false'."\n".
         'APP_URL='.$request->app_url."\n\n".
         'LOG_CHANNEL=stack'."\n".
         'LOG_DEPRECATIONS_CHANNEL=null'."\n".

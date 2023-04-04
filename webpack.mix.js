@@ -34,6 +34,9 @@ mix.js('resources/js/app.js', 'js')
         'node_modules/@eonasdan/tempus-dominus/dist/css/tempus-dominus.min.css',
         'resources/css/app.css'
     ], 'public/css/app.css')
+    .styles([
+        'resources/css/installer.css'   
+    ], 'public/css/installer.min.css')
     .sourceMaps()
     .js('resources/js/loans.js', 'js')
     .js('resources/js/setups.js', 'js')

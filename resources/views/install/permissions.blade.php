@@ -12,6 +12,9 @@
 @section('container')
 
     <ul class="list">
+        <li class="list__item list__title">
+            <strong>File Permissions</strong>
+        </li>
         @foreach($permissions['permissions'] as $permission)
         <li class="list__item list__item--permissions {{ $permission['isSet'] ? 'success' : 'error' }}">
             {{ $permission['folder'] }}
