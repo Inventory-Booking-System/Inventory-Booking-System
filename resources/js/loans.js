@@ -356,7 +356,7 @@ function App() {
                                 </FormLabel>
                                 <Form.Control
                                     as="textarea"
-                                    rows={3}
+                                    rows={4}
                                     value={details}
                                     onChange={handleDetailsChange}
                                     disabled={submitLoading}
