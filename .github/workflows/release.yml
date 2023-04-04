@@ -18,13 +18,13 @@ jobs:
           node-version: '16'
           cache: 'npm'
 
-      # Install dependencies
-      - name: Install dependencies
-        run: npm install
+      - name: Install Node dependencies
+        run: |
+          apt install build-essential -y && npm ci --force
 
-      # Build assets
-      - name: Build assets
-        run: npm run prod
+      - name: Generate JavaScript
+            run: |
+              npm run prod
 
       # Read the contents of the changelog file
       - name: Read changelog
