@@ -13,6 +13,7 @@ import moment from 'moment';
 import UserSelect from './components/UserSelect';
 import AssetSelect from './components/AssetSelect';
 import ShoppingCart from './components/ShoppingCart';
+import FormLabel from './components/FormLabel';
 import {
     assets as assetsApi,
     locations as locationsApi,
@@ -318,20 +319,25 @@ function App() {
                     <Col md={6}>
                         <Form>
                             <Form.Group>
-                                <Form.Label>Title</Form.Label>
+                                <FormLabel
+                                    helperText={titleHelperText}
+                                >
+                                    Title
+                                </FormLabel>
                                 <Form.Control
                                     type="text"
                                     value={title}
                                     onChange={handleTitleChange}
                                     disabled={submitLoading}
                                 />
-                                <Form.Text className="text-danger" style="min-height: 20px">
-                                    {titleHelperText}
-                                </Form.Text>
                             </Form.Group>
 
                             <Form.Group>
-                                <Form.Label>Start Date</Form.Label>
+                                <FormLabel
+                                    helperText={startDateHelperText}
+                                >
+                                    Start Date
+                                </FormLabel>
                                 <DateTimePicker
                                     collapse={false}
                                     onChange={handleStartDateChange}
@@ -341,13 +347,14 @@ function App() {
                                     validate
                                     readOnly={submitLoading}
                                 />
-                                <Form.Text className="text-danger" style="min-height: 20px">
-                                    {startDateHelperText}
-                                </Form.Text>
                             </Form.Group>
 
                             <Form.Group>
-                                <Form.Label>End Date</Form.Label>
+                                <FormLabel
+                                    helperText={endDateHelperText}
+                                >
+                                    End Date
+                                </FormLabel>
                                 <DateTimePicker
                                     collapse={false}
                                     onChange={handleEndDateChange}
@@ -356,13 +363,14 @@ function App() {
                                     sideBySide
                                     readOnly={submitLoading}
                                 />
-                                <Form.Text className="text-danger" style="min-height: 20px">
-                                    {endDateHelperText}
-                                </Form.Text>
                             </Form.Group>
 
                             <Form.Group>
-                                <Form.Label>User</Form.Label>
+                                <FormLabel
+                                    helperText={userHelperText}
+                                >
+                                    User
+                                </FormLabel>
                                 <UserSelect
                                     users={users}
                                     isLoading={usersLoading}
@@ -370,13 +378,14 @@ function App() {
                                     disabled={submitLoading}
                                     defaultValue={user}
                                 />
-                                <Form.Text className="text-danger" style="min-height: 20px">
-                                    {userHelperText}
-                                </Form.Text>
                             </Form.Group>
 
                             <Form.Group>
-                                <Form.Label>Location</Form.Label>
+                                <FormLabel
+                                    helperText={locationHelperText}
+                                >
+                                    Location
+                                </FormLabel>
                                 <Select
                                     options={locations}
                                     onChange={handleLocationChange}
@@ -385,13 +394,14 @@ function App() {
                                     defaultValue={location}
                                     isClearable
                                 />
-                                <Form.Text className="text-danger" style="min-height: 20px">
-                                    {locationHelperText}
-                                </Form.Text>
                             </Form.Group>
 
                             <Form.Group>
-                                <Form.Label>Equipment</Form.Label>
+                                <FormLabel
+                                    helperText={assetsHelperText}
+                                >
+                                    Equipment
+                                </FormLabel>
                                 <AssetSelect
                                     assets={assets}
                                     shoppingCart={shoppingCart}
@@ -399,16 +409,15 @@ function App() {
                                     isLoading={assetsLoading}
                                     disabled={submitLoading}
                                 />
-                                <Form.Text className="text-danger" style="min-height: 20px">
-                                    {assetsHelperText}
-                                </Form.Text>
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <Form.Label>Details</Form.Label>
+                                <FormLabel>
+                                    Details
+                                </FormLabel>
                                 <Form.Control
                                     as="textarea"
-                                    rows={3}
+                                    rows={4}
                                     value={details}
                                     onChange={handleDetailsChange}
                                     disabled={submitLoading}

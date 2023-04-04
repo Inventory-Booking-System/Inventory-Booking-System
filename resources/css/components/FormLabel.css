@@ -1,0 +1,12 @@
+.form-label-stack {
+    margin-bottom: .5rem;
+    margin-top: .25rem;
+}
+
+.form-label-stack .form-label {
+    margin-bottom: 0;
+}
+
+.form-label-stack .form-text {
+    margin-top: 0;
+}
