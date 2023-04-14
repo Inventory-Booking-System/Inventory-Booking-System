@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
 use Response;
 use App\Models\Asset;
@@ -49,39 +50,35 @@ class AssetController extends Controller
 
         $validated = $validator->validated();
 
-        $validatedDate =[
+        $validatedDate = [
             'start_date_time' => Carbon::createFromTimestamp($validated['startDateTime']),
             'end_date_time' => Carbon::createFromTimestamp($validated['endDateTime'])
         ];
 
         $assets = Asset::latest()->get();
 
-        //Get equipment that is available for booking
-        $availableAssets = Asset::where(function($query) use($validatedDate){
-                $query->whereNotIn('assets.id', function($query) use($validatedDate){
-                    $query->select('asset_loan.asset_id')
-                        ->from('loans')
-                        ->join('asset_loan','loans.id','asset_loan.loan_id')
-                        ->whereRaw('`assets`.`id` = `asset_loan`.`asset_id`')
-                        ->where(function($query2) use($validatedDate){
-                            $query2->where('loans.start_date_time', '>=', $validatedDate['start_date_time'])
-                                ->where('loans.start_date_time', '<=', $validatedDate['end_date_time']);
-                        })
-                        ->orWhere(function($query2) use($validatedDate){
-                            $query2->where('loans.end_date_time', '>=', $validatedDate['start_date_time'])
-                                ->where('loans.end_date_time', '<=', $validatedDate['end_date_time']);
-                        })
-                        ->where('asset_loan.returned','=',0);
-                })
-                ->orWhereDoesntHave('loans');
+        $nonAvailableAssets = DB::table('assets')
+            ->join('asset_loan', 'assets.id', '=', 'asset_loan.asset_id')
+            ->join('loans', 'asset_loan.loan_id', '=', 'loans.id')
+            ->select('assets.id', 'assets.name')
+            ->where('asset_loan.returned', 0)
+            ->where('loans.status_id', '<>', 4) // Cancelled
+            ->where('loans.status_id', '<>', 5) // Completed
+            ->where(function ($query) use ($validatedDate) {
+                $query->whereBetween('loans.start_date_time', [$validatedDate['start_date_time'], $validatedDate['end_date_time']])
+                    ->orWhereBetween('loans.end_date_time', [$validatedDate['start_date_time'], $validatedDate['end_date_time']]);
             })
-            ->get(['id','name','tag'])->toArray();
+            ->get();
 
-        //Mark available equipment in master equipment list
-        foreach($availableAssets as $equipment){
-            foreach($assets as $key => $equipment2){
-                if($equipment['id'] == $equipment2['id']){
-                    $assets[$key]['available'] = true;
+        foreach($assets as $key => $value){
+            $assets[$key]['available'] = true;
+        }
+
+        // Mark non-available equipment in master equipment list
+        foreach($nonAvailableAssets as $nonAvailableAsset){
+            foreach($assets as $key => $asset){
+                if($nonAvailableAsset->id === $asset['id']){
+                    $assets[$key]['available'] = false;
                 }
             }
         }
