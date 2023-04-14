@@ -14,7 +14,7 @@ export default function AssetSelect({ assets, shoppingCart, onChange, isLoading,
         const updatedAssets = JSON.parse(JSON.stringify(assets));
         for (var i = 0; i < updatedAssets.length; i++) {
             for (var j = 0; j < shoppingCart.length; j++) {
-                if (updatedAssets[i].id === shoppingCart[j].id) {
+                if (updatedAssets[i].id === shoppingCart[j].id && !shoppingCart[j].returned) {
                     updatedAssets[i].available = false;
                     updatedAssets[i].isDisabled = true;
                 }
