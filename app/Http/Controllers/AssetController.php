@@ -66,7 +66,24 @@ class AssetController extends Controller
             ->where('loans.status_id', '<>', 5) // Completed
             ->where(function ($query) use ($validatedDate) {
                 $query->whereBetween('loans.start_date_time', [$validatedDate['start_date_time'], $validatedDate['end_date_time']])
-                    ->orWhereBetween('loans.end_date_time', [$validatedDate['start_date_time'], $validatedDate['end_date_time']]);
+                    ->orWhereBetween('loans.end_date_time', [$validatedDate['start_date_time'], $validatedDate['end_date_time']])
+                    /**
+                     * We can't use a value as the first parameter in Laravel's 
+                     * orWhereBetweenColumns(), so implement it using orWhere()
+                     *
+                     * OR :startDateTime BETWEEN loans.start_date_time AND loans.end_date_time
+                     */
+                    ->orWhere([
+                        ['loans.start_date_time', '<=', $validatedDate['start_date_time']],
+                        ['loans.end_date_time', '>=', $validatedDate['start_date_time']],
+                    ])
+                    /**
+                     * OR :endDateTime BETWEEN loans.start_date_time AND loans.end_date_time
+                     */
+                    ->orWhere([
+                        ['loans.start_date_time', '<=', $validatedDate['end_date_time']],
+                        ['loans.end_date_time', '>=', $validatedDate['end_date_time']],
+                    ]);
             })
             ->get();
 

@@ -526,4 +526,84 @@ class AssetControllerTest extends TestCase
                     )
             );
     }
+
+    /**
+     * @test
+     * @group asset-controller
+     */
+    public function notAvailableWhenQueryStartAndEndOutsideLoanStartAndEnd(): void
+    {
+        $this->seed();
+
+        $startDateTime = Carbon::now()->add(1, 'day');
+        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+
+        $loan = Loan::factory()
+            ->count(1)
+            ->withUser(User::first())
+            ->withCreator(User::first())
+            ->withStartDateTime($startDateTime)
+            ->withEndDateTime($endDateTime)
+            ->withStatusId(0)
+            ->create()
+            ->first();
+        $loan->assets()->attach(Asset::first());
+
+        $response = $this
+            ->actingAs(User::first())
+            ->get('/api/assets?startDateTime='.$startDateTime->subtract(30, 'minute')->timestamp.'&endDateTime='.$endDateTime->add(30, 'minute')->timestamp);
+        $response
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) => 
+                $json
+                    ->has('0', fn (AssertableJson $json) =>
+                        $json->where('available', false)
+                            ->etc()
+                    )
+                    ->has('1', fn (AssertableJson $json) =>
+                        $json->where('available', true)
+                            ->etc()
+                    )
+            );
+    }
+
+    /**
+     * @test
+     * @group asset-controller
+     */
+    public function notAvailableWhenQueryStartAndEndInsideLoanStartAndEnd(): void
+    {
+        $this->seed();
+
+        $startDateTime = Carbon::now()->add(1, 'day');
+        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+
+        $loan = Loan::factory()
+            ->count(1)
+            ->withUser(User::first())
+            ->withCreator(User::first())
+            ->withStartDateTime($startDateTime)
+            ->withEndDateTime($endDateTime)
+            ->withStatusId(0)
+            ->create()
+            ->first();
+        $loan->assets()->attach(Asset::first());
+
+        $response = $this
+            ->actingAs(User::first())
+            ->get('/api/assets?startDateTime='.$startDateTime->add(10, 'minute')->timestamp.'&endDateTime='.$endDateTime->subtract(10, 'minute')->timestamp);
+        $response
+            ->assertStatus(200)
+            ->assertJson(fn (AssertableJson $json) => 
+                $json
+                    ->has('0', fn (AssertableJson $json) =>
+                        $json->where('available', false)
+                            ->etc()
+                    )
+                    ->has('1', fn (AssertableJson $json) =>
+                        $json->where('available', true)
+                            ->etc()
+                    )
+            );
+    }
 }
