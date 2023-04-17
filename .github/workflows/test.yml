@@ -1,11 +1,11 @@
+name: CI
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-
-name: CI
 
 jobs:
   phpunit:
@@ -25,10 +25,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: "finnp/create-file-action@master"
-          env:
-            FILE_NAME: "storage/installed"
-            FILE_DATA: "Laravel Installer successfully INSTALLED"
+    - name: Create file
+      uses: finnp/create-file-action@master
+      with:
+        FILE_NAME: 'storage/installed'
+        FILE_DATA: 'Laravel Installer successfully INSTALLED'
+      env:
+        FILE_NAME: 'storage/installed'
+        FILE_DATA: 'Laravel Installer successfully INSTALLED'
     - uses: actions/setup-node@v3
       with:
         node-version: 16
