@@ -149,13 +149,8 @@ function App() {
             setLocationHelperText('Location is required');
         }
 
-        if (!shoppingCart.length) {
-            success = false;
-            setAssetsHelperText('Equipment is required');
-        }
-
         return success;
-    }, [clearHelperText, title, startDate, endDate, user, location, shoppingCart.length]);
+    }, [clearHelperText, title, startDate, endDate, user, location]);
 
     const handleCreate = useCallback(async () => {
         if (!validate()) {
