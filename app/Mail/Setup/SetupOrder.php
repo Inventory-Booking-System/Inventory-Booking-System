@@ -25,7 +25,7 @@ class SetupOrder extends Mailable
      *
      * @return void
      */
-    public function __construct(Setup $setup, $status)
+    public function __construct(Setup $setup, $isCreateOperation)
     {
         $this->setup = Setup::find($setup->id);
         $this->bookingTitle = "Setup";
@@ -33,7 +33,7 @@ class SetupOrder extends Mailable
         switch($setup->loan->status_id){
             case(3):
                 #Setup
-                $this->bookingType = $status ? "created" : "modified";
+                $this->bookingType = $isCreateOperation ? "created" : "modified";
                 break;
             case(4):
                 #Reservation Cancelled
