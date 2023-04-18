@@ -16,7 +16,7 @@
                             @endforeach
                             <br><b>Total Cost:</b> £{{ $shoppingCost }}<br>
                             <br>
-                            <b>Evidence</b><br>{{ $incident->evidence }}<br><br>
+                            <b>Evidence</b><br><a href="{{ $incident->evidence }}" target="_blank" rel="noopener">{{ $incident->evidence }}</a><br><br>
                             <b>Details</b><br>{{ $incident->details }}<br><br>
                             <center>If you have any queries about this {{ lcfirst($bookingTitle) }}, contact us at <a href="mailto:{{ Config::get('mail.reply_to.address') }}">{{ Config::get('mail.reply_to.address') }}</a></center>
                         </td>
