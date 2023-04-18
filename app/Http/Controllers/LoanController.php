@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 use Validator;
 use Redirect;
 use Response;
@@ -10,6 +12,7 @@ use App\Models\Loan;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\AssetLoan;
+use App\Mail\Loan\LoanOrder;
 use Carbon\Carbon;
 
 class LoanController extends Controller
@@ -76,6 +79,13 @@ class LoanController extends Controller
         }
         $loan->assets()->sync($assets);
 
+        $user = User::find($loan->user_id);
+        if (Config::get('mail.cc.address')) {
+            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, true));
+        } else {
+            Mail::to($user->email)->queue(new LoanOrder($loan, true));
+        }
+
         return $loan->toJSON();
     }
 
@@ -111,6 +121,13 @@ class LoanController extends Controller
             $assets[$asset['id']] = ['returned' => $asset['returned']];
         }
         $loan->assets()->sync($assets);
+
+        $user = User::find($loan->user_id);
+        if (Config::get('mail.cc.address')) {
+            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
+        } else {
+            Mail::to($user->email)->queue(new LoanOrder($loan, false));
+        }
 
         return $loan->toJSON();
     }
