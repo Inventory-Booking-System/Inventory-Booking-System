@@ -25,7 +25,7 @@ class LoanOrder extends Mailable
      *
      * @return void
      */
-    public function __construct(Loan $loan, $isCreateOperation)
+    public function __construct(Loan $loan, $isCreateOperation, $isCreateFromReservation = false)
     {
         $this->loan = $loan;
 
@@ -33,7 +33,12 @@ class LoanOrder extends Mailable
             case(0):
                 #Booking
                 $this->bookingTitle = "Booking";
-                $this->bookingType = $isCreateOperation ? "created" : "modified";
+                if ($isCreateFromReservation) {
+                    // Display "Booking Created" when booking out a reservation
+                    $this->bookingType = "created";
+                } else {
+                    $this->bookingType = $isCreateOperation ? "created" : "modified";
+                }
                 break;
             case(1):
                 #Reservation
