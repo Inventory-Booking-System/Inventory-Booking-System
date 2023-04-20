@@ -401,10 +401,18 @@ function App() {
                 <Form.Text className="text-danger">
                     {formHelperText}
                 </Form.Text>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button
+                    variant="secondary"
+                    onClick={handleClose}
+                    disabled={submitLoading}
+                >
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={modalAction === 'Create' ? handleCreate : handleEdit}>
+                <Button
+                    variant="primary"
+                    onClick={modalAction === 'Create' ? handleCreate : handleEdit}
+                    disabled={submitLoading}
+                >
                     Save
                 </Button>
             </Modal.Footer>
