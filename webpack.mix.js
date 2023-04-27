@@ -13,16 +13,14 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'js')
     .extract([
-        'jquery',
-        'bootstrap',
-        'moment',
-        'bootbox',
-        'toastr',
-        'admin-lte',
-        'select2',
-        '@popperjs/core',
-        '@eonasdan/tempus-dominus'
-    ])
+        'react',
+        'react-dom',
+        'scheduler',
+        'react-is',
+        'react-bootstrap',
+        'react-tempusdominus-bootstrap',
+    ], 'js/vendor-react.js')
+    .extract()
     .copyDirectory('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .styles([
         'node_modules/bootstrap/dist/css/bootstrap.min.css',
@@ -35,7 +33,7 @@ mix.js('resources/js/app.js', 'js')
         'resources/css/app.css'
     ], 'public/css/app.css')
     .styles([
-        'resources/css/installer.css'   
+        'resources/css/installer.css'
     ], 'public/css/installer.min.css')
     .sourceMaps()
     .js('resources/js/loans.js', 'js')
