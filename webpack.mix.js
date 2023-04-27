@@ -40,16 +40,7 @@ mix.js('resources/js/app.js', 'js')
     .sourceMaps()
     .js('resources/js/loans.js', 'js')
     .js('resources/js/setups.js', 'js')
-    .preact()
-    .webpackConfig({
-        resolve: {
-            alias: {
-                'react': 'preact/compat',
-                'react-dom/test-utils': 'preact/test-utils',
-                'react-dom': 'preact/compat',     // Must be below test-utils
-                'react/jsx-runtime': 'preact/jsx-runtime'
-            },
-        }
-    });
+    .react();
 
-mix.js('resources/js/signage.js', 'js').preact();
+mix.js('resources/js/signage.js', 'js')
+    .react();

@@ -1,9 +1,6 @@
-// eslint-disable-next-line no-unused-vars
-import { h } from 'preact';
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import { useCallback, useState } from 'preact/hooks';
 
 const colorStyles = {
     option: (styles, { data }) => ({...styles, color: data.available ? styles.color : 'red'})

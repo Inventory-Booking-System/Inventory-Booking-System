@@ -12,5 +12,6 @@
         <div id="masonry" class="row"></div>
     </div>
 
+    <script src="{{ mix('js/vendor-react.js') }}"></script>
     <script src="{{ mix('js/signage.js') }}"></script>
 </div>

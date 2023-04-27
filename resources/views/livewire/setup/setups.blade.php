@@ -202,5 +202,6 @@
         </x-modal.dialog>
     </form>
 
+    <script src="{{ mix('js/vendor-react.js') }}"></script>
     <script src="{{ mix('js/setups.js') }}"></script>
 </div>
