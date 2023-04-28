@@ -32,14 +32,31 @@ jobs:
         run: echo ::set-output name=contents::$(cat storage/changelog.txt)
 
       # Create the release on GitHub
-      - name: Create release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: actions/gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ${{ steps.changelog.outputs.contents }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: true
+          files: |
+            app/**
+            bootstrap/**
+            config/**
+            database/**
+            public/**
+            resources/**
+            routes/**
+            storage/**
+            tests/**
+            vendor/**
+            .env.example
+            artisan
+            composer.json
+            composer.lock
+            package.json
+            package-lock.json
+            webpack.mix.js
 
       # Output a message
       - name: Output message
