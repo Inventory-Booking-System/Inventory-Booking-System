@@ -12,7 +12,7 @@ export default function AssetSelect({ assets, shoppingCart, onChange, isLoading,
     const assetAvailability = useMemo(() => {
         const updatedAssets = JSON.parse(JSON.stringify(assets));
         for (var i = 0; i < updatedAssets.length; i++) {
-            for (var j = 0; j < shoppingCart.length; j++) {
+            for (var j = 0; j < shoppingCart?.length; j++) {
                 if (updatedAssets[i].id === shoppingCart[j].id) {
                     updatedAssets[i].available = false;
                     updatedAssets[i].isDisabled = true;

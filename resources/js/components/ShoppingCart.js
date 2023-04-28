@@ -86,6 +86,8 @@ export default function ShoppingCart({ action, assets, onChange }) {
     }, [assets, onChange]);
 
     const totalCost = useMemo(() => {
+        if (!assets) return;
+
         let cost = 0;
         for (var i = 0; i < assets.length; i++) {
             cost += assets[i].cost;
@@ -102,7 +104,7 @@ export default function ShoppingCart({ action, assets, onChange }) {
                     </h5>
                     <hr />
                 </>}
-                {assets.map((asset, index) =>
+                {assets && assets.map((asset, index) =>
                     <ItemCard
                         key={index}
                         index={index}
