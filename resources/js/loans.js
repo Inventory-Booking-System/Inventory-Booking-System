@@ -132,7 +132,7 @@ function App() {
         setUserEditedEndDate(true);
         setUser({ value: loan.user_id, label: loan.user.forename+' '+loan.user.surname });
         setDetails(loan.details);
-        setReservation();
+        setReservation(loan.status_id === 1 ? 'true' : 'false');
         setShoppingCart(loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned })));
 
         setModalAction('Edit');
