@@ -24,11 +24,11 @@
         "jest": "^29.4.1",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
-        "node-sass": "^7.0.1",
+        "node-sass": "^8.0.0",
         "postcss": "^8.4.16",
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.32.11",
-        "sass-loader": "^11.0.1"
+        "sass-loader": "^13.2.2"
     },
     "dependencies": {
         "@eonasdan/tempus-dominus": "^6.0.0-beta9",
