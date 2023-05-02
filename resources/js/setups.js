@@ -1,7 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-import { h, render } from 'preact';
 import React, { useState, useCallback, useEffect } from 'react';
-import { html } from 'htm/preact';
+import { createRoot } from 'react-dom/client';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -445,4 +443,5 @@ function App() {
     );
 }
 
-render(html`<${App} />`, document.querySelector('#create-edit-modal'));
+const root = createRoot(document.getElementById('create-edit-modal'));
+root.render(<App />);

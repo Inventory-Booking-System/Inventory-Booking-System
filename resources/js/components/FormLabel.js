@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import { h } from 'preact';
 import React from 'react';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
@@ -20,6 +18,6 @@ export default function FormLabel({ children, helperText }) {
 }
 
 FormLabel.propTypes = {
-    children: PropTypes.object,
+    children: PropTypes.node,
     helperText: PropTypes.string
 };
