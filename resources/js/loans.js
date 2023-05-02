@@ -64,6 +64,7 @@ function App() {
     const [users, setUsers] = useState([]);
     const [assets, setAssets] = useState([]);
     const [userEditedEndDate, setUserEditedEndDate] = useState(false);
+    const [startDateHidden, setStartDateHidden] = useState(false);
 
     const [id, setId] = useState();
     const [startDate, setStartDate] = useState(moment());
@@ -112,6 +113,7 @@ function App() {
         setStartDate(moment());
         setEndDate();
         setUserEditedEndDate(false);
+        setStartDateHidden(false);
         setUser();
         setDetails();
         setReservation('false');
@@ -130,6 +132,7 @@ function App() {
         setStartDate(moment(loan.start_date_time, 'DD MMM YYYY HH:mm'));
         setEndDate(moment(loan.end_date_time, 'DD MMM YYYY HH:mm'));
         setUserEditedEndDate(true);
+        setStartDateHidden(false);
         setUser({ value: loan.user_id, label: loan.user.forename+' '+loan.user.surname });
         setDetails(loan.details);
         setReservation(loan.status_id === 1 ? 'true' : 'false');
@@ -143,6 +146,17 @@ function App() {
 
     const handleStartDateChange = useCallback(e => setStartDate(e.date), []);
     useEffect(() => { validate('startDate'); }, [validate, startDate]);
+
+    /**
+     * If the start date has been modified, but not the end date, set the end
+     * date equal to the start date
+     */
+    const handleStartDateHide = useCallback(() => setStartDateHidden(true), []);
+    useEffect(() => {
+        if (startDateHidden && !userEditedEndDate) {
+            setEndDate(startDate);
+        }
+    }, [startDateHidden, userEditedEndDate, startDate]);
 
     const handleEndDateChange = useCallback(e => {
         setEndDate(e.date);
@@ -373,6 +387,7 @@ function App() {
                                 <DateTimePicker
                                     collapse={false}
                                     onChange={handleStartDateChange}
+                                    onHide={handleStartDateHide}
                                     date={startDate}
                                     locale="en-gb"
                                     sideBySide
