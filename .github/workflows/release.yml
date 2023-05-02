@@ -20,7 +20,7 @@ jobs:
 
       - name: Install Node dependencies
         run: |
-          sudo apt install build-essential -y && npm ci --force
+          sudo apt update && sudo apt install build-essential -y && npm ci --force
 
       - name: Generate JavaScript
         run: |
