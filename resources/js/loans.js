@@ -433,7 +433,7 @@ function App() {
                                 <Form.Control
                                     as="textarea"
                                     rows={4}
-                                    value={details}
+                                    value={details  || ''}
                                     onChange={handleDetailsChange}
                                     disabled={submitLoading}
                                 />
