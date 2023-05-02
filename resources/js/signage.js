@@ -1,7 +1,6 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { createRoot } from 'react-dom/client';
 import Masonry from 'masonry-layout';
-import { render } from 'preact';
-import { useState, useEffect, useMemo } from 'preact/hooks';
-import { html } from 'htm/preact';
 import PropTypes from 'prop-types';
 import '../css/signage.css';
 
@@ -20,16 +19,16 @@ function Header() {
         return () => clearInterval(interval);
     }, []);
 
-    return html`
-        <div class="row">
-            <div class="col-6">
-                <h1 class="text-center" style="color:white">Inventory Booking System</h1>
+    return (
+        <div className="row">
+            <div className="col-6">
+                <h1 className="text-center" style={{ color: 'white' }}>Inventory Booking System</h1>
             </div>
-            <div  class="col-6">
-                <h1 class="text-center" style="color:white">${date}</h1>
+            <div  className="col-6">
+                <h1 className="text-center" style={{ color: 'white' }}>{date}</h1>
             </div>
         </div>
-    `;
+    );
 }
 
 function Entry({ item }) {
@@ -52,36 +51,36 @@ function Entry({ item }) {
         return null;
     }
 
-    return html`
-        <div class="col-md-4">
-            <div class="card ${cardClass} w-100">
-                <div class="card-header text-center">${user.forename} ${user.surname} : ${status_id === 2 ? end_date_time : start_date_time.split(' ')[3]}</div>
-                <div class="card-body p-1 ">
-                    <div class="row mb-2">
-                        ${setup?.location?.name && html`<div class="col-12 text-center truncate">
-                            ${setup.location.name}
-                        </div>`}
-                        <div class="col-12 text-center truncate">
-                            ${details}
+    return (
+        <div className="col-md-4">
+            <div className={`card ${cardClass} w-100`}>
+                <div className="card-header text-center">{user.forename} {user.surname} : {status_id === 2 ? end_date_time : start_date_time.split(' ')[3]}</div>
+                <div className="card-body p-1 ">
+                    <div className="row mb-2">
+                        {setup?.location?.name && <div className="col-12 text-center truncate">
+                            {setup.location.name}
+                        </div>}
+                        <div className="col-12 text-center truncate">
+                            {details}
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-6">
-                            <div style="list-style-type: none;" class="text-center">
-                                ${assets.map((asset, index) => index % 2 === 0 ? (asset.pivot.returned ? html`<div style="text-decoration: line-through;">${asset.name} (${asset.tag})</div>` : html`<div>${asset.name} (${asset.tag})</div>`) : null)}
+                    <div className="row">
+                        <div className="col-6">
+                            <div style={{ listStyleType: 'none' }} className="text-center">
+                                {assets.map((asset, index) => index % 2 === 0 ? (asset.pivot.returned ? <div key={index} style={{ textDecoration: 'line-through' }}>{asset.name} ({asset.tag})</div> : <div key={index}>{asset.name} ({asset.tag})</div>) : null)}
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div style="list-style-type: none;" class="text-center">
-                                ${assets.map((asset, index) => !(index % 2 === 0) ? (asset.pivot.returned ? html`<div style="text-decoration: line-through;">${asset.name} (${asset.tag})</div>` : html`<div>${asset.name} (${asset.tag})</div>`) : null)}
+                        <div className="col-6">
+                            <div style={{ listStyleType: 'none' }} className="text-center">
+                                {assets.map((asset, index) => !(index % 2 === 0) ? (asset.pivot.returned ? <div key={index} style={{ textDecoration: 'line-through' }}>{asset.name} ({asset.tag})</div> : <div key={index}>{asset.name} ({asset.tag})</div>) : null)}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    `;
+    );
 }
 
 Entry.propTypes = {
@@ -133,13 +132,11 @@ function App() {
         masonry.layout();
     }, [masonry, items]);
 
-    return html`
-        ${items.map((item) => html`<${Entry} item=${item} />`)}
-    `;
+    return items.map((item, index) => <Entry item={item} key={index} />);
 }
 
-render(html`<${Header} />`, document.querySelector('#header'));
-render(html`<${App} />`, document.querySelector('#masonry'));
+createRoot(document.getElementById('header')).render(<Header />);
+createRoot(document.getElementById('masonry')).render(<App />);
 
 let scrollDirection = 1;
 async function pageScroll() {

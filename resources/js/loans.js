@@ -1,7 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-import { h, render } from 'preact';
 import React, { useState, useCallback, useEffect } from 'react';
-import { html } from 'htm/preact';
+import { createRoot } from 'react-dom/client';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -16,6 +14,7 @@ import ShoppingCart from './components/ShoppingCart';
 import FormLabel from './components/FormLabel';
 import { assets as assetsApi, loans, users as usersApi } from './api';
 import * as livewire from './utils/livewire';
+import ValidationError from './errors/ValidationError';
 import 'tempusdominus-bootstrap/src/sass/tempusdominus-bootstrap-build.scss';
 
 const radios = [
@@ -23,11 +22,49 @@ const radios = [
     { name: 'Booked', value: 'false' }
 ];
 
+function validateStartDate(startDate) {
+    if (!startDate) {
+        throw new ValidationError('Start Date is required');
+    }
+}
+
+function validateEndDate(startDate, endDate) {
+    if (!endDate) {
+        throw new ValidationError('End Date is required');
+    }
+    if (moment(endDate).isSame(startDate, 'minute')) {
+        throw new ValidationError('End Date cannot be the same as Start Date');
+    }
+    if (moment(endDate).isBefore(startDate, 'minute')) {
+        throw new ValidationError('End Date cannot be before Start Date');
+    }
+}
+
+function validateUser(user) {
+    if (!user) {
+        throw new ValidationError('User is required');
+    }
+}
+
+function validateShoppingCart(shoppingCart) {
+    if (!shoppingCart?.length) {
+        throw new ValidationError('Equipment is required');
+    }
+}
+
+function validateReservation(reservation) {
+    if (reservation !== 'true' && reservation !== 'false') {
+        throw new ValidationError('Booking type is required');
+    }
+}
+
 function App() {
     const [open, setOpen] = useState(false);
     const [modalAction, setModalAction] = useState();
     const [users, setUsers] = useState([]);
     const [assets, setAssets] = useState([]);
+    const [userEditedEndDate, setUserEditedEndDate] = useState(false);
+    const [startDateHidden, setStartDateHidden] = useState(false);
 
     const [id, setId] = useState();
     const [startDate, setStartDate] = useState(moment());
@@ -35,7 +72,7 @@ function App() {
     const [user, setUser] = useState();
     const [details, setDetails] = useState();
     const [reservation, setReservation] = useState('false');
-    const [shoppingCart, setShoppingCart] = useState([]);
+    const [shoppingCart, setShoppingCart] = useState(null);
 
     const [startDateHelperText, setStartDateHelperText] = useState('');
     const [endDateHelperText, setEndDateHelperText] = useState('');
@@ -45,27 +82,42 @@ function App() {
     const [formHelperText, setFormHelperText] = useState('');
 
     const [usersLoading, setUsersLoading] = useState(true);
-    const [assetsLoading, setAssetsLoading] = useState(true);
+    const [assetsLoading, setAssetsLoading] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
 
-    const clearHelperText = useCallback(() => {
-        setStartDateHelperText('');
-        setEndDateHelperText('');
-        setUserHelperText('');
-        setReservationHelperText('');
-        setAssetsHelperText('');
-        setFormHelperText('');
-    }, []);
+    const clearHelperText = useCallback((field) => {
+        if (!field || field === 'startDate') {
+            setStartDateHelperText('');
+        }
+        if (!field || (field === 'startDate' && userEditedEndDate) || field === 'endDate') {
+            setEndDateHelperText('');
+        }
+        if (!field || field === 'user') {
+            setUserHelperText('');
+        }
+        if (!field || field === 'shoppingCart') {
+            setAssetsHelperText('');
+        }
+        if (!field || field === 'reservation') {
+            setReservationHelperText('');
+        }
+        if (!field || field === 'form') {
+            setFormHelperText('');
+        }
+    }, [userEditedEndDate]);
+    useEffect(() => clearHelperText(), [clearHelperText, open]);
 
     const handleCreateOpen = useCallback(() => {
         clearHelperText();
 
         setStartDate(moment());
         setEndDate();
+        setUserEditedEndDate(false);
+        setStartDateHidden(false);
         setUser();
         setDetails();
         setReservation('false');
-        setShoppingCart([]);
+        setShoppingCart(null);
 
         setModalAction('Create');
         setOpen(true);
@@ -79,9 +131,11 @@ function App() {
         setId(loan.id);
         setStartDate(moment(loan.start_date_time, 'DD MMM YYYY HH:mm'));
         setEndDate(moment(loan.end_date_time, 'DD MMM YYYY HH:mm'));
+        setUserEditedEndDate(true);
+        setStartDateHidden(false);
         setUser({ value: loan.user_id, label: loan.user.forename+' '+loan.user.surname });
         setDetails(loan.details);
-        setReservation();
+        setReservation(loan.status_id === 1 ? 'true' : 'false');
         setShoppingCart(loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned })));
 
         setModalAction('Edit');
@@ -91,61 +145,94 @@ function App() {
     const handleClose = useCallback(() => setOpen(false), []);
 
     const handleStartDateChange = useCallback(e => setStartDate(e.date), []);
-    const handleEndDateChange = useCallback(e => setEndDate(e.date), []);
+    useEffect(() => { validate('startDate'); }, [validate, startDate]);
+
+    /**
+     * If the start date has been modified, but not the end date, set the end
+     * date equal to the start date
+     */
+    const handleStartDateHide = useCallback(() => setStartDateHidden(true), []);
+    useEffect(() => {
+        if (startDateHidden && !userEditedEndDate) {
+            setEndDate(startDate);
+        }
+    }, [startDateHidden, userEditedEndDate, startDate]);
+
+    const handleEndDateChange = useCallback(e => {
+        setEndDate(e.date);
+        setUserEditedEndDate(true);
+    }, []);
+    useEffect(() => { validate('endDate'); }, [validate, endDate]);
+
     const handleUserChange = useCallback(e => setUser(e), []);
+    useEffect(() => { validate('user'); }, [validate, user]);
+
     const handleDetailsChange = useCallback(e => setDetails(e.target.value), []);
+
     const handleReservationChange = useCallback(e => {
         e.preventDefault();
         setReservation(e.currentTarget.value);
     }, []);
+    useEffect(() => { validate('reservation'); }, [validate, reservation]);
 
     const handleAssetChange = useCallback(e => {
-        setShoppingCart([...shoppingCart, assets.find(x => x.id === e.value)]);
+        setShoppingCart(shoppingCart ? [...shoppingCart, assets.find(x => x.id === e.value)] : [assets.find(x => x.id === e.value)]);
     }, [shoppingCart, assets]);
-
     const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
+    useEffect(() => { validate('shoppingCart'); }, [validate, shoppingCart]);
 
-    const validate = useCallback(() => {
-        clearHelperText();
+    const validate = useCallback((field) => {
+        clearHelperText(field);
 
         let success = true;
 
-        if (!startDate) {
-            success = false;
-            setStartDateHelperText('Start Date is required');
+        if (!field || field === 'startDate') {
+            try {
+                validateStartDate(startDate);
+            } catch(e) {
+                success = false;
+                setStartDateHelperText(e.message);
+            }
         }
 
-        if (!endDate) {
-            success = false;
-            setEndDateHelperText('End Date is required');
-        }
-        if (moment(endDate).isSame(startDate, 'minute')) {
-            success = false;
-            setEndDateHelperText('End Date cannot be the same as Start Date');
-        }
-        if (moment(endDate).isBefore(startDate, 'minute')) {
-            success = false;
-            console.log(endDate);
-            setEndDateHelperText('End Date cannot be before Start Date');
+        if (!field || (field === 'startDate' && userEditedEndDate) || field === 'endDate') {
+            try {
+                validateEndDate(startDate, endDate);
+            } catch(e) {
+                success = false;
+                setEndDateHelperText(e.message);
+            }
         }
 
-        if (!user) {
-            success = false;
-            setUserHelperText('User is required');
+        if (!field || field === 'user') {
+            try {
+                validateUser(user);
+            } catch(e) {
+                success = false;
+                setUserHelperText(e.message);
+            }
         }
 
-        if (reservation !== 'true' && reservation !== 'false') {
-            success = false;
-            setReservationHelperText('Booking type is required');
+        if (!field || field === 'shoppingCart') {
+            try {
+                validateShoppingCart(shoppingCart);
+            } catch(e) {
+                success = false;
+                setAssetsHelperText(e.message);
+            }
         }
 
-        if (!shoppingCart.length) {
-            success = false;
-            setAssetsHelperText('Equipment is required');
+        if (!field || field === 'reservation') {
+            try {
+                validateReservation(reservation);
+            } catch(e) {
+                success = false;
+                setReservationHelperText(e.message);
+            }
         }
 
         return success;
-    }, [clearHelperText, startDate, endDate, user, reservation, shoppingCart.length]);
+    }, [clearHelperText, startDate, endDate, userEditedEndDate, user, shoppingCart, reservation]);
 
     const handleCreate = useCallback(async () => {
         if (!validate()) {
@@ -232,6 +319,10 @@ function App() {
      */
     useEffect(() => {
         async function getAssets() {
+            if (moment(endDate).isSameOrBefore(startDate, 'minute')) {
+                return;
+            }
+
             setAssetsLoading(true);
             const body = await assetsApi.getAll({
                 startDateTime: moment(startDate).unix(),
@@ -296,10 +387,10 @@ function App() {
                                 <DateTimePicker
                                     collapse={false}
                                     onChange={handleStartDateChange}
-                                    defaultDate={startDate}
+                                    onHide={handleStartDateHide}
+                                    date={startDate}
                                     locale="en-gb"
                                     sideBySide
-                                    validate
                                     readOnly={submitLoading}
                                 />
                             </Form.Group>
@@ -313,7 +404,7 @@ function App() {
                                 <DateTimePicker
                                     collapse={false}
                                     onChange={handleEndDateChange}
-                                    defaultDate={endDate}
+                                    date={endDate}
                                     locale="en-gb"
                                     sideBySide
                                     readOnly={submitLoading}
@@ -357,7 +448,7 @@ function App() {
                                 <Form.Control
                                     as="textarea"
                                     rows={4}
-                                    value={details}
+                                    value={details  || ''}
                                     onChange={handleDetailsChange}
                                     disabled={submitLoading}
                                 />
@@ -401,10 +492,18 @@ function App() {
                 <Form.Text className="text-danger">
                     {formHelperText}
                 </Form.Text>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button
+                    variant="secondary"
+                    onClick={handleClose}
+                    disabled={submitLoading}
+                >
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={modalAction === 'Create' ? handleCreate : handleEdit}>
+                <Button
+                    variant="primary"
+                    onClick={modalAction === 'Create' ? handleCreate : handleEdit}
+                    disabled={submitLoading}
+                >
                     Save
                 </Button>
             </Modal.Footer>
@@ -412,4 +511,5 @@ function App() {
     );
 }
 
-render(html`<${App} />`, document.querySelector('#create-edit-modal'));
+const root = createRoot(document.getElementById('create-edit-modal'));
+root.render(<App />);
