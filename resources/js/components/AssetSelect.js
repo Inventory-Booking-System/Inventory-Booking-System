@@ -3,12 +3,14 @@ import { h } from 'preact';
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import { useCallback, useState } from 'preact/hooks';
 
 const colorStyles = {
     option: (styles, { data }) => ({...styles, color: data.available ? styles.color : 'red'})
 };
 
 export default function AssetSelect({ assets, shoppingCart, onChange, isLoading, disabled }) {
+    const [inputValue, setInputValue] = useState();
 
     const assetAvailability = useMemo(() => {
         const updatedAssets = JSON.parse(JSON.stringify(assets));
@@ -23,6 +25,12 @@ export default function AssetSelect({ assets, shoppingCart, onChange, isLoading,
         return updatedAssets;
     }, [assets, shoppingCart]);
 
+    const handleInputChange = useCallback((query, { action }) => {
+        if (action !== 'set-value') {
+            setInputValue(query);
+        }
+    }, []);
+
     return (
         <Select
             options={assetAvailability}
@@ -32,6 +40,8 @@ export default function AssetSelect({ assets, shoppingCart, onChange, isLoading,
             isDisabled={disabled}
             closeMenuOnSelect={false}
             value=""
+            onInputChange={handleInputChange}
+            inputValue={inputValue}
         />
     );
 }

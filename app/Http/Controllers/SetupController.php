@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 use Validator;
 use Response;
 use App\Models\Loan;
 use App\Models\Setup;
+use App\Models\User;
+use App\Mail\Setup\SetupOrder;
 use Carbon\Carbon;
 
 class SetupController extends Controller
@@ -44,7 +48,7 @@ class SetupController extends Controller
             'endDateTime' => 'required|integer|gt:startDateTime',
             'user' => 'required|integer',
             'location' => 'required|integer',
-            'assets' => 'required|array',
+            'assets' => 'array',
             'assets.*.id' => 'required|integer',
             'assets.*.returned' => 'required|boolean',
             'details' => 'nullable|string',
@@ -76,6 +80,13 @@ class SetupController extends Controller
         $setup->location_id = $validated['location'];
         $setup->push();
 
+        $user = User::find($setup->loan->user_id);
+        if (Config::get('mail.cc.address')) {
+            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new SetupOrder($setup, true));
+        } else {
+            Mail::to($user->email)->queue(new SetupOrder($setup, true));
+        }
+
         return $setup->toJSON();
     }
 
@@ -87,7 +98,7 @@ class SetupController extends Controller
             'endDateTime' => 'required|integer|gt:startDateTime',
             'user' => 'required|integer',
             'location' => 'required|integer',
-            'assets' => 'required|array',
+            'assets' => 'array',
             'assets.*.id' => 'required|integer',
             'assets.*.returned' => 'required|boolean',
             'details' => 'nullable|string',
@@ -115,6 +126,13 @@ class SetupController extends Controller
         $setup->title = $validated['title'];
         $setup->location_id = $validated['location'];
         $setup->push();
+
+        $user = User::find($setup->loan->user_id);
+        if (Config::get('mail.cc.address')) {
+            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new SetupOrder($setup, false));
+        } else {
+            Mail::to($user->email)->queue(new SetupOrder($setup, false));
+        }
 
         return $setup->toJSON();
     }
