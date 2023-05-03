@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Response;
+use App\Models\DistributionGroup;
 
 class DistributionGroupController extends Controller
 {
@@ -27,5 +29,21 @@ class DistributionGroupController extends Controller
         return view('distribution-group.show',[
             'distributionGroup' => $id
         ]);
+    }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getAll()
+    {
+        $data = [];
+        $groups = DistributionGroup::latest()->get();
+        foreach($users as $key => $user) {
+            $data[] = [
+                'id' => $user['id'],
+                'name' => $user['name']
+            ];
+        }
+        return $data;
     }
 }
