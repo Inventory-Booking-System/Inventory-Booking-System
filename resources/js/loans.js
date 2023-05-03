@@ -142,7 +142,18 @@ function App() {
         setOpen(true);
     }, [clearHelperText]);
 
-    const handleClose = useCallback(() => setOpen(false), []);
+    const handleClose = useCallback(() => {
+        setOpen(false);
+
+        setStartDate(moment());
+        setEndDate();
+        setUserEditedEndDate(false);
+        setStartDateHidden(false);
+        setUser();
+        setDetails();
+        setReservation('false');
+        setShoppingCart(null);
+    }, []);
 
     const handleStartDateChange = useCallback(e => setStartDate(e.date), []);
     useEffect(() => { validate('startDate'); }, [validate, startDate]);
