@@ -4,6 +4,7 @@ import * as locations from './locations';
 import * as setups from './setups';
 import * as users from './users';
 import * as distributionGroups from './distributionGroups';
+import * as equipmentIssues from './equipmentIssues';
 
 export {
     assets,
@@ -11,5 +12,6 @@ export {
     locations,
     setups,
     users,
-    distributionGroups
+    distributionGroups,
+    equipmentIssues
 };
