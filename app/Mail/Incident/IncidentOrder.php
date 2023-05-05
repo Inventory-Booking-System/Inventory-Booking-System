@@ -26,7 +26,7 @@ class IncidentOrder extends Mailable
      *
      * @return void
      */
-    public function __construct(Incident $incident, $status, $cost)
+    public function __construct(Incident $incident, $isCreateOperation, $cost)
     {
         $this->incident = $incident;
         $this->shoppingCost = $cost;
@@ -35,7 +35,7 @@ class IncidentOrder extends Mailable
         switch($incident->status_id){
             case(0):
                 #Outstanding
-                $this->bookingType = $status ? "created" : "modified";
+                $this->bookingType = $isCreateOperation ? "created" : "modified";
                 break;
             case(1):
                 #Resolved

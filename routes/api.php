@@ -7,9 +7,12 @@ use App\Models\Loan;
 use App\Http\Controllers\SignageController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DistributionGroupController;
+use App\Http\Controllers\EquipmentIssueController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SetupController;
+use App\Http\Controllers\IncidentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,9 +46,13 @@ Route::get('/signage', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assets', [AssetController::class, 'getAll']);
     Route::get('/users', [UserController::class, 'getAll']);
+    Route::get('/distributionGroups', [DistributionGroupController::class, 'getAll']);
+    Route::get('/equipmentIssues', [EquipmentIssueController::class, 'getAll']);
     Route::post('/loans', [LoanController::class, 'create']);
     Route::put('/loans/{id}', [LoanController::class, 'put']);
     Route::get('/locations', [LocationController::class, 'getAll']);
     Route::post('/setups', [SetupController::class, 'create']);
     Route::put('/setups/{id}', [SetupController::class, 'put']);
+    Route::post('/incidents', [IncidentController::class, 'create']);
+    Route::put('/incidents/{id}', [IncidentController::class, 'put']);
 });

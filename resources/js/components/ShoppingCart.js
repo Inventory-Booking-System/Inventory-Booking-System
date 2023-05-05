@@ -4,10 +4,12 @@ import Card from 'react-bootstrap/Card';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 
-function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onReturn, action }) {
+function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onReturn, action, page, onAdd, onSubtract }) {
 
     const remove = useCallback(() => onRemove(index), [index, onRemove]);
     const bookIn = useCallback(() => onReturn(index), [index, onReturn]);
+    const add = useCallback(() => onAdd(index), [index, onAdd]);
+    const subtract = useCallback(() => onSubtract(index), [index, onSubtract]);
 
     return (
         <Card className={returned ? 'bg-success' : ''}>
@@ -30,11 +32,11 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
                         </div>}
 
                         {cost && <div style={{ width: 80 }}>
-                            <h5 className="mb-0">£{cost}</h5>
+                            <h5 className="mb-0">£{cost.toFixed(2)}</h5>
                         </div>}
 
                         <ButtonGroup>
-                            {action !== 'Create' && <Button
+                            {action !== 'Create' && page !== 'incidents' && <Button
                                 variant={returned ? 'success' : 'light'}
                                 onClick={bookIn}
                                 size="sm"
@@ -44,13 +46,29 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
                                     style={returned ? { color: '#fff' } : null}
                                 />
                             </Button>}
-                            <Button
+                            {page !== 'incidents' && <Button
                                 variant={returned ? 'success' : 'light'}
                                 onClick={remove}
                                 size="sm"
                             >
                                 <i className="fas fa-trash-alt"></i>
-                            </Button>
+                            </Button>}
+                            {page === 'incidents' && <>
+                                <Button
+                                    variant="light"
+                                    onClick={add}
+                                    size="sm"
+                                >
+                                    <i className="fas fa-plus"></i>
+                                </Button>
+                                <Button
+                                    variant="light"
+                                    onClick={subtract}
+                                    size="sm"
+                                >
+                                    {quantity !== 1 ? <i className="fas fa-minus"></i> : <i className="fas fa-trash-alt"></i>}
+                                </Button>
+                            </>}
                         </ButtonGroup>
                     </div>
                 </div>
@@ -68,10 +86,13 @@ ItemCard.propTypes = {
     cost: PropTypes.number,
     onRemove: PropTypes.func,
     onReturn: PropTypes.func,
-    action: PropTypes.string
+    action: PropTypes.string,
+    page: PropTypes.string,
+    onAdd: PropTypes.func,
+    onSubtract: PropTypes.func
 };
 
-export default function ShoppingCart({ action, assets, onChange }) {
+export default function ShoppingCart({ action, assets, page, onChange }) {
 
     const onRemove = useCallback(index => {
         let updatedShoppingCart = [...assets];
@@ -85,12 +106,27 @@ export default function ShoppingCart({ action, assets, onChange }) {
         onChange(updatedShoppingCart);
     }, [assets, onChange]);
 
+    const onAdd = useCallback(index => {
+        let updatedShoppingCart = [...assets];
+        updatedShoppingCart[index].quantity++;
+        onChange(updatedShoppingCart);
+    }, [assets, onChange]);
+
+    const onSubtract = useCallback(index => {
+        let updatedShoppingCart = [...assets];
+        updatedShoppingCart[index].quantity--;
+        if (updatedShoppingCart[index].quantity <= 0) {
+            return onRemove(index);
+        }
+        onChange(updatedShoppingCart);
+    }, [assets, onChange, onRemove]);
+
     const totalCost = useMemo(() => {
         if (!assets) return;
 
         let cost = 0;
         for (var i = 0; i < assets.length; i++) {
-            cost += assets[i].cost;
+            cost += (assets[i].cost * assets[i].quantity);
         }
         return cost;
     }, [assets]);
@@ -100,7 +136,7 @@ export default function ShoppingCart({ action, assets, onChange }) {
             <Card.Body>
                 {totalCost > 0 && <>
                     <h5 className="mb-0 text-right text-body font-weight-bold">
-                        Total Cost <span className="font-weight-normal">{totalCost}</span>
+                        Total Cost <span className="font-weight-normal">£{totalCost.toFixed(2)}</span>
                     </h5>
                     <hr />
                 </>}
@@ -112,6 +148,9 @@ export default function ShoppingCart({ action, assets, onChange }) {
                         onRemove={onRemove}
                         onReturn={onReturn}
                         action={action}
+                        page={page}
+                        onAdd={onAdd}
+                        onSubtract={onSubtract}
                     />
                 )}
             </Card.Body>
@@ -122,5 +161,6 @@ export default function ShoppingCart({ action, assets, onChange }) {
 ShoppingCart.propTypes = {
     action: PropTypes.string,
     assets: PropTypes.array,
+    page: PropTypes.string,
     onChange: PropTypes.func
 };

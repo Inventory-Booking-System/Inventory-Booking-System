@@ -6,15 +6,14 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { DateTimePicker } from 'react-tempusdominus-bootstrap';
-import Select from 'react-select';
 import moment from 'moment';
 import UserSelect from './components/UserSelect';
+import LocationSelect from './components/LocationSelect';
 import AssetSelect from './components/AssetSelect';
 import ShoppingCart from './components/ShoppingCart';
 import FormLabel from './components/FormLabel';
 import {
     assets as assetsApi,
-    locations as locationsApi,
     setups,
     users as usersApi
 } from './api';
@@ -25,7 +24,6 @@ function App() {
     const [open, setOpen] = useState(false);
     const [modalAction, setModalAction] = useState();
     const [users, setUsers] = useState([]);
-    const [locations, setLocations] = useState([]);
     const [assets, setAssets] = useState([]);
 
     const [id, setId] = useState();
@@ -46,14 +44,13 @@ function App() {
     const [formHelperText, setFormHelperText] = useState('');
 
     const [usersLoading, setUsersLoading] = useState(true);
-    const [locationsLoading, setLocationsLoading] = useState(true);
     const [assetsLoading, setAssetsLoading] = useState(true);
     const [submitLoading, setSubmitLoading] = useState(false);
 
     const handleCreateOpen = useCallback(() => {
         clearHelperText();
 
-        setTitle();
+        setTitle('');
         setStartDate(moment());
         setEndDate();
         setUser();
@@ -236,22 +233,6 @@ function App() {
     }, [open]);
 
     /**
-     * Load locations when modal is opened
-     */
-    useEffect(() => {
-        async function getLocations() {
-            setLocationsLoading(true);
-            const body = await locationsApi.getAll();
-
-            setLocations(body.map(location => ({...location, value: location.id, label: location.name})));
-            setLocationsLoading(false);
-        }
-        if (open) {
-            getLocations();
-        }
-    }, [open]);
-
-    /**
      * Load assets when modal is opened, and when start/end dates are changed
      */
     useEffect(() => {
@@ -379,10 +360,8 @@ function App() {
                                 >
                                     Location
                                 </FormLabel>
-                                <Select
-                                    options={locations}
+                                <LocationSelect
                                     onChange={handleLocationChange}
-                                    isLoading={locationsLoading}
                                     isDisabled={submitLoading}
                                     defaultValue={location}
                                     isClearable
