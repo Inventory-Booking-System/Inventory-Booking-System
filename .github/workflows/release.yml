@@ -30,33 +30,21 @@ jobs:
       - name: Read changelog
         id: changelog
         run: echo ::set-output name=contents::$(cat storage/changelog.txt)
+        
+      - name: Zip Folder
+        run: zip -r ${{ github.event.repository.name }}.zip .
 
       # Create the release on GitHub
       - name: Create Release
-        uses: actions/gh-release@v1
+        uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release_name: ${{ github.ref }}
           draft: false
           prerelease: true
-          files: |
-            app/**
-            bootstrap/**
-            config/**
-            database/**
-            public/**
-            resources/**
-            routes/**
-            storage/**
-            tests/**
-            vendor/**
-            .env.example
-            artisan
-            composer.json
-            composer.lock
-            package.json
-            package-lock.json
-            webpack.mix.js
+          files: ${{ github.event.repository.name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Output a message
       - name: Output message
