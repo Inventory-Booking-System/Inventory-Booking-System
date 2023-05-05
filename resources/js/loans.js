@@ -12,7 +12,7 @@ import UserSelect from './components/UserSelect';
 import AssetSelect from './components/AssetSelect';
 import ShoppingCart from './components/ShoppingCart';
 import FormLabel from './components/FormLabel';
-import { assets as assetsApi, loans, users as usersApi } from './api';
+import { assets as assetsApi, loans } from './api';
 import * as livewire from './utils/livewire';
 import ValidationError from './errors/ValidationError';
 import 'tempusdominus-bootstrap/src/sass/tempusdominus-bootstrap-build.scss';
@@ -61,7 +61,6 @@ function validateReservation(reservation) {
 function App() {
     const [open, setOpen] = useState(false);
     const [modalAction, setModalAction] = useState();
-    const [users, setUsers] = useState([]);
     const [assets, setAssets] = useState([]);
     const [userEditedEndDate, setUserEditedEndDate] = useState(false);
     const [startDateHidden, setStartDateHidden] = useState(false);
@@ -81,7 +80,6 @@ function App() {
     const [assetsHelperText, setAssetsHelperText] = useState('');
     const [formHelperText, setFormHelperText] = useState('');
 
-    const [usersLoading, setUsersLoading] = useState(true);
     const [assetsLoading, setAssetsLoading] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -308,24 +306,6 @@ function App() {
     }, [details, endDate, handleClose, id, reservation, shoppingCart, startDate, user, validate]);
 
     /**
-     * Load users when modal is opened
-     */
-    useEffect(() => {
-        async function getUsers() {
-            setUsersLoading(true);
-            const body = await usersApi.getAll();
-
-            setUsers(body.map(user => {
-                return {...user, value: user.id, label: user.forename+' '+user.surname};
-            }));
-            setUsersLoading(false);
-        }
-        if (open) {
-            getUsers();
-        }
-    }, [open]);
-
-    /**
      * Load assets when modal is opened, and when start/end dates are changed
      */
     useEffect(() => {
@@ -429,8 +409,6 @@ function App() {
                                     User
                                 </FormLabel>
                                 <UserSelect
-                                    users={users}
-                                    isLoading={usersLoading}
                                     onChange={handleUserChange}
                                     disabled={submitLoading}
                                     defaultValue={user}
