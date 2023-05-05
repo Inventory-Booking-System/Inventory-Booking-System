@@ -77,8 +77,8 @@ class IncidentController extends Controller
 
         $equipmentIssues = $incident->issues()->get()->toArray();
         $cost = 0;
-        foreach ($equipmentIssues as $key => $equipment){ 
-            $cost += $equipment['cost'];
+        foreach ($equipmentIssues as $key => $equipment) {
+            $cost += ($equipment['cost'] * $equipment['pivot']['quantity']);
         }
         
         $users = $incident->group->users->pluck('email');
@@ -127,8 +127,8 @@ class IncidentController extends Controller
 
         $equipmentIssues = $incident->issues()->get()->toArray();
         $cost = 0;
-        foreach ($equipmentIssues as $key => $equipment){ 
-            $cost += $equipment['cost'];
+        foreach ($equipmentIssues as $key => $equipment) {
+            $cost += ($equipment['cost'] * $equipment['pivot']['quantity']);
         }
         
         $users = $incident->group->users->pluck('email');
