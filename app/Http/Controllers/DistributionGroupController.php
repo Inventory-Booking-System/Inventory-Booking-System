@@ -38,7 +38,7 @@ class DistributionGroupController extends Controller
     {
         $data = [];
         $groups = DistributionGroup::latest()->get();
-        foreach($users as $key => $user) {
+        foreach($groups as $key => $user) {
             $data[] = [
                 'id' => $user['id'],
                 'name' => $user['name']

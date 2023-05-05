@@ -12,6 +12,7 @@ use App\Http\Controllers\EquipmentIssueController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SetupController;
+use App\Http\Controllers\IncidentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,4 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/locations', [LocationController::class, 'getAll']);
     Route::post('/setups', [SetupController::class, 'create']);
     Route::put('/setups/{id}', [SetupController::class, 'put']);
+    Route::post('/incidents', [IncidentController::class, 'create']);
+    Route::put('/incidents/{id}', [IncidentController::class, 'put']);
 });

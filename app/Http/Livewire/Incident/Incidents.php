@@ -25,6 +25,11 @@ class Incidents extends Component
 {
     use WithPerPagePagination, WithSorting, WithBulkActions, WithShoppingCart;
 
+    /**
+     * Allow JS to re-render page on demand
+     */
+    protected $listeners = ['render'];
+
     protected $paginationTheme = 'bootstrap';
     protected $queryString = [];
     public $showFilters = false;
@@ -315,6 +320,8 @@ class Incidents extends Component
 
     public function render()
     {
+        $this->dispatchBrowserEvent('render');
+
         if($this->selectAll){
            $this->selectPageRows();
         }

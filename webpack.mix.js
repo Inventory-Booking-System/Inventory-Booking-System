@@ -38,6 +38,7 @@ mix.js('resources/js/app.js', 'js')
     .sourceMaps()
     .js('resources/js/loans.js', 'js')
     .js('resources/js/setups.js', 'js')
+    .js('resources/js/incidents.js', 'js')
     .react();
 
 mix.js('resources/js/signage.js', 'js')
