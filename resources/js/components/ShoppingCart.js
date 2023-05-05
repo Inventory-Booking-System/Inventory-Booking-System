@@ -55,18 +55,18 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
                             </Button>}
                             {page === 'incidents' && <>
                                 <Button
-                                    variant={returned ? 'success' : 'light'}
+                                    variant="light"
                                     onClick={add}
                                     size="sm"
                                 >
                                     <i className="fas fa-plus"></i>
                                 </Button>
                                 <Button
-                                    variant={returned ? 'success' : 'light'}
+                                    variant="light"
                                     onClick={subtract}
                                     size="sm"
                                 >
-                                    <i className="fas fa-minus"></i>
+                                    {quantity !== 1 ? <i className="fas fa-minus"></i> : <i className="fas fa-trash-alt"></i>}
                                 </Button>
                             </>}
                         </ButtonGroup>
