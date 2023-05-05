@@ -74,7 +74,6 @@ function App() {
     const [endDateHelperText, setEndDateHelperText] = useState('');
     const [userHelperText, setUserHelperText] = useState('');
     const [locationHelperText, setLocationHelperText] = useState('');
-    const [assetsHelperText, setAssetsHelperText] = useState('');
     const [formHelperText, setFormHelperText] = useState('');
 
     const [assetsLoading, setAssetsLoading] = useState(true);
@@ -95,9 +94,6 @@ function App() {
         }
         if (!field || field === 'location') {
             setLocationHelperText('');
-        }
-        if (!field || field === 'shoppingCart') {
-            setAssetsHelperText('');
         }
         if (!field || field === 'form') {
             setFormHelperText('');
@@ -453,9 +449,7 @@ function App() {
                             </Form.Group>
 
                             <Form.Group>
-                                <FormLabel
-                                    helperText={assetsHelperText}
-                                >
+                                <FormLabel>
                                     Equipment
                                 </FormLabel>
                                 <AssetSelect
