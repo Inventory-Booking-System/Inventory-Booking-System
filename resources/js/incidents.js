@@ -5,22 +5,17 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { DateTimePicker } from 'react-tempusdominus-bootstrap';
 import moment from 'moment';
-import UserSelect from './components/UserSelect';
-import AssetSelect from './components/AssetSelect';
+import DistributionGroupSelect from './components/DistributionGroupSelect';
+import LocationSelect from './components/LocationSelect';
+import EquipmentIssueSelect from './components/EquipmentIssueSelect';
 import ShoppingCart from './components/ShoppingCart';
 import FormLabel from './components/FormLabel';
-import { assets as assetsApi, loans } from './api';
+import { incidents, equipmentIssues as equipmentIssuesApi } from './api';
 import * as livewire from './utils/livewire';
 import ValidationError from './errors/ValidationError';
 import 'tempusdominus-bootstrap/src/sass/tempusdominus-bootstrap-build.scss';
-
-const radios = [
-    { name: 'Reservation', value: 'true' },
-    { name: 'Booked', value: 'false' }
-];
 
 function validateStartDate(startDate) {
     if (!startDate) {
@@ -28,21 +23,15 @@ function validateStartDate(startDate) {
     }
 }
 
-function validateEndDate(startDate, endDate) {
-    if (!endDate) {
-        throw new ValidationError('End Date is required');
-    }
-    if (moment(endDate).isSame(startDate, 'minute')) {
-        throw new ValidationError('End Date cannot be the same as Start Date');
-    }
-    if (moment(endDate).isBefore(startDate, 'minute')) {
-        throw new ValidationError('End Date cannot be before Start Date');
+function validateDistributionGroup(distributionGroup) {
+    if (!distributionGroup) {
+        throw new ValidationError('Distribution Group is required');
     }
 }
 
-function validateUser(user) {
-    if (!user) {
-        throw new ValidationError('User is required');
+function validateLocation(location) {
+    if (!location) {
+        throw new ValidationError('Location is required');
     }
 }
 
@@ -52,69 +41,75 @@ function validateShoppingCart(shoppingCart) {
     }
 }
 
-function validateReservation(reservation) {
-    if (reservation !== 'true' && reservation !== 'false') {
-        throw new ValidationError('Booking type is required');
+function validateEvidence(evidence) {
+    if (!evidence) {
+        throw new ValidationError('Evidence is required');
     }
 }
 
-function App() {
+function validateDetails(details) {
+    if (!details) {
+        throw new ValidationError('Details is required');
+    }
+}
+
+function Incidents() {
     const [open, setOpen] = useState(false);
     const [modalAction, setModalAction] = useState();
-    const [assets, setAssets] = useState([]);
-    const [userEditedEndDate, setUserEditedEndDate] = useState(false);
-    const [startDateHidden, setStartDateHidden] = useState(false);
+    const [equipmentIssues, setEquipmentIssues] = useState();
 
     const [id, setId] = useState();
     const [startDate, setStartDate] = useState(moment());
-    const [endDate, setEndDate] = useState();
-    const [user, setUser] = useState();
-    const [details, setDetails] = useState();
-    const [reservation, setReservation] = useState('false');
+    const [distributionGroup, setDistributionGroup] = useState();
+    const [location, setLocation] = useState();
+    const [evidence, setEvidence] = useState('');
+    const [details, setDetails] = useState('');
     const [shoppingCart, setShoppingCart] = useState(null);
 
     const [startDateHelperText, setStartDateHelperText] = useState('');
-    const [endDateHelperText, setEndDateHelperText] = useState('');
-    const [userHelperText, setUserHelperText] = useState('');
-    const [reservationHelperText, setReservationHelperText] = useState('');
-    const [assetsHelperText, setAssetsHelperText] = useState('');
+    const [distributionGroupHelperText, setDistributionGroupHelperText] = useState('');
+    const [locationHelperText, setLocationHelperText] = useState('');
+    const [equipmentIssuesHelperText, setEquipmentIssuesHelperText] = useState('');
+    const [evidenceHelperText, setEvidenceHelperText] = useState('');
+    const [detailsHelperText, setDetailsHelperText] = useState('');
     const [formHelperText, setFormHelperText] = useState('');
 
-    const [assetsLoading, setAssetsLoading] = useState(false);
+    const [equipmentIssuesLoading, setEquipmentIssuesLoading] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
 
     const clearHelperText = useCallback((field) => {
         if (!field || field === 'startDate') {
             setStartDateHelperText('');
         }
-        if (!field || (field === 'startDate' && userEditedEndDate) || field === 'endDate') {
-            setEndDateHelperText('');
+        if (!field || field === 'distributionGroup') {
+            setDistributionGroupHelperText('');
         }
-        if (!field || field === 'user') {
-            setUserHelperText('');
+        if (!field || field === 'location') {
+            setLocationHelperText('');
         }
         if (!field || field === 'shoppingCart') {
-            setAssetsHelperText('');
+            setEquipmentIssuesHelperText('');
         }
-        if (!field || field === 'reservation') {
-            setReservationHelperText('');
+        if (!field || field === 'evidence') {
+            setEvidenceHelperText('');
+        }
+        if (!field || field === 'details') {
+            setDetailsHelperText('');
         }
         if (!field || field === 'form') {
             setFormHelperText('');
         }
-    }, [userEditedEndDate]);
+    }, []);
     useEffect(() => clearHelperText(), [clearHelperText, open]);
 
     const handleCreateOpen = useCallback(() => {
         clearHelperText();
 
         setStartDate(moment());
-        setEndDate();
-        setUserEditedEndDate(false);
-        setStartDateHidden(false);
-        setUser();
-        setDetails();
-        setReservation('false');
+        setDistributionGroup();
+        setLocation();
+        setEvidence('');
+        setDetails('');
         setShoppingCart(null);
 
         setModalAction('Create');
@@ -122,19 +117,17 @@ function App() {
     }, [clearHelperText]);
 
     const handleEditOpen = useCallback((e) => {
-        const loan = JSON.parse(e.target.dataset.loan);
+        const data = JSON.parse(e.target.dataset.loan);
 
         clearHelperText();
 
-        setId(loan.id);
-        setStartDate(moment(loan.start_date_time, 'DD MMM YYYY HH:mm'));
-        setEndDate(moment(loan.end_date_time, 'DD MMM YYYY HH:mm'));
-        setUserEditedEndDate(true);
-        setStartDateHidden(false);
-        setUser({ value: loan.user_id, label: loan.user.forename+' '+loan.user.surname });
-        setDetails(loan.details);
-        setReservation(loan.status_id === 1 ? 'true' : 'false');
-        setShoppingCart(loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned })));
+        setId(data.id);
+        setStartDate(moment(data.start_date_time, 'DD MMM YYYY HH:mm'));
+        setDistributionGroup({ value: data.group.id, label: data.group.name });
+        setLocation({ value: data.location.id, label: data.location.name });
+        setEvidence(data.evidence);
+        setDetails(data.details);
+        setShoppingCart(data.issues.map(item => ({ ...item, name: item.title, cost: parseFloat(item.cost), quantity: item.pivot.quantity })));
 
         setModalAction('Edit');
         setOpen(true);
@@ -144,50 +137,46 @@ function App() {
         setOpen(false);
 
         setStartDate(moment());
-        setEndDate();
-        setUserEditedEndDate(false);
-        setStartDateHidden(false);
-        setUser();
-        setDetails();
-        setReservation('false');
+        setDistributionGroup();
+        setLocation();
+        setEvidence('');
+        setDetails('');
         setShoppingCart(null);
     }, []);
 
     const handleStartDateChange = useCallback(e => setStartDate(e.date), []);
     useEffect(() => { validate('startDate'); }, [validate, startDate]);
 
-    /**
-     * If the start date has been modified, but not the end date, set the end
-     * date equal to the start date
-     */
-    const handleStartDateHide = useCallback(() => setStartDateHidden(true), []);
-    useEffect(() => {
-        if (startDateHidden && !userEditedEndDate) {
-            setEndDate(startDate);
-        }
-    }, [startDateHidden, userEditedEndDate, startDate]);
+    const handleDistributionGroupChange = useCallback(e => setDistributionGroup(e), []);
+    useEffect(() => { validate('distributionGroup'); }, [validate, distributionGroup]);
 
-    const handleEndDateChange = useCallback(e => {
-        setEndDate(e.date);
-        setUserEditedEndDate(true);
-    }, []);
-    useEffect(() => { validate('endDate'); }, [validate, endDate]);
+    const handleLocationChange = useCallback(e => setLocation(e), []);
+    useEffect(() => { validate('location'); }, [validate, location]);
 
-    const handleUserChange = useCallback(e => setUser(e), []);
-    useEffect(() => { validate('user'); }, [validate, user]);
+    const handleEvidenceChange = useCallback(e => setEvidence(e.target.value), []);
+    useEffect(() => { validate('evidence'); }, [validate, evidence]);
 
     const handleDetailsChange = useCallback(e => setDetails(e.target.value), []);
+    useEffect(() => { validate('details'); }, [validate, details]);
 
-    const handleReservationChange = useCallback(e => {
-        e.preventDefault();
-        setReservation(e.currentTarget.value);
-    }, []);
-    useEffect(() => { validate('reservation'); }, [validate, reservation]);
-
-    const handleAssetChange = useCallback(e => {
-        setShoppingCart(shoppingCart ? [...shoppingCart, assets.find(x => x.id === e.value)] : [assets.find(x => x.id === e.value)]);
-    }, [shoppingCart, assets]);
-    const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
+    const handleEquipmentIssueChange = useCallback(e => {
+        let newShoppingCart;
+        if (shoppingCart) {
+            let oldShoppingCart = JSON.parse(JSON.stringify(shoppingCart));
+            const existingItem = oldShoppingCart.find(x => x.id === e.value);
+            const existingItemIndex = oldShoppingCart.findIndex(x => x.id === e.value);
+            if (existingItem) {
+                oldShoppingCart[existingItemIndex].quantity++;
+                newShoppingCart = oldShoppingCart;
+            } else {
+                newShoppingCart = [...oldShoppingCart, equipmentIssues.find(x => x.id === e.value)];
+            }
+        } else {
+            newShoppingCart = [equipmentIssues.find(x => x.id === e.value)];
+        }
+        setShoppingCart(newShoppingCart);
+    }, [shoppingCart, equipmentIssues]);
+    const onShoppingCartChange = useCallback(equipmentIssues => setShoppingCart(equipmentIssues), []);
     useEffect(() => { validate('shoppingCart'); }, [validate, shoppingCart]);
 
     const validate = useCallback((field) => {
@@ -204,21 +193,21 @@ function App() {
             }
         }
 
-        if (!field || (field === 'startDate' && userEditedEndDate) || field === 'endDate') {
+        if (!field || field === 'distributionGroup') {
             try {
-                validateEndDate(startDate, endDate);
+                validateDistributionGroup(distributionGroup);
             } catch(e) {
                 success = false;
-                setEndDateHelperText(e.message);
+                setDistributionGroupHelperText(e.message);
             }
         }
 
-        if (!field || field === 'user') {
+        if (!field || field === 'location') {
             try {
-                validateUser(user);
+                validateLocation(location);
             } catch(e) {
                 success = false;
-                setUserHelperText(e.message);
+                setLocationHelperText(e.message);
             }
         }
 
@@ -227,21 +216,30 @@ function App() {
                 validateShoppingCart(shoppingCart);
             } catch(e) {
                 success = false;
-                setAssetsHelperText(e.message);
+                setEquipmentIssuesHelperText(e.message);
             }
         }
 
-        if (!field || field === 'reservation') {
+        if (!field || field === 'evidence') {
             try {
-                validateReservation(reservation);
+                validateEvidence(evidence);
             } catch(e) {
                 success = false;
-                setReservationHelperText(e.message);
+                setEvidenceHelperText(e.message);
+            }
+        }
+
+        if (!field || field === 'details') {
+            try {
+                validateDetails(details);
+            } catch(e) {
+                success = false;
+                setDetailsHelperText(e.message);
             }
         }
 
         return success;
-    }, [clearHelperText, startDate, endDate, userEditedEndDate, user, shoppingCart, reservation]);
+    }, [clearHelperText, startDate, distributionGroup, location, shoppingCart, evidence, details]);
 
     const handleCreate = useCallback(async () => {
         if (!validate()) {
@@ -250,13 +248,13 @@ function App() {
 
         try {
             setSubmitLoading(true);
-            const resp = await loans.create({
+            const resp = await incidents.create({
                 startDateTime: startDate.unix(),
-                endDateTime: endDate.unix(),
-                user: user.value,
-                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                distributionGroup: distributionGroup.value,
+                location: location.value,
+                equipmentIssues: shoppingCart.map(item => ({ id: item.id, quantity: item.quantity })),
+                evidence,
                 details,
-                reservation: reservation === 'true'
             });
             await livewire.render();
             setSubmitLoading(false);
@@ -272,7 +270,7 @@ function App() {
             setSubmitLoading(false);
         }
         setFormHelperText('An connection error has occurred. Please try again later.');
-    }, [details, endDate, handleClose, reservation, shoppingCart, startDate, user, validate]);
+    }, [details, distributionGroup, evidence, handleClose, location, shoppingCart, startDate, validate]);
 
     const handleEdit = useCallback(async () => {
         if (!validate()) {
@@ -281,13 +279,13 @@ function App() {
 
         try {
             setSubmitLoading(true);
-            const resp = await loans.update(id, {
+            const resp = await incidents.update(id, {
                 startDateTime: startDate.unix(),
-                endDateTime: endDate.unix(),
-                user: user.value,
-                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                distributionGroup: distributionGroup.value,
+                location: location.value,
+                equipmentIssues: shoppingCart.map(item => ({ id: item.id, quantity: item.quantity })),
+                evidence,
                 details,
-                reservation: reservation === 'true'
             });
             await livewire.render();
             setSubmitLoading(false);
@@ -303,36 +301,25 @@ function App() {
             setSubmitLoading(false);
         }
         setFormHelperText('An connection error has occurred. Please try again later.');
-    }, [details, endDate, handleClose, id, reservation, shoppingCart, startDate, user, validate]);
+    }, [details, distributionGroup, evidence, handleClose, id, location, shoppingCart, startDate, validate]);
 
     /**
      * Load assets when modal is opened, and when start/end dates are changed
      */
     useEffect(() => {
-        async function getAssets() {
-            if (moment(endDate).isSameOrBefore(startDate, 'minute')) {
-                return;
-            }
+        async function getEquipmentIssues() {
+            setEquipmentIssuesLoading(true);
+            const body = await equipmentIssuesApi.getAll();
 
-            setAssetsLoading(true);
-            const body = await assetsApi.getAll({
-                startDateTime: moment(startDate).unix(),
-                /**
-                 * If end date isn't set, use a time in the future so assets
-                 * list can be preloaded
-                 */
-                endDateTime: endDate ? moment(endDate).unix() : moment().add(1, 'day').unix()
-            });
-
-            setAssets(body.map(asset => {
-                return {...asset, value: asset.id, label: asset.name+' ('+asset.tag+')', isDisabled: !asset.available};
+            setEquipmentIssues(body.map(item => {
+                return {...item, cost: parseFloat(item.cost), value: item.id, label: item.name+' (£'+item.cost+')', quantity: 1};
             }));
-            setAssetsLoading(false);
+            setEquipmentIssuesLoading(false);
         }
         if (open) {
-            getAssets();
+            getEquipmentIssues();
         }
-    }, [open, startDate, endDate]);
+    }, [open]);
 
     useEffect(() => {
         document.querySelector('#create').addEventListener('click', handleCreateOpen);
@@ -362,7 +349,7 @@ function App() {
         <Modal show={open} onHide={handleClose} size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>
-                    {modalAction} Loan
+                    {modalAction} Incident
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -378,7 +365,6 @@ function App() {
                                 <DateTimePicker
                                     collapse={false}
                                     onChange={handleStartDateChange}
-                                    onHide={handleStartDateHide}
                                     date={startDate}
                                     locale="en-gb"
                                     sideBySide
@@ -388,50 +374,61 @@ function App() {
 
                             <Form.Group>
                                 <FormLabel
-                                    helperText={endDateHelperText}
+                                    helperText={distributionGroupHelperText}
                                 >
-                                    End Date
+                                    Distribution Group
                                 </FormLabel>
-                                <DateTimePicker
-                                    collapse={false}
-                                    onChange={handleEndDateChange}
-                                    date={endDate}
-                                    locale="en-gb"
-                                    sideBySide
-                                    readOnly={submitLoading}
-                                />
-                            </Form.Group>
-
-                            <Form.Group>
-                                <FormLabel
-                                    helperText={userHelperText}
-                                >
-                                    User
-                                </FormLabel>
-                                <UserSelect
-                                    onChange={handleUserChange}
+                                <DistributionGroupSelect
+                                    onChange={handleDistributionGroupChange}
                                     disabled={submitLoading}
-                                    defaultValue={user}
+                                    defaultValue={distributionGroup}
                                 />
                             </Form.Group>
 
                             <Form.Group>
                                 <FormLabel
-                                    helperText={assetsHelperText}
+                                    helperText={locationHelperText}
                                 >
-                                    Equipment
+                                    Location
                                 </FormLabel>
-                                <AssetSelect
-                                    assets={assets}
-                                    shoppingCart={shoppingCart}
-                                    onChange={handleAssetChange}
-                                    isLoading={assetsLoading}
+                                <LocationSelect
+                                    onChange={handleLocationChange}
+                                    disabled={submitLoading}
+                                    defaultValue={location}
+                                />
+                            </Form.Group>
+
+                            <Form.Group>
+                                <FormLabel
+                                    helperText={equipmentIssuesHelperText}
+                                >
+                                    Equipment Issues
+                                </FormLabel>
+                                <EquipmentIssueSelect
+                                    data={equipmentIssues}
+                                    onChange={handleEquipmentIssueChange}
+                                    disabled={submitLoading}
+                                    isLoading={equipmentIssuesLoading}
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <FormLabel
+                                    helperText={evidenceHelperText}
+                                >
+                                    Evidence Link
+                                </FormLabel>
+                                <Form.Control
+                                    value={evidence  || ''}
+                                    onChange={handleEvidenceChange}
                                     disabled={submitLoading}
                                 />
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <FormLabel>
+                                <FormLabel
+                                    helperText={detailsHelperText}
+                                >
                                     Details
                                 </FormLabel>
                                 <Form.Control
@@ -443,29 +440,6 @@ function App() {
                                 />
                             </Form.Group>
 
-                            <Form.Group>
-                                <FormLabel
-                                    helperText={reservationHelperText}
-                                >
-                                    Booking Type
-                                </FormLabel>
-                            </Form.Group>
-
-                            <Form.Group className="mb-3">
-                                <ButtonGroup>
-                                    {radios.map((radio, idx) => (
-                                        <Button
-                                            key={idx}
-                                            variant={radio.value === 'true' ? 'warning' : 'success'}
-                                            value={radio.value}
-                                            className={reservation === radio.value ? 'btn-active' : ''}
-                                            onClick={handleReservationChange}
-                                        >
-                                            {radio.name}
-                                        </Button>
-                                    ))}
-                                </ButtonGroup>
-                            </Form.Group>
                         </Form>
                     </Col>
                     <Col md={6}>
@@ -473,6 +447,7 @@ function App() {
                             action={modalAction}
                             assets={shoppingCart}
                             onChange={onShoppingCartChange}
+                            page="incidents"
                         />
                     </Col>
                 </Row>
@@ -501,4 +476,4 @@ function App() {
 }
 
 const root = createRoot(document.getElementById('create-edit-modal'));
-root.render(<App />);
+root.render(<Incidents />);

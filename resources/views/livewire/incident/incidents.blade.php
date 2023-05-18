@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="Incident" perPage="{{ $perPage }}" />
+    <x-table.controls name="Incident" perPage="{{ $perPage }}" legacyModal="{{ false }}" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -94,7 +94,7 @@
                             </x-table.cell>
                             <x-table.cell class="col-2">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <x-button.primary wire:click="edit({{ $incident->id }})" ><x-loading wire:target="edit({{ $incident->id }})" />Edit</x-button.primary>
+                                    <x-button.primary class="edit-button" data-loan="{{ $incident->toJSON() }}">Edit</x-button.primary>
                                     <x-button.success wire:click="resolve({{ $incident->id }})" ><x-loading wire:target="resolve({{ $incident->id }})" />Resolve</x-button.success>
                                 </div>
                             </x-table.cell>
@@ -149,6 +149,8 @@
             </x-slot>
         </x-modal.dialog>
     </form>
+    
+    <div id="create-edit-modal"></div>
 
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
@@ -220,4 +222,7 @@
             </x-slot>
         </x-modal.dialog>
     </form>
+
+    <script src="{{ mix('js/vendor-react.js') }}"></script>
+    <script src="{{ mix('js/incidents.js') }}"></script>
 </div>

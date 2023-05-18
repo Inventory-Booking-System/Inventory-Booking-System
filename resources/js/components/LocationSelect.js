@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import { users } from '../api';
+import { locations } from '../api';
 
-export default function UserSelect({ onChange, disabled, defaultValue }) {
+export default function LocationSelect({ onChange, disabled, defaultValue }) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         async function get() {
             setIsLoading(true);
-            const body = await users.getAll();
+            const body = await locations.getAll();
 
             setData(body.map(item => {
-                return {...item, value: item.id, label: item.forename+' '+item.surname};
+                return {...item, value: item.id, label: item.name};
             }));
             setIsLoading(false);
         }
@@ -34,7 +34,7 @@ export default function UserSelect({ onChange, disabled, defaultValue }) {
     );
 }
 
-UserSelect.propTypes = {
+LocationSelect.propTypes = {
     onChange: PropTypes.func,
     disabled: PropTypes.bool,
     defaultValue: PropTypes.object

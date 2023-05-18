@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import { users } from '../api';
+import { distributionGroups } from '../api';
 
-export default function UserSelect({ onChange, disabled, defaultValue }) {
-    const [data, setData] = useState([]);
+export default function DistributionGroupSelect({ onChange, disabled, defaultValue }) {
+    const [groups, setGroups] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         async function get() {
             setIsLoading(true);
-            const body = await users.getAll();
+            const body = await distributionGroups.getAll();
 
-            setData(body.map(item => {
-                return {...item, value: item.id, label: item.forename+' '+item.surname};
+            setGroups(body.map(item => {
+                return {...item, value: item.id, label: item.name};
             }));
             setIsLoading(false);
         }
@@ -24,7 +24,7 @@ export default function UserSelect({ onChange, disabled, defaultValue }) {
 
     return (
         <Select
-            options={data}
+            options={groups}
             onChange={onChange}
             isLoading={isLoading}
             isDisabled={disabled}
@@ -34,7 +34,7 @@ export default function UserSelect({ onChange, disabled, defaultValue }) {
     );
 }
 
-UserSelect.propTypes = {
+DistributionGroupSelect.propTypes = {
     onChange: PropTypes.func,
     disabled: PropTypes.bool,
     defaultValue: PropTypes.object

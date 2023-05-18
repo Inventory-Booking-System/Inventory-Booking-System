@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Response;
+use App\Models\EquipmentIssue;
 
 class EquipmentIssueController extends Controller
 {
@@ -27,5 +29,22 @@ class EquipmentIssueController extends Controller
         return view('equipment-issue.show',[
             'equipmentIssue' => $id
         ]);
+    }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getAll()
+    {
+        $data = [];
+        $issues = EquipmentIssue::latest()->get();
+        foreach($issues as $key => $user) {
+            $data[] = [
+                'id' => $user['id'],
+                'name' => $user['title'],
+                'cost' => $user['cost']
+            ];
+        }
+        return $data;
     }
 }

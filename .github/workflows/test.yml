@@ -44,7 +44,7 @@ jobs:
 
     - name: Install Node dependencies
       run: |
-        apt install build-essential -y && npm ci --force
+        apt update && apt install build-essential -y && npm ci --force
 
     - name: Prepare Laravel Application
       run: |
