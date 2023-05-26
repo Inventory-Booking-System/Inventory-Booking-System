@@ -43,13 +43,36 @@ class DatabaseSeeder extends Seeder
          * is associated with a setup, with a random location.
          */
         foreach($users as $index => $user){
-            Role::factory()->count(1)->withUser($user)->create();
-            $loan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStartDateTime(Carbon::now()->add($index, 'hour'))->withEndDateTime(Carbon::now()->add($index + 1, 'hour'))->create()->first();
+            Role::factory()
+                ->count(1)
+                ->withUser($user)
+                ->create();
+
+            $loan = Loan::factory()
+                ->count(1)
+                ->withUser($user)
+                ->withCreator($userAdmin)
+                ->withStartDateTime(Carbon::now()->add($index, 'hour'))
+                ->withEndDateTime(Carbon::now()->add($index + 1, 'hour'))
+                ->create()
+                ->first();
             $loan->assets()->attach(Asset::skip($index)->first());
 
-            $setupLoan = Loan::factory()->count(1)->withUser($user)->withCreator($userAdmin)->withStatusId(3)->withStartDateTime(Carbon::now()->add($index, 'hour'))->withEndDateTime(Carbon::now()->add($index + 1, 'hour'))->create()->first();
+            $setupLoan = Loan::factory()
+                ->count(1)
+                ->withUser($user)
+                ->withCreator($userAdmin)
+                ->withStatusId(3)
+                ->withStartDateTime(Carbon::now()->add($index, 'hour'))
+                ->withEndDateTime(Carbon::now()->add($index + 1, 'hour'))
+                ->create()
+                ->first();
             $setupLoan->assets()->attach(Asset::skip($index)->first());
-            Setup::factory()->count(1)->withLoan($setupLoan)->withLocation($locations[array_rand($locations)])->create();
+            Setup::factory()
+                ->count(1)
+                ->withLoan($setupLoan)
+                ->withLocation($locations[array_rand($locations)])
+                ->create();
         }
 
         foreach ($distributionGroups as $index => $distributionGroup) {
@@ -63,7 +86,12 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
             
-            $incident = Incident::factory()->withLocation($locations[array_rand($locations)])->withDistributionGroup($distributionGroup)->withCreator($userAdmin)->create()->first();
+            $incident = Incident::factory()
+                ->withLocation($locations[array_rand($locations)])
+                ->withDistributionGroup($distributionGroup)
+                ->withCreator($userAdmin)
+                ->create()
+                ->first();
             $incident->issues()->attach(EquipmentIssue::skip($index)->first());
         }
 
