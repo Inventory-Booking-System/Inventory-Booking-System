@@ -10,7 +10,6 @@ class AppSettings extends Component
 {
     //Mail Settings
     public $mail;
-    public $update;
 
     public function rules()
     {
