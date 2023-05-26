@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "codedge/laravel-selfupdater": "*",
         "guzzlehttp/guzzle": "^7.2",
         "jackiedo/dotenv-editor": "^2.0",
         "laravel/framework": "^9.19",
@@ -65,7 +66,8 @@
         "allow-plugins": {
             "composer/installers": true,
             "oomphinc/composer-installers-extender": true,
-            "robloach/component-installer": false
+            "robloach/component-installer": false,
+            "phpstan/extension-installer": true
         }
     },
     "minimum-stability": "dev",
