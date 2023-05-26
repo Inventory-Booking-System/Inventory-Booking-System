@@ -447,7 +447,8 @@ function Incidents() {
                             action={modalAction}
                             assets={shoppingCart}
                             onChange={onShoppingCartChange}
-                            page="incidents"
+                            showCost
+                            showQuantity
                         />
                     </Col>
                 </Row>
