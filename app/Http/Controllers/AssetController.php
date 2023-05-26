@@ -57,6 +57,9 @@ class AssetController extends Controller
 
         $assets = Asset::latest()->get();
 
+        $startDateTime = $validatedDate['start_date_time'];
+        $endDateTime = $validatedDate['end_date_time'];
+
         $nonAvailableAssets = DB::table('assets')
             ->join('asset_loan', 'assets.id', '=', 'asset_loan.asset_id')
             ->join('loans', 'asset_loan.loan_id', '=', 'loans.id')
@@ -64,26 +67,39 @@ class AssetController extends Controller
             ->where('asset_loan.returned', 0)
             ->where('loans.status_id', '<>', 4) // Cancelled
             ->where('loans.status_id', '<>', 5) // Completed
-            ->where(function ($query) use ($validatedDate) {
-                $query->whereBetween('loans.start_date_time', [$validatedDate['start_date_time'], $validatedDate['end_date_time']])
-                    ->orWhereBetween('loans.end_date_time', [$validatedDate['start_date_time'], $validatedDate['end_date_time']])
+            ->where(function ($query) use ($startDateTime, $endDateTime) {
+                $query->where(function ($query) use ($startDateTime, $endDateTime) {
+                    $query
+                        ->whereBetween('loans.start_date_time', [$startDateTime, $endDateTime])
+                        ->orWhereBetween('loans.end_date_time', [$startDateTime, $endDateTime])
+                        /**
+                         * We can't use a value as the first parameter in Laravel's 
+                         * orWhereBetweenColumns(), so implement it using orWhere()
+                         *
+                         * OR :startDateTime BETWEEN loans.start_date_time AND loans.end_date_time
+                         */
+                        ->orWhere(function ($query) use ($startDateTime) {
+                            $query
+                                ->where('loans.start_date_time', '<=', $startDateTime)
+                                ->where('loans.end_date_time', '>=', $startDateTime);
+                        })
+                        /**
+                         * OR :endDateTime BETWEEN loans.start_date_time AND loans.end_date_time
+                         */
+                        ->orWhere(function ($query) use ($endDateTime) {
+                            $query
+                                ->where('loans.start_date_time', '<=', $endDateTime)
+                                ->where('loans.end_date_time', '>=', $endDateTime);
+                        });
+                })
+                ->orWhere(function ($query) {
                     /**
-                     * We can't use a value as the first parameter in Laravel's 
-                     * orWhereBetweenColumns(), so implement it using orWhere()
-                     *
-                     * OR :startDateTime BETWEEN loans.start_date_time AND loans.end_date_time
+                     * If a reservation/setup end time is before the current 
+                     * time, but it hasn't been completed/cancelled, the assets 
+                     * should not be bookable
                      */
-                    ->orWhere([
-                        ['loans.start_date_time', '<=', $validatedDate['start_date_time']],
-                        ['loans.end_date_time', '>=', $validatedDate['start_date_time']],
-                    ])
-                    /**
-                     * OR :endDateTime BETWEEN loans.start_date_time AND loans.end_date_time
-                     */
-                    ->orWhere([
-                        ['loans.start_date_time', '<=', $validatedDate['end_date_time']],
-                        ['loans.end_date_time', '>=', $validatedDate['end_date_time']],
-                    ]);
+                    $query->where('loans.end_date_time', '<=', Carbon::now());
+                });
             })
             ->get();
 
