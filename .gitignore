@@ -20,3 +20,4 @@ yarn-error.log
 /public/css
 /public/js
 /session/*
+public/mix-manifest.json
