@@ -4,6 +4,7 @@ namespace Tests\Feature;
  
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 use App\Models\Asset;
@@ -12,10 +13,14 @@ use App\Models\Loan;
 use App\Models\Setup;
 use App\Models\Location;
 use Carbon\Carbon;
+use Throwable;
  
 class AssetControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    private $testLoanString;
+    private $responseString;
 
     /**
      * @test
@@ -26,6 +31,7 @@ class AssetControllerTest extends TestCase
         $this->seed();
 
         $response = $this->get('/assets');
+        $this->responseString = $response->getContent();
         $response->assertStatus(302);
     }
 
@@ -38,6 +44,7 @@ class AssetControllerTest extends TestCase
         $this->seed();
 
         $response = $this->actingAs(User::first())->get('/api/assets?endDateTime='.time());
+        $this->responseString = $response->getContent();
         $response->assertStatus(400);
     }
 
@@ -50,6 +57,7 @@ class AssetControllerTest extends TestCase
         $this->seed();
 
         $response = $this->actingAs(User::first())->get('/api/assets?startDateTime='.time());
+        $this->responseString = $response->getContent();
         $response->assertStatus(400);
     }
 
@@ -64,6 +72,8 @@ class AssetControllerTest extends TestCase
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.time().'&endDateTime='.time()+60*100);
+        $this->responseString = $response->getContent();
+
         $response
             ->assertStatus(200)
             ->assertJson(fn (AssertableJson $json) => 
@@ -80,30 +90,28 @@ class AssetControllerTest extends TestCase
     /**
      * @test
      * @group asset-controller
+     * @group failing
      */
     public function availableWhenNoLoans(): void
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertTrue($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -114,8 +122,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -127,23 +135,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -154,8 +160,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -167,23 +173,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -194,8 +198,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -207,23 +211,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
-            ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+            ->get('/api/assets?startDateTime='.$startDateTime->add(1, 'day')->timestamp.'&endDateTime='.$endDateTime->add(1, 'day')->timestamp);
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -234,8 +236,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $setupLoan = Loan::factory()
             ->count(1)
@@ -252,23 +254,21 @@ class AssetControllerTest extends TestCase
             ->withLoan($setupLoan)
             ->withLocation(Location::first())
             ->create();
+        $this->testLoanString = Loan::with('assets')->find($setupLoan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -279,8 +279,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -292,23 +292,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertTrue($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -319,8 +317,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -332,23 +330,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertTrue($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -359,8 +355,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -370,8 +366,7 @@ class AssetControllerTest extends TestCase
             ->withEndDateTime($endDateTime)
             ->withStatusId(5)
             ->create()
-            ->first();
-        
+            ->first();        
         $loan->assets()->attach(Asset::first());
         
         // Mark the asset as returned
@@ -379,22 +374,21 @@ class AssetControllerTest extends TestCase
         $ids[Asset::first()->id] = ['returned' => 1];
         $loan->assets()->sync($ids);
 
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
+
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertTrue($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -405,8 +399,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $setupLoan = Loan::factory()
             ->count(1)
@@ -429,22 +423,21 @@ class AssetControllerTest extends TestCase
         $ids[Asset::first()->id] = ['returned' => 1];
         $setupLoan->assets()->sync($ids);
 
+        $this->testLoanString = Loan::with('assets')->find($setupLoan->id)->toJson();
+
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->timestamp.'&endDateTime='.$endDateTime->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertTrue($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -455,8 +448,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -468,23 +461,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->add(30, 'minute')->timestamp.'&endDateTime='.$endDateTime->add(30, 'minute')->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -495,8 +486,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -508,23 +499,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->subtract(30, 'minute')->timestamp.'&endDateTime='.$endDateTime->subtract(30, 'minute')->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -535,8 +524,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -548,23 +537,21 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->subtract(30, 'minute')->timestamp.'&endDateTime='.$endDateTime->add(30, 'minute')->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
     }
 
     /**
@@ -575,8 +562,8 @@ class AssetControllerTest extends TestCase
     {
         $this->seed();
 
-        $startDateTime = Carbon::now()->add(1, 'day');
-        $endDateTime = Carbon::now()->add(1, 'day')->add(1, 'hour');
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
 
         $loan = Loan::factory()
             ->count(1)
@@ -588,22 +575,213 @@ class AssetControllerTest extends TestCase
             ->create()
             ->first();
         $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
 
         $response = $this
             ->actingAs(User::first())
             ->get('/api/assets?startDateTime='.$startDateTime->add(10, 'minute')->timestamp.'&endDateTime='.$endDateTime->subtract(10, 'minute')->timestamp);
-        $response
-            ->assertStatus(200)
-            ->assertJson(fn (AssertableJson $json) => 
-                $json
-                    ->has('0', fn (AssertableJson $json) =>
-                        $json->where('available', false)
-                            ->etc()
-                    )
-                    ->has('1', fn (AssertableJson $json) =>
-                        $json->where('available', true)
-                            ->etc()
-                    )
-            );
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
+    }
+
+    /**
+     * @test
+     * @group asset-controller
+     * 
+     * If a reservation end time is before the current time, but it hasn't been 
+     * cancelled/booked out, the assets should not be bookable
+     */
+    public function notAvailableWhenReservationExpiresButNotCancelled(): void
+    {
+        $this->seed();
+
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
+        $this->travelTo($endDateTime->copy()->add(1, 'hour'));
+
+        $loan = Loan::factory()
+            ->count(1)
+            ->withUser(User::first())
+            ->withCreator(User::first())
+            ->withStartDateTime($startDateTime)
+            ->withEndDateTime($endDateTime)
+            ->withStatusId(1)
+            ->create()
+            ->first();
+        $loan->assets()->attach(Asset::first());
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
+
+        $response = $this
+            ->actingAs(User::first())
+            ->get('/api/assets?startDateTime='.$endDateTime->add(10, 'minute')->timestamp.'&endDateTime='.$endDateTime->add(20, 'minute')->timestamp);
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
+    }
+
+    /**
+     * @test
+     * @group asset-controller
+     */
+    public function availableWhenReservationExpiresButNotCancelledAndAssetReturned(): void
+    {
+        $this->seed();
+
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
+        $this->travelTo($endDateTime->copy()->add(1, 'hour'));
+
+        $loan = Loan::factory()
+            ->count(1)
+            ->withUser(User::first())
+            ->withCreator(User::first())
+            ->withStartDateTime($startDateTime)
+            ->withEndDateTime($endDateTime)
+            ->withStatusId(1)
+            ->create()
+            ->first();
+        $loan->assets()->attach(Asset::first());
+        
+        // Mark the asset as returned
+        $ids = [];
+        $ids[Asset::first()->id] = ['returned' => 1];
+        $loan->assets()->sync($ids);
+
+        $this->testLoanString = Loan::with('assets')->find($loan->id)->toJson();
+
+        $response = $this
+            ->actingAs(User::first())
+            ->get('/api/assets?startDateTime='.$endDateTime->add(10, 'minute')->timestamp.'&endDateTime='.$endDateTime->add(20, 'minute')->timestamp);
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertTrue($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
+    }
+
+    /**
+     * @test
+     * @group asset-controller
+     * 
+     * If a setup end time is before the current time, but it hasn't been 
+     * completed, the assets should not be bookable
+     */
+    public function notAvailableWhenSetupExpiresButNotCompleted(): void
+    {
+        $this->seed();
+
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
+        $this->travelTo($endDateTime->copy()->add(1, 'hour'));
+
+        $setupLoan = Loan::factory()
+            ->count(1)
+            ->withUser(User::first())
+            ->withCreator(User::first())
+            ->withStartDateTime($startDateTime)
+            ->withEndDateTime($endDateTime)
+            ->withStatusId(3)
+            ->create()
+            ->first();
+        $setupLoan->assets()->attach(Asset::first());
+        Setup::factory()
+            ->count(1)
+            ->withLoan($setupLoan)
+            ->withLocation(Location::first())
+            ->create();
+        $this->testLoanString = Loan::with('assets')->find($setupLoan->id)->toJson();
+
+        $response = $this
+            ->actingAs(User::first())
+            ->get('/api/assets?startDateTime='.$endDateTime->add(10, 'minute')->timestamp.'&endDateTime='.$endDateTime->add(20, 'minute')->timestamp);
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertFalse($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
+    }
+
+    /**
+     * @test
+     * @group asset-controller
+     */
+    public function availableWhenSetupExpiresButNotCompletedAndAssetReturned(): void
+    {
+        $this->seed();
+
+        $startDateTime = Carbon::create(2000, 1, 1, 0);
+        $endDateTime = $startDateTime->copy()->add(1, 'hour');
+        $this->travelTo($endDateTime->copy()->add(1, 'hour'));
+
+        $setupLoan = Loan::factory()
+            ->count(1)
+            ->withUser(User::first())
+            ->withCreator(User::first())
+            ->withStartDateTime($startDateTime)
+            ->withEndDateTime($endDateTime)
+            ->withStatusId(3)
+            ->create()
+            ->first();
+        $setupLoan->assets()->attach(Asset::first());
+        Setup::factory()
+            ->count(1)
+            ->withLoan($setupLoan)
+            ->withLocation(Location::first())
+            ->create();
+
+        // Mark the asset as returned
+        $ids = [];
+        $ids[Asset::first()->id] = ['returned' => 1];
+        $setupLoan->assets()->sync($ids);
+
+        $this->testLoanString = Loan::with('assets')->find($setupLoan->id)->toJson();
+
+        $response = $this
+            ->actingAs(User::first())
+            ->get('/api/assets?startDateTime='.$endDateTime->add(10, 'minute')->timestamp.'&endDateTime='.$endDateTime->add(20, 'minute')->timestamp);
+        $this->responseString = $response->getContent();
+
+        $response->assertOk();
+        $jsonResponse = $response->json();
+
+        $item1 = collect($jsonResponse)->firstWhere('id', Asset::first()->id);
+        $this->assertTrue($item1['available']);
+
+        $item2 = collect($jsonResponse)->firstWhere('id', Asset::skip(1)->first()->id);
+        $this->assertTrue($item2['available']);
+    }
+    
+    protected function onNotSuccessfulTest(Throwable $exception): void
+    {
+        // Log to console if the test fails
+        dump('testLoanString: '.$this->testLoanString);
+        dump('responseString: '.$this->responseString);
+
+        parent::onNotSuccessfulTest($exception);
     }
 }
