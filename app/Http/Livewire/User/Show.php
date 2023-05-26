@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Carbon\Carbon;
 use App\Http\Livewire\DataTable\WithSorting;
-use App\Http\Livewire\DataTable\WithPerPagePagination;
+use App\Http\Livewire\DataTable\WithDetailsPerPagePagination;
 use App\Models\User;
 use App\Models\Loan;
 use App\Models\Setup;
@@ -14,7 +14,7 @@ use App\Helpers\SQL;
 
 class Show extends Component
 {
-    use WithPerPagePagination, WithSorting;
+    use WithDetailsPerPagePagination, WithSorting;
 
     public $user;
 
