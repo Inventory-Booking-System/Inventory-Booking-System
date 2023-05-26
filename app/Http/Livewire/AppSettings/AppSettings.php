@@ -25,8 +25,6 @@ class AppSettings extends Component
             'mail.from_address' => 'required|email',
             'mail.cc_address' => 'email',
             'mail.reply_to_address' => 'email',
-            'update' => 'array',
-            'update.self_updater_version_installed' => 'string',
         ];
     }
 
@@ -60,9 +58,6 @@ class AppSettings extends Component
         $this->mail['from_address'] = DotenvEditor::getValue('MAIL_FROM_ADDRESS');
         $this->mail['cc_address'] = DotenvEditor::getValue('MAIL_CC_ADDRESS');
         $this->mail['reply_to_address'] = DotenvEditor::getValue('MAIL_REPLY_TO_ADDRESS');
-
-        //Update Settings
-        $this->update['self_updater_version_installed'] = DotenvEditor::getValue('SELF_UPDATER_VERSION_INSTALLED');
 
     }
 
