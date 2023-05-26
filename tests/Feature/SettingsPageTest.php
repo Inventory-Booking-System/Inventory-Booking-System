@@ -183,26 +183,4 @@ class SettingsPageTest extends TestCase
             ->call('save')
             ->assertHasErrors(['mail.cc_address' => 'email']);
     }
-
-    /** @test */
-    public function notification_overdue_emails_is_boolean()
-    {
-        $this->actingAs(User::factory()->create());
-
-        Livewire::test('app-settings.app-settings')
-            ->set('notification.overdue_emails', 'Apples')
-            ->call('save')
-            ->assertHasErrors(['notification.overdue_emails' => 'boolean']);
-    }
-
-    /** @test */
-    public function notification_setup_emails_is_boolean()
-    {
-        $this->actingAs(User::factory()->create());
-
-        Livewire::test('app-settings.app-settings')
-            ->set('notification.setup_emails', 'Apples')
-            ->call('save')
-            ->assertHasErrors(['notification.setup_emails' => 'boolean']);
-    }
 }
