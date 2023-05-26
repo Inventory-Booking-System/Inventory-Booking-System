@@ -4,12 +4,14 @@ namespace App\Http\Livewire\AppSettings;
 
 use Livewire\Component;
 use Jackiedo\DotenvEditor\Facades\DotenvEditor;
+use \Codedge\Updater\UpdaterManager;
 
 class AppSettings extends Component
 {
     //Mail Settings
     public $mail;
     public $notification;
+    public $update;
 
     public function rules()
     {
@@ -24,6 +26,8 @@ class AppSettings extends Component
             'mail.from_address' => 'required|email',
             'mail.cc_address' => 'email',
             'mail.reply_to_address' => 'email',
+            'update' => 'array',
+            'update.self_updater_version_installed' => 'string',
             'notification' => 'array',
             'notification.overdue_emails' => 'boolean',
             'notification.setup_emails' => 'boolean',
@@ -65,9 +69,34 @@ class AppSettings extends Component
         $this->mail['cc_address'] = DotenvEditor::getValue('MAIL_CC_ADDRESS');
         $this->mail['reply_to_address'] = DotenvEditor::getValue('MAIL_REPLY_TO_ADDRESS');
 
+        //Update Settings
+        $this->update['self_updater_version_installed'] = DotenvEditor::getValue('SELF_UPDATER_VERSION_INSTALLED');
+
         //Notifications Settings
         $this->notification['overdue_emails'] = DotenvEditor::getValue('NOTIFICATION_OVERDUE_EMAILS');
         $this->notification['setup_emails'] = DotenvEditor::getValue('NOTIFICATION_SETUP_EMAILS'); 
+    }
+
+    public function checkForUpdate()
+    {
+        // Check if new version is available
+        if($updater->source()->isNewVersionAvailable()) {
+    
+            // Get the current installed version
+            $updater->source()->getVersionInstalled();
+    
+            // Get the new version available
+            $versionAvailable = $updater->source()->getVersionAvailable();
+    
+            // // Create a release
+            $release = $updater->source()->fetch($versionAvailable);
+    
+            // // Run the update process
+            $updater->source()->update($release);
+    
+        } else {
+            echo "No new version available.";
+        }
     }
 
     public function render()
