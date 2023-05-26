@@ -1,6 +1,6 @@
 <form wire:submit.prevent="save">
     <div class="row" >
-        <div class="col-4 offset-2">
+        <div class="col-4 offset-4">
             <div class="card w-100">
                 <div class="card-header bg-dark text-center">
                     <h1>Mail Settings</h1>
@@ -42,42 +42,6 @@
                         <x-input.text class="form-control-full-width" wire:model="mail.reply_to_address" id="reply_to_address" />
                     </x-input.group>
 
-                </div>
-            </div>
-        </div>
-
-        {{-- <div class="col-4 ">
-            <div class="card w-100">
-                <div class="card-header bg-dark text-center">
-                    <h1>Notification Settings</h1>
-                </div>
-                <div class="card-body">
-                    <!-- Overdue Emails -->
-                    <x-input.group label="Send Overdue Emails" for="overdue_emails" :error="$errors->first('notification.overdue_emails')" buttonGroup>
-                        <x-input.radioButton wire:model="notification.overdue_emails" id="overdue_emails_yes" value="1" text="Yes" checked="{{ $notification['overdue_emails'] }}" />
-                        <x-input.radioButton wire:model="notification.overdue_emails" id="overdue_emails_no" value="0" text="No" checked="{{ $notification['overdue_emails'] }}" />
-                    </x-input.group>
-
-                    <!-- Setup Emails -->
-                    <x-input.group label="Send Setup Emails" for="setup_emails" :error="$errors->first('notification.setup_emails')" buttonGroup>
-                        <x-input.radioButton wire:model="notification.setup_emails" id="setup_emails_yes" value="1" text="Yes" checked="{{ $notification['setup_emails']}}" />
-                        <x-input.radioButton wire:model="notification.setup_emails" id="setup_emails_no" value="0" text="No" checked="{{ $notification['setup_emails'] }}" />
-                    </x-input.group>
-                </div>
-            </div>
-        </div> --}}
-
-        
-        <div class="col-4 ">
-            <div class="card w-100">
-                <div class="card-header bg-dark text-center">
-                    <h1>Update Settings</h1>
-                </div>
-                <div class="card-body">
-                    <!-- Current Installed Version -->
-                    <p>You are currently running version <b>{{ $update['self_updater_version_installed'] }}</b></p>
-
-                    <x-button.danger class="btn-lg" wire:click="checkForUpdate">Check for updates</x-button.danger>
                 </div>
             </div>
         </div>
