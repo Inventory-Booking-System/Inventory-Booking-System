@@ -4,13 +4,13 @@ namespace App\Http\Livewire\DistributionGroup;
 
 use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
-use App\Http\Livewire\DataTable\WithPerPagePagination;
+use App\Http\Livewire\DataTable\WithDetailsPerPagePagination;
 use App\Models\DistributionGroup;
 use App\Models\Incident;
 
 class Show extends Component
 {
-    use WithPerPagePagination, WithSorting;
+    use WithDetailsPerPagePagination, WithSorting;
 
     public $distributionGroup;
 
