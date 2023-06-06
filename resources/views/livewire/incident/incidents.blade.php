@@ -13,7 +13,7 @@
                         <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-1">Start Date</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('location_id')" :direction="$sorts['location_id'] ?? null" class="col-1">Location</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('distribution_groups.name')" :direction="$sorts['distribution_groups.name'] ?? null" class="col-1">Alert</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('equipment_id')" :direction="$sorts['equipment_id'] ?? null" class="col">Issues</x-table.heading>
+                        <x-table.heading class="col">Issues</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('evidence')" :direction="$sorts['evidence'] ?? null" class="col">Evidence</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col">Details</x-table.heading>
                         <x-table.heading class="col-2"/>
