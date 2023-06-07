@@ -20,7 +20,11 @@ trait WithSorting
         if($this->sorts != null){
             //Apply user selected sort
             foreach($this->sorts as $field => $direction){
-                $query->orderBy($field, $direction);
+                if ($field === 'users') {
+                    $query->orderByRaw('CONCAT(users.forename, users.surname) '.$direction);
+                } else {
+                    $query->orderBy($field, $direction);
+                }
             }
         }else{
             //Apply default sort
