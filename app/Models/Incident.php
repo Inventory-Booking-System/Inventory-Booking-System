@@ -62,6 +62,14 @@ class Incident extends Model
         return $this->getStatusIds()[$this->status_id] ?? 'Error';
     }
 
+    public function getStatusTypeAttribute()
+    {
+        return [
+            '0' => 'warning',
+            '1' => 'success',
+        ][$this->status_id] ?? 'secondary';
+    }
+
     public function getStartDateTimeAttribute($value)
     {
         $date = Carbon::parse($value);

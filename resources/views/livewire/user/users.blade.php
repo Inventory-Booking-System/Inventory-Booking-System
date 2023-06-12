@@ -9,7 +9,7 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('user_id')" :direction="$sorts['user_id'] ?? null" class="col-3">User</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('user_full_name')" :direction="$sorts['user_full_name'] ?? null" class="col-3">User</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('email')" :direction="$sorts['email'] ?? null" class="col">Email</x-table.heading>
                         <x-table.heading class="col-2"/>
                     </x-table.row>
