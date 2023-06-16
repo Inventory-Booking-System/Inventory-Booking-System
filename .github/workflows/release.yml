@@ -33,7 +33,16 @@ jobs:
         run: echo ::set-output name=contents::$(cat storage/changelog.txt)
         
       - name: Zip Folder
-        run: zip -r ${{ github.event.repository.name }}.zip .
+        run: |
+          zip -r ${{ github.event.repository.name }}.zip . \
+            --exclude .git/\* \
+            --exclude .github/\* \
+            --exclude .env.ci \
+            --exclude .gitattributes \
+            --exclude .gitignore
+            --exclude .eslintrc.json
+            --exclude .editorconfig
+            --exclude node_modules/\*
 
       # Create the release on GitHub
       - name: Create Release
@@ -46,8 +55,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: startsWith(github.ref, 'refs/tags/')
-
-      # Output a message
-      - name: Output message
-        if: success()
-        run: echo "The release was created successfully!"
