@@ -34,15 +34,16 @@ jobs:
         
       - name: Zip Folder
         run: |
-          zip -r ${{ github.event.repository.name }}.zip . \
-            --exclude .git/\* \
-            --exclude .github/\* \
-            --exclude .env.ci \
-            --exclude .gitattributes \
-            --exclude .gitignore
-            --exclude .eslintrc.json
-            --exclude .editorconfig
-            --exclude node_modules/\*
+          find . \
+            -path './.git' -prune -o \
+            -path './.github' -prune -o \
+            -name '.env.ci' -prune -o \
+            -name '.gitattributes' -prune -o \
+            -name '.gitignore' -prune -o \
+            -name '.eslintrc.json' -prune -o \
+            -name '.editorconfig' -prune -o \
+            -name 'node_modules' -prune -o \
+            -type f -print | zip ${{ github.event.repository.name }}.zip -@
 
       # Create the release on GitHub
       - name: Create Release
