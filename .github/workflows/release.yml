@@ -26,6 +26,10 @@ jobs:
       - name: Generate JavaScript
         run: |
           npm run prod
+          
+      - name: Run Composer
+        run: |
+          composer install
 
       # Read the contents of the changelog file
       - name: Read changelog
