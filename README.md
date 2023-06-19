@@ -21,13 +21,14 @@
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="https://github.com/Dragnogd/Inventory-Booking-System/assets/6664974/c86c5a70-84c7-4e8a-9795-2ae820530ef9" alt="Logo" width="600" height="250">
+    <img src="https://github.com/Dragnogd/Inventory-Booking-System/assets/6664974/f351af2c-66e5-41dc-9ea9-aa4bae1926fa" alt="Logo" width="600" height="250">
   </a>
+
 
   <h3 align="center">Inventory Booking System</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    A web based bookings, loans and setups management system for IT departments.
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
