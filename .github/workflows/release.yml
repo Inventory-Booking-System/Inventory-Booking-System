@@ -58,7 +58,7 @@ jobs:
           find . -type f -name '.gitignore' -print0 | xargs -0 rm -f
         
       - name: Zip Folder
-        run: zip ${{ github.event.repository.name }}.zip -@
+        run: zip -r ${{ github.event.repository.name }}.zip .
 
       # Create the release on GitHub
       - name: Create Release
