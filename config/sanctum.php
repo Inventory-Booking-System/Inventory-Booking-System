@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * Sanctum doesn't work if you specify a domain with port 80, so only pass the
+ * port number if it is non-standard
+ */
+$appHost = '';
+if (env('APP_URL')) {
+    $port = parse_url(env('APP_URL'), PHP_URL_PORT);
+    if (!isset($port) || $port === 80 || $port === 443) {
+        $appHost = ','.parse_url(env('APP_URL'), PHP_URL_HOST);
+    } else {
+        $appHost = ','.parse_url(env('APP_URL'), PHP_URL_HOST).':'.parse_url(env('APP_URL'), PHP_URL_PORT);
+    }
+}
+
 return [
 
     /*
@@ -16,7 +30,7 @@ return [
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
         '%s%s',
         'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
-        env('APP_URL') ? ','.parse_url(env('APP_URL'), PHP_URL_HOST).':'.parse_url(env('APP_URL'), PHP_URL_PORT) : ''
+        $appHost
     ))),
 
     /*
