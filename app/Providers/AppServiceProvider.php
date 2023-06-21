@@ -26,10 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Fix for MySQL < 5.7.7 and MariaDB < 10.2.2
-        //TODO: Lets only do this when we detect the above requirements
-        Schema::defaultStringLength(191);
-
         Builder::macro('search', function ($field, $string) {
             return $string ? $this->where($field, 'like', '%'.$string.'%') : $this;
         });
