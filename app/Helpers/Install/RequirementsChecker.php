@@ -34,10 +34,10 @@ class RequirementsChecker
                         if(gettype($requirement) == 'array'){
                             //User has the option to enable one or more of the extentions in the list
                             $extEnabled = false;
-                            $results['requirements'][$type][$key] = true;
 
                             foreach($requirement as $option){
                                 if(extension_loaded($option)){
+                                    $results['requirements'][$type][$option] = true;
                                     $extEnabled = true;
                                 }
                             }

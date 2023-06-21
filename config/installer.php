@@ -22,6 +22,7 @@ return [
     'requirements' => [
         'php' => [
             'openssl',
+            'pdo',
             'pdo' => [
                 'pdo_mysql',
                 'pdo_pgsql',
@@ -31,6 +32,16 @@ return [
             'tokenizer',
             'JSON',
             'cURL',
+            'mysqli',
+            'fileinfo',
+            'dom',
+            'xml',
+            'session',
+            'ctype',
+            'tokenizer',
+            'pcre',
+            'hash',
+            'filter',
         ],
         'apache' => [
             'mod_rewrite',
