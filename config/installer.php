@@ -22,7 +22,11 @@ return [
     'requirements' => [
         'php' => [
             'openssl',
-            'pdo',
+            'pdo' => [
+                'pdo_mysql',
+                'pdo_pgsql',
+                'pdo_sqlite',
+            ],
             'mbstring',
             'tokenizer',
             'JSON',

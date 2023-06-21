@@ -30,13 +30,31 @@ class RequirementsChecker
             switch ($type) {
                 // check php requirements
                 case 'php':
-                    foreach ($requirements[$type] as $requirement) {
-                        $results['requirements'][$type][$requirement] = true;
+                    foreach ($requirements[$type] as $key => $requirement) {
+                        if(gettype($requirement) == 'array'){
+                            //User has the option to enable one or more of the extentions in the list
+                            $extEnabled = false;
+                            $results['requirements'][$type][$key] = true;
 
-                        if (! extension_loaded($requirement)) {
-                            $results['requirements'][$type][$requirement] = false;
+                            foreach($requirement as $option){
+                                if(extension_loaded($option)){
+                                    $extEnabled = true;
+                                }
+                            }
 
-                            $results['errors'] = true;
+                            if($extEnabled == false){
+                                $results['requirements'][$type][$key] = false;
+    
+                                $results['errors'] = true;
+                            }
+                        }else{
+                            $results['requirements'][$type][$requirement] = true;
+
+                            if (! extension_loaded($requirement)) {
+                                $results['requirements'][$type][$requirement] = false;
+    
+                                $results['errors'] = true;
+                            }
                         }
                     }
                     break;
