@@ -39,25 +39,26 @@ jobs:
       - name: Rename env file
         run: mv .env.template .env
         
-      - name: Zip Folder
+      - name: Remove Files and Folders
         run: |
-          find . \
-            -path './.git' -prune -o \
-            -path './.github' -prune -o \
-            -name '.env.ci' -prune -o \
-            -name '.gitattributes' -prune -o \
-            -name '.gitignore' -prune -o \
-            -name '.eslintrc.json' -prune -o \
-            -name '.editorconfig' -prune -o \
-            -name '.styleci.yml' -prune -o \
-            -name 'phpunit.xml' -prune -o \
-            -name 'package-lock.json' -prune -o \
-            -name 'package.json' -prune -o \
-            -name 'webpack.mix.js' -prune -o \
-            -name 'node_modules' -prune -o \
-            -path 'resources/js/' -prune -o \
-            -path 'resources/css/' -prune -o \
-            -type d -print | zip ${{ github.event.repository.name }}.zip -@
+          rm -rf ./.git 
+          rm -rf ./.github
+          rm -rf ./node_modules
+          rm -rf ./resources/js
+          rm -rf ./resources/css
+          rm -f ./.env.ci
+          rm -f ./.gitattributes
+          rm -f ./.eslintrc.json
+          rm -f ./.editorconfig
+          rm -f ./.styleci.yml
+          rm -f ./phpunit.xml
+          rm -f ./package-lock.json
+          rm -f ./package.json
+          rm -f ./webpack.mix.js
+          find . -type f -name '.gitignore' -print0 | xargs -0 rm -f
+        
+      - name: Zip Folder
+        run: zip ${{ github.event.repository.name }}.zip -@
 
       # Create the release on GitHub
       - name: Create Release
