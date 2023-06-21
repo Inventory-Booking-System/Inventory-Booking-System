@@ -57,7 +57,7 @@ jobs:
             -name 'node_modules' -prune -o \
             -path 'resources/js' -prune -o \
             -path 'resources/css' -prune -o \
-            -type f -print | zip ${{ github.event.repository.name }}.zip -@
+            -type d -print | zip ${{ github.event.repository.name }}.zip -@
 
       # Create the release on GitHub
       - name: Create Release
