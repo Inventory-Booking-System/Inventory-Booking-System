@@ -10,7 +10,7 @@
 
 @section('container')
     <p class="text-center">
-    <img src="img\IBS.png" alt="Picture of the Inventory Booking System" width="920">
+    <img src="img\Inventory Booking System.png" alt="Picture of the Inventory Booking System" width="920">
     </p>
     <p class="text-center">
       <a href="{{ route('LaravelInstaller::requirements') }}" class="button">
