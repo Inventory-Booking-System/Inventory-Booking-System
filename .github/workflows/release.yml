@@ -55,8 +55,8 @@ jobs:
             -name 'package.json' -prune -o \
             -name 'webpack.mix.js' -prune -o \
             -name 'node_modules' -prune -o \
-            -path 'resources/js' -prune -o \
-            -path 'resources/css' -prune -o \
+            -path 'resources/js/' -prune -o \
+            -path 'resources/css/' -prune -o \
             -type d -print | zip ${{ github.event.repository.name }}.zip -@
 
       # Create the release on GitHub
