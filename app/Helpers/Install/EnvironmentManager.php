@@ -143,10 +143,11 @@ class EnvironmentManager
         'CLEANUP_HAS_FAILED_NOTIFICATION=mail'."\n".
         'BACKUP_WAS_SUCCESSFUL_NOTIFICATION=mail'."\n".
         'HEALTHY_BACKUP_WAS_FOUND_NOTIFICATION=mail'."\n".
-        'CLEANUP_WAS_SUCCESSFUL_NOTIFICATION=mail'."\n".
+        'CLEANUP_WAS_SUCCESSFUL_NOTIFICATION=mail'."\n\n".
         'NOTIFICATION_EMAIL='."\n".
         'NOTIFICATION_OVERDUE_EMAILS=1'."\n".
-        'NOTIFICATION_SETUP_EMAILS=1';
+        'NOTIFICATION_SETUP_EMAILS=1\n\n'.
+        'APP_TIMEZONE=Europe/London';
 
         try {
             file_put_contents($this->envPath, $envFileData);
