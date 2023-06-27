@@ -20,11 +20,12 @@
                                 <x-input.text wire:model="editing.email" id="email" />
                             </x-input.group>
 
-                            <x-input.group for="password" label="Password" :error="$errors->first('editing.password')">
-                                <x-input.text type="password" wire:model="editing.password" id="password" />
+                            <x-input.group for="password" label="Password" :error="$errors->first('newPassword')">
+                                <x-input.text type="password" wire:model="newPassword" id="password" />
                             </x-input.group>
 
                             <x-button.primary class="mt-3 w-100" type="submit">Save</x-button.primary>
+                            @if ($saved) <p>Profile saved successfully.</p> @endif
                         </div>
                     </form>
                 </div>

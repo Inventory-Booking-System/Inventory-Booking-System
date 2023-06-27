@@ -11,6 +11,14 @@ class Profile extends Component
 {
     public User $editing;
 
+    /**
+     * User password is a protected field, so will always appear blank on the
+     * frontend. We need this separate field to update the password
+     */
+    public string $newPassword;
+
+    public bool $saved = false;
+
     public function mount()
     {
         $this->editing = User::find(Auth::id());
@@ -22,19 +30,21 @@ class Profile extends Component
             'editing.forename' => 'required|string',
             'editing.surname' => 'required|string',
             'editing.email' => 'required|email|unique:users,email,'.$this->editing->id,
-            'editing.password' => 'required|string',
+            'newPassword' => 'required|string',
         ];
     }
 
     public function save()
     {
+        $this->saved = false;
+
         $this->validate();
 
-        $this->editing->password = Hash::make($this->editing->password);
+        $this->editing->password = Hash::make($this->newPassword);
 
         $this->editing->save();
 
-        $this->emit('hideModal', 'edit');
+        $this->saved = true;
     }
 
     public function render()
