@@ -17,6 +17,8 @@ class Profile extends Component
      */
     public string $newPassword;
 
+    public bool $saved = false;
+
     public function mount()
     {
         $this->editing = User::find(Auth::id());
@@ -34,13 +36,15 @@ class Profile extends Component
 
     public function save()
     {
+        $this->saved = false;
+
         $this->validate();
 
         $this->editing->password = Hash::make($this->newPassword);
 
         $this->editing->save();
 
-        $this->emit('hideModal', 'edit');
+        $this->saved = true;
     }
 
     public function render()

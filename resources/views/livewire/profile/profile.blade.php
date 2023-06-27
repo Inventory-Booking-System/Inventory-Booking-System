@@ -25,6 +25,7 @@
                             </x-input.group>
 
                             <x-button.primary class="mt-3 w-100" type="submit">Save</x-button.primary>
+                            @if ($saved) <p>Profile saved successfully.</p> @endif
                         </div>
                     </form>
                 </div>
