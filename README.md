@@ -66,7 +66,7 @@ Below are the recommended prerequisities to install the Inventory Booking System
 * [Microsoft IIS](https://www.iis.net/) or Apache
 * [PHP](https://windows.php.net/) >= 8.1
 * [MySQL](https://www.mysql.com/) >= 8
-* 
+
 ### Installation
 
 [Click here for a step by step guide on installing using IIS](https://github.com/Dragnogd/Inventory-Booking-System/wiki/Setup-with-IIS)
