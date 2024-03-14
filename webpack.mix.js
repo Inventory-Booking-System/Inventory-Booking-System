@@ -42,4 +42,5 @@ mix.js('resources/js/app.js', 'js')
     .react();
 
 mix.js('resources/js/signage.js', 'js')
+    .js('resources/js/pos.js', 'js')
     .react();

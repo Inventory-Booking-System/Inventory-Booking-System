@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Validator;
 use Response;
 use App\Models\Asset;
+use App\Models\Loan;
+use App\Models\User;
 use Carbon\Carbon;
 
 class AssetController extends Controller
@@ -117,5 +119,45 @@ class AssetController extends Controller
         }
 
         return $assets;
+    }
+
+    /**
+     * Book in the asset from any existing loans or setups. Whitespace is trimmed
+     * and leading 0s are removed.
+     * @return \Illuminate\Http\Response
+     */
+    public function scanIn(Request $request, $id)
+    {
+        $loans = Loan::query()
+            ->whereHas('assets', function($query) use($id) {
+                $query->where('tag', '=', $id);
+            })
+            ->get();
+
+        foreach ($loans as $loan) {
+            $assets = $loan->assets()->where('tag', '=', $id)->get();
+            foreach ($assets as $asset) {
+                $loan->assets()->updateExistingPivot($asset->id, ['returned' => 1]);
+            }
+
+            // Check if all assets for this loan are returned
+            $totalAssets = $loan->assets->count();
+            $returnedAssets = $loan->assets()->wherePivot('returned', 1)->count();
+
+            if ($totalAssets === $returnedAssets) {
+                // All assets are returned, update loan status
+                $loan->status_id = 5;
+                $loan->save();
+            }
+
+            // $user = User::find($loan->user_id);
+            // if (Config::get('mail.cc.address')) {
+            //     Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
+            // } else {
+            //     Mail::to($user->email)->queue(new LoanOrder($loan, false));
+            // }
+        }
+
+        return response()->json($loans, 200);
     }
 }
