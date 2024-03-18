@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -8,9 +8,9 @@ import AssetCard from '../components/AssetCard';
 import BarcodeScannerOut from '../components/BarcodeScannerOut';
 import { assets as assetsApi, loans } from '../../api';
 
-async function scanOut({ studentName, asset }) {
+async function scanOut({ user, studentName, asset }) {
     return loans.create({
-        user: 157,
+        user,
         assets: [{
             id: asset.id,
             returned: false
@@ -25,6 +25,7 @@ async function scanOut({ studentName, asset }) {
 export default function StudentSelected() {
     const { studentId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [assets, setAssets] = useState([]);
     const [selectedAssets, setSelectedAssets] = useState([]);
 
@@ -43,7 +44,7 @@ export default function StudentSelected() {
                     const asset = assets.find(x => x.tag === parseInt(assetTag));
                     if (!asset) return;
                     setSelectedAssets([...selectedAssets, assetTag]);
-                    scanOut({ studentName: studentId, asset });
+                    scanOut({ user: location.state.user.userId, studentName: studentId, asset });
                 }}
             />
             <Box sx={{ paddingTop: 5 }}>

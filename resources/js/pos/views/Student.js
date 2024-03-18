@@ -17,9 +17,9 @@ export default function Student() {
             >
                 <Search
                     name="Student Search"
-                    onSelect={navigate}
+                    onSelect={(user) => navigate(user.label, { state: { user } })}
                     options={[
-                        { label: 'Test' }
+                        { userId: 1, label: 'Test' }
                     ]}
                 />
             </Stack>
