@@ -18,7 +18,8 @@ export default function Search({ name, options, onSelect }) {
                 }}
                 value={value}
                 onChange={(_, newValue) => {
-                    onSelect(newValue);
+                    const user = options.find(x => x.label === newValue);
+                    onSelect(user);
                     setValue(newValue);
                 }}
                 options={options.map((option) => option.label)}
