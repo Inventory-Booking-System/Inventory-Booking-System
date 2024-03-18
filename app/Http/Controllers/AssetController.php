@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use Response;
 use App\Models\Asset;
 use App\Models\Loan;
 use App\Models\User;
+use App\Mail\Loan\LoanOrder;
 use Carbon\Carbon;
 
 class AssetController extends Controller
@@ -132,6 +135,7 @@ class AssetController extends Controller
             ->whereHas('assets', function($query) use($id) {
                 $query->where('tag', '=', $id);
             })
+            ->whereIn('status_id', [0, 2, 3])  // Only 'booked', 'overdue' or 'setup'
             ->get();
 
         foreach ($loans as $loan) {
@@ -150,12 +154,12 @@ class AssetController extends Controller
                 $loan->save();
             }
 
-            // $user = User::find($loan->user_id);
-            // if (Config::get('mail.cc.address')) {
-            //     Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
-            // } else {
-            //     Mail::to($user->email)->queue(new LoanOrder($loan, false));
-            // }
+            $user = User::find($loan->user_id);
+            if (Config::get('mail.cc.address')) {
+                Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
+            } else {
+                Mail::to($user->email)->queue(new LoanOrder($loan, false));
+            }
         }
 
         return response()->json($loans, 200);
