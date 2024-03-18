@@ -11,7 +11,7 @@ export default function BarcodeScanner() {
     const handleOpen = (code) => {
         enqueueSnackbar(`Scanned in ${code.join('')}`, {
             variant: 'success',
-            autoHideDuration: 10000,
+            autoHideDuration: 5000,
             action: (snackbarId) => <Button onClick={() => closeSnackbar(snackbarId)}>Undo</Button>,
             onClose: async (_, reason) => {
                 if (reason !== 'instructed') {
@@ -22,11 +22,17 @@ export default function BarcodeScanner() {
     };
 
     useEffect(() => {
+        /**
+         * Scan codes may only contain numbers
+         */
         function handleKeyPress(event) {
-            if (event.key === 'Enter') {
+            if (event.key !== 'Enter' && /^[a-zA-Z| ]+$/.test(event.key)) {
+                return;
+            }
+            if (event.key === 'Enter' && code.length) {
                 handleOpen(code);
                 setCode([]);
-            } else {
+            } else if (event.key !== 'Enter') {
                 setCode([...code, event.key]);
             }
         }

@@ -1,12 +1,14 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-// import Button from '@mui/material/Button';
-// import Stack from '@mui/material/Stack';
-import Keyboard from './pos/components/Keyboard';
-import BarcodeScanner from './pos/components/BarcodeScanner';
+import Home from './pos/views/Home';
+import Staff from './pos/views/Staff';
+import Student from './pos/views/Student';
+import StaffSelected from './pos/views/StaffSelected';
+import StudentSelected from './pos/views/StudentSelected';
 
 const theme = createTheme({
     palette: {
@@ -18,14 +20,17 @@ function App() {
     return (
         <>
             <ThemeProvider theme={theme}>
+                <CssBaseline />
                 <SnackbarProvider>
-                    <CssBaseline />
-                    <BarcodeScanner />
-                    {/*<Stack direction="row" spacing={2}>
-                        <Button variant="contained" size="large"></Button>
-                        <Button variant="contained" size="large"></Button>
-                    </Stack>*/}
-                    <Keyboard />
+                    <MemoryRouter>
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="staff" element={<Staff />} />
+                            <Route path="staff/:staffId" element={<StaffSelected />} />
+                            <Route path="student" element={<Student />} />
+                            <Route path="student/:studentId" element={<StudentSelected />} />
+                        </Routes>
+                    </MemoryRouter>
                 </SnackbarProvider>
             </ThemeProvider>
         </>

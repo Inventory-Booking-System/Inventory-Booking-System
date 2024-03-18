@@ -12,6 +12,13 @@
         <script src="{{ mix('js/vendor.js') }}"></script>
         <script src="{{ mix('js/app.js') }}"></script>
 
+        <style>
+            html {
+                zoom: 250%;
+                overflow: hidden;
+            }
+        </style>
+
     </head>
 
     <body>

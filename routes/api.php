@@ -45,7 +45,6 @@ Route::get('/signage', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assets', [AssetController::class, 'getAll']);
-    Route::get('/assets/{id}/scan/in', [AssetController::class, 'scanIn']);
     Route::get('/users', [UserController::class, 'getAll']);
     Route::get('/distributionGroups', [DistributionGroupController::class, 'getAll']);
     Route::get('/equipmentIssues', [EquipmentIssueController::class, 'getAll']);
@@ -57,3 +56,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/incidents', [IncidentController::class, 'create']);
     Route::put('/incidents/{id}', [IncidentController::class, 'put']);
 });
+
+Route::get('/assets/{id}/scan/in', [AssetController::class, 'scanIn']);

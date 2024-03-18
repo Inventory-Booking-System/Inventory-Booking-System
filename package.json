@@ -31,6 +31,7 @@
         "node-sass": "^8.0.0",
         "notistack": "^3.0.1",
         "postcss": "^8.4.31",
+        "react-router-dom": "^6.22.3",
         "resolve-url-loader": "^5.0.0",
         "sass": "^1.32.11",
         "sass-loader": "^13.2.2",
