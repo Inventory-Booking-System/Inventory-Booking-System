@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
-export default function AssetCard({ asset }) {
+export default function AssetCard({ asset, endDateTime, overdue }) {
     return (
         <Card variant="outlined" sx={{ maxWidth: 360 }}>
             <Box sx={{ p: 2 }}>
@@ -19,6 +19,7 @@ export default function AssetCard({ asset }) {
                         {asset.tag}
                     </Typography>
                 </Stack>
+                {!asset.available && <Chip color="error" label="Not available: Scan again to confirm" size="small" sx={{ marginBottom: 1 }} />}
                 <Typography color="text.secondary" variant="body2">
                     Please return by the end of the day.
                 </Typography>
@@ -29,7 +30,7 @@ export default function AssetCard({ asset }) {
                     Booking end
                 </Typography>
                 <Stack direction="row" spacing={1}>
-                    <Chip color="primary" label="15:30" size="small" />
+                    <Chip label={endDateTime} size="small" color={overdue ? 'error' : 'primary'} />
                 </Stack>
             </Box>
         </Card>
@@ -39,6 +40,9 @@ export default function AssetCard({ asset }) {
 AssetCard.propTypes = {
     asset: PropTypes.shape({
         name: PropTypes.string.isRequired,
-        tag: PropTypes.number.isRequired
-    }).isRequired
+        tag: PropTypes.number.isRequired,
+        available: PropTypes.bool,
+    }).isRequired,
+    endDateTime: PropTypes.string,
+    overdue: PropTypes.bool
 };

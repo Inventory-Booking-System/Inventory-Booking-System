@@ -1,7 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { assets as assetsApi } from '../../api';
 
 export default function BarcodeScannerOut({ onScan }) {
+    const { enqueueSnackbar } = useSnackbar();
     const [code, setCode] = useState([]);
+    const [assets, setAssets] = useState([]);
+
+    useEffect(() => {
+        assetsApi.getAll({
+            startDateTime: Math.round(Date.now() / 1000),
+            endDateTime: Math.round(new Date(new Date().setHours(15, 30, 0, 0)).getTime() / 1000),
+        })
+            .then(setAssets);
+    }, []);
 
     useEffect(() => {
         /**
@@ -12,7 +24,15 @@ export default function BarcodeScannerOut({ onScan }) {
                 return;
             }
             if (event.key === 'Enter' && code.length) {
-                onScan(code.join(''));
+                if (assets.find(x => x.tag === parseInt(code.join('')))) {
+                    onScan(code.join(''));
+                } else {
+                    enqueueSnackbar(`Asset ${code.join('')} not found`, {
+                        variant: 'error',
+                        autoHideDuration: 5000
+                    });
+                    (new Audio('/pos-static/error.wav')).play();
+                }
                 setCode([]);
             } else if (event.key !== 'Enter') {
                 setCode([...code, event.key]);
@@ -20,7 +40,7 @@ export default function BarcodeScannerOut({ onScan }) {
         }
         document.addEventListener('keyup', handleKeyPress);
         return () => document.removeEventListener('keyup', handleKeyPress);
-    }, [code, onScan]);
+    }, [assets, code, enqueueSnackbar, onScan]);
 
     return;
 }

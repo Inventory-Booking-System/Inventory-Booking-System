@@ -2,10 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { closeSnackbar, useSnackbar } from 'notistack';
 import Button from '@mui/material/Button';
 import { scanIn } from '../../api/assets';
+import { assets as assetsApi } from '../../api';
 
 export default function BarcodeScanner() {
     const { enqueueSnackbar } = useSnackbar();
     const [code, setCode] = useState([]);
+    const [assets, setAssets] = useState([]);
+
+    useEffect(() => {
+        assetsApi.getAll({
+            startDateTime: Math.round(Date.now() / 1000),
+            endDateTime: Math.round(Date.now() / 1000) + 1,
+        })
+            .then(setAssets);
+    }, []);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleOpen = (code) => {
@@ -30,7 +40,16 @@ export default function BarcodeScanner() {
                 return;
             }
             if (event.key === 'Enter' && code.length) {
-                handleOpen(code);
+                if (assets.find(x => x.tag === parseInt(code.join('')))) {
+                    handleOpen(code);
+                    (new Audio('/pos-static/ding.wav')).play();
+                } else {
+                    enqueueSnackbar(`Asset ${code.join('')} not found`, {
+                        variant: 'error',
+                        autoHideDuration: 5000
+                    });
+                    (new Audio('/pos-static/error.wav')).play();
+                }
                 setCode([]);
             } else if (event.key !== 'Enter') {
                 setCode([...code, event.key]);
@@ -38,7 +57,7 @@ export default function BarcodeScanner() {
         }
         document.addEventListener('keyup', handleKeyPress);
         return () => document.removeEventListener('keyup', handleKeyPress);
-    }, [code, handleOpen]);
+    }, [assets, code, enqueueSnackbar, handleOpen]);
 
     return;
 }

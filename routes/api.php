@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'getAll']);
     Route::get('/distributionGroups', [DistributionGroupController::class, 'getAll']);
     Route::get('/equipmentIssues', [EquipmentIssueController::class, 'getAll']);
+    Route::get('/loans', [LoanController::class, 'getAll']);
     Route::post('/loans', [LoanController::class, 'create']);
     Route::put('/loans/{id}', [LoanController::class, 'put']);
     Route::get('/locations', [LocationController::class, 'getAll']);
