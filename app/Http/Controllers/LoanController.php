@@ -131,4 +131,14 @@ class LoanController extends Controller
 
         return $loan->toJSON();
     }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getAll()
+    {
+        return $loans = Loan::query()
+            ->whereNotIn('status_id', [4, 5])  // Not cancelled or completed
+            ->get();
+    }
 }

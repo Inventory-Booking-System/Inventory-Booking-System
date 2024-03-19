@@ -1,5 +1,10 @@
 import request from './request';
 
+export async function getAll() {
+    const resp = await request('/api/loans');
+    return await resp.json();
+}
+
 /**
  * @param {{
  *  startDateTime: number,
