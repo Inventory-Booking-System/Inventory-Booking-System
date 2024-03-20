@@ -7,7 +7,7 @@ COPY composer.json composer.lock /usr/app/
 RUN composer install --no-dev --no-scripts --no-autoloader
 
 
-FROM node:21-alpine AS node
+FROM node:20 AS node
 
 WORKDIR /usr/app
 
