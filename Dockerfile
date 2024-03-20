@@ -15,7 +15,7 @@ COPY package.json package-lock.json /usr/app/
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        python \
+        python3 \
     && npm install \
     && npm run prod
 
