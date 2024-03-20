@@ -13,7 +13,10 @@ WORKDIR /usr/app
 
 COPY package.json package-lock.json /usr/app/
 
-RUN npm install \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python \
+    && npm install \
     && npm run prod
 
 
