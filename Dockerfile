@@ -11,7 +11,7 @@ FROM node:20 AS node
 
 WORKDIR /usr/app
 
-COPY package.json package-lock.json /usr/app/
+COPY . /usr/app/
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -25,6 +25,6 @@ FROM php:8.1-apache
 COPY . /var/www/html/
 
 COPY --from=composer /usr/app/vendor/ /var/www/html/vendor/
-COPY --from=node /usr/app/node_modules/ /var/www/html/node_modules/
+COPY --from=node /usr/app/public/js/ /var/www/html/public/js/
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
