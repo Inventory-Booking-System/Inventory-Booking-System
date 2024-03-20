@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -7,6 +7,13 @@ import Search from '../components/Search';
 
 export default function Student() {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            navigate('/');
+        }, 60000);
+        return () => clearTimeout(timeout);
+    }, [navigate]);
 
     return (
         <Box sx={{ paddingTop: 5 }}>

@@ -1,19 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
+import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
-import { assets as assetsApi } from '../../api';
 
-export default function BarcodeScannerOut({ onScan }) {
+const BarcodeScannerOut = memo(function BarcodeScannerOut({ assets, onScan }) {
     const { enqueueSnackbar } = useSnackbar();
     const [code, setCode] = useState([]);
-    const [assets, setAssets] = useState([]);
-
-    useEffect(() => {
-        assetsApi.getAll({
-            startDateTime: Math.round(Date.now() / 1000),
-            endDateTime: Math.round(new Date(new Date().setHours(15, 30, 0, 0)).getTime() / 1000),
-        })
-            .then(setAssets);
-    }, []);
 
     useEffect(() => {
         /**
@@ -24,10 +15,20 @@ export default function BarcodeScannerOut({ onScan }) {
                 return;
             }
             if (event.key === 'Enter' && code.length) {
+                if (!assets?.length) {
+                    enqueueSnackbar('Scanner not ready.', {
+                        variant: 'error',
+                        autoHideDuration: 5000
+                    });
+                    (new Audio('/pos-static/error.wav')).play();
+                    setCode([]);
+                    return;
+                }
+
                 if (assets.find(x => x.tag === parseInt(code.join('')))) {
                     onScan(code.join(''));
                 } else {
-                    enqueueSnackbar(`Asset ${code.join('')} not found`, {
+                    enqueueSnackbar(`Asset ${code.join('')} not found.`, {
                         variant: 'error',
                         autoHideDuration: 5000
                     });
@@ -43,4 +44,11 @@ export default function BarcodeScannerOut({ onScan }) {
     }, [assets, code, enqueueSnackbar, onScan]);
 
     return;
-}
+});
+
+BarcodeScannerOut.propTypes = {
+    assets: PropTypes.array.isRequired,
+    onScan: PropTypes.func.isRequired
+};
+
+export default BarcodeScannerOut;
