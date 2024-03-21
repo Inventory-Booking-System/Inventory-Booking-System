@@ -2,7 +2,7 @@ FROM composer:2.7 AS composer
 
 WORKDIR /usr/app
 
-COPY composer.json composer.lock /usr/app/
+COPY . /usr/app/
 
 RUN composer install --no-dev
 
