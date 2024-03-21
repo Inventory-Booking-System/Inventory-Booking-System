@@ -22,9 +22,12 @@ RUN apt-get update \
 
 FROM php:8.1-apache
 
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+
 COPY . /var/www/html/
 
 COPY --from=composer /usr/app/vendor/ /var/www/html/vendor/
 COPY --from=node /usr/app/public/js/ /var/www/html/public/js/
 
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN mv .env.template .env \
+    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
