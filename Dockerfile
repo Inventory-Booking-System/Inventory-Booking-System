@@ -4,7 +4,7 @@ WORKDIR /usr/app
 
 COPY composer.json composer.lock /usr/app/
 
-RUN composer install --no-dev --no-scripts --no-autoloader
+RUN composer install --no-dev
 
 
 FROM node:20 AS node
