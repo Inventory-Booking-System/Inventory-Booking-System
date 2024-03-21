@@ -26,7 +26,7 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 COPY . /var/www/html/
 
-COPY --from=composer composer.lock /usr/app/vendor/ /var/www/html/vendor/
+COPY --from=composer /usr/app/ /var/www/html/
 COPY --from=node /usr/app/public/js/ /var/www/html/public/js/
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
