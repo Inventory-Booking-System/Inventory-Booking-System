@@ -36,7 +36,15 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
     && mv .env.template .env \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && chown -R www-data:www-data /var/www/html \
+    # Set permissions
+    && chown -R www-data:www-data /var/www/html/storage/framework \
+    && chown -R www-data:www-data /var/www/html/storage/logs \
+    && chown -R www-data:www-data /var/www/html/bootstrap/cache \
+    && find /var/www/html -type f -exec chmod 644 {} \; \
+    && find /var/www/html -type d -exec chmod 755 {} \; \
+    && find /var/www/html/storage/framework -type d -exec chmod 775 {} \; \
+    && find /var/www/html/storage/logs -type d -exec chmod 775 {} \; \
+    && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; \
     # Install zip PHP extension
     && apt-get update \
     && apt-get install -y --no-install-recommends \
