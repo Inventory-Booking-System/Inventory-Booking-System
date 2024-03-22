@@ -34,4 +34,10 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && mv .env.template .env \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && chown -R www-data:www-data /var/www/html \
+    # Install zip PHP extension
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libzip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install zip pdo_mysql mysqli
