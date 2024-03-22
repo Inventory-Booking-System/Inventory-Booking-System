@@ -1,3 +1,4 @@
+# Install PHP Composer packages
 FROM composer:2.7 AS composer
 
 WORKDIR /usr/app
@@ -6,7 +7,7 @@ COPY . /usr/app/
 
 RUN composer install --no-dev
 
-
+# Install Node packages
 FROM node:20 AS node
 
 WORKDIR /usr/app
@@ -19,7 +20,7 @@ RUN apt-get update \
     && npm install \
     && npm run prod
 
-
+# Set up Apache server
 FROM php:8.1-apache
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -40,4 +41,6 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
         libzip-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install zip pdo_mysql mysqli
+    && docker-php-ext-install zip pdo_mysql mysqli \
+    # Enable Apache modules
+    && a2enmod rewrite
