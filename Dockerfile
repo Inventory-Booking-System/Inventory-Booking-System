@@ -59,7 +59,10 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && openssl genrsa -out /etc/ssl/private/ca.key 4096 \
     && openssl req -x509 -new -nodes -key /etc/ssl/private/ca.key -sha256 -days 3650 -out /etc/ssl/certs/ca.crt -subj "/C=US/ST=State/L=City/O=Company/CN=example.com CA" \
     && mv generate-cert.sh /usr/local/bin/generate-cert.sh \
-    && chmod +x /usr/local/bin/generate-cert.sh
+    && chmod +x /usr/local/bin/generate-cert.sh \
+    # Configure Apache to use the generated SSL Certificate
+    && sed -i 's|SSLCertificateFile.*|SSLCertificateFile /etc/ssl/certs/ca.crt|' /etc/apache2/sites-available/default-ssl.conf \
+    && sed -i 's|SSLCertificateKeyFile.*|SSLCertificateKeyFile /etc/ssl/private/ca.key|' /etc/apache2/sites-available/default-ssl.conf
 
 ENTRYPOINT ["generate-cert.sh"]
 CMD ["apache2-foreground"]
