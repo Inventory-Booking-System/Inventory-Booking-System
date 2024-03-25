@@ -46,7 +46,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     # Redirect Laravel logs to stdout
     && touch /var/www/html/storage/logs/laravel.log \
     && chown www-data:www-data /var/www/html/storage/logs/laravel.log \
-    && ln -sf /dev/stdout /var/www/html/storage/logs/laravel.log \
+    && ln -sfT /dev/stdout /var/www/html/storage/logs/laravel.log \
     # Install dependencies
     && apt-get update \
     && apt-get install -y --no-install-recommends \
