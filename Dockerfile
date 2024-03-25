@@ -26,7 +26,6 @@ FROM php:8.1-apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 COPY . /var/www/html/
-COPY generate-cert.sh /usr/local/bin/generate-cert.sh
 
 COPY --from=composer /usr/app/ /var/www/html/
 
@@ -59,6 +58,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     # Generate CA Key and Certificate
     && openssl genrsa -out /etc/ssl/private/ca.key 4096 \
     && openssl req -x509 -new -nodes -key /etc/ssl/private/ca.key -sha256 -days 3650 -out /etc/ssl/certs/ca.crt -subj "/C=US/ST=State/L=City/O=Company/CN=example.com CA" \
+    && mv generate-cert.sh /usr/local/bin/generate-cert.sh \
     && chmod +x /usr/local/bin/generate-cert.sh
 
 ENTRYPOINT ["generate-cert.sh"]
