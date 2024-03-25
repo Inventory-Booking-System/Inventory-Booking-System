@@ -44,6 +44,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && find /var/www/html/storage -type d -exec chmod 775 {} \; \
     && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; \
     # Redirect Laravel logs to stdout
+    && touch /var/www/html/storage/logs/laravel.log \
     && ln -sf /dev/stdout /var/www/html/storage/logs/laravel.log \
     # Install dependencies
     && apt-get update \

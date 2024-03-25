@@ -1,0 +1,10 @@
+.editorconfig
+.env.ci
+.eslintrc.json
+.gitattributes
+.github
+.gitignore
+.styleci.yml
+README.md
+phpunit.xml
+tests
