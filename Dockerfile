@@ -37,20 +37,31 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && mv .env.template .env \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     # Set permissions
-    && chown -R www-data:www-data /var/www/html/storage/framework \
-    && chown -R www-data:www-data /var/www/html/storage/logs \
+    && chown -R www-data:www-data /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/bootstrap/cache \
     && find /var/www/html -type f -exec chmod 644 {} \; \
     && find /var/www/html -type d -exec chmod 755 {} \; \
-    && find /var/www/html/storage/framework -type d -exec chmod 775 {} \; \
-    && find /var/www/html/storage/logs -type d -exec chmod 775 {} \; \
+    && find /var/www/html/storage -type d -exec chmod 775 {} \; \
     && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; \
-    # Install zip PHP extension
+    # Install dependencies
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         libzip-dev \
+        openssl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
+    # Install PHP extensions
     && docker-php-ext-install zip pdo_mysql mysqli \
     # Enable Apache modules
-    && a2enmod rewrite
+    && a2enmod rewrite ssl \
+    && a2ensite default-ssl \
+    # Generate CA Key and Certificate
+    && openssl genrsa -out /etc/ssl/private/ca.key 4096 \
+    && openssl req -x509 -new -nodes -key /etc/ssl/private/ca.key -sha256 -days 3650 -out /etc/ssl/certs/ca.crt -subj "/C=US/ST=State/L=City/O=Company/CN=example.com CA" \
+    && chmod +x generate-cert.sh
+
+ENTRYPOINT ["generate-cert.sh"]
+CMD ["apache2-foreground"]
+
+# Expose port 443 for SSL
+EXPOSE 443
