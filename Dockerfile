@@ -58,7 +58,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     # Generate CA Key and Certificate
     && openssl genrsa -out /etc/ssl/private/ca.key 4096 \
     && openssl req -x509 -new -nodes -key /etc/ssl/private/ca.key -sha256 -days 3650 -out /etc/ssl/certs/ca.crt -subj "/C=US/ST=State/L=City/O=Company/CN=example.com CA" \
-    && chmod +x generate-cert.sh
+    && mv generate-cert.sh /usr/local/bin/generate-cert.sh \
+    && chmod +x /usr/local/bin/generate-cert.sh
 
 ENTRYPOINT ["generate-cert.sh"]
 CMD ["apache2-foreground"]
