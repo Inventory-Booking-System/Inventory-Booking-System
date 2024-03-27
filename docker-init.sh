@@ -5,16 +5,16 @@ CONFIG_DIR="/etc/inventory-booking-system/config"
 
 # Check if storage directory is empty
 if [ -z "$(ls -A $STORAGE_DIR)" ]; then
-   echo "Storage directory is empty. Creating file structure."
-   mkdir -p $STORAGE_DIR/framework/cache
-   mkdir -p $STORAGE_DIR/framework/sessions
-   mkdir -p $STORAGE_DIR/framework/views
+    echo "Storage directory is empty. Creating file structure."
+    mkdir -p $STORAGE_DIR/framework/cache
+    mkdir -p $STORAGE_DIR/framework/sessions
+    mkdir -p $STORAGE_DIR/framework/views
 fi
 
 # Check if config directory is empty
 if [ -z "$(ls -A $CONFIG_DIR)" ]; then
-   echo "Config directory is empty. Copying .env file."
-   cp .env.template $CONFIG_DIR/.env
+    echo "Config directory is empty. Copying .env file."
+    cp .env.template $CONFIG_DIR/.env
 fi
 
 # Generate a new key and certificate request

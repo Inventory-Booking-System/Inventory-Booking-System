@@ -48,7 +48,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && find /var/www/html/storage -type d -exec chmod 775 {} \; \
     && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; \
     # Give www-data write permissions to .env
-    && chown www-data:www-data /var/www/html/.env \
+    && chown --no-dereference www-data:www-data /var/www/html/.env \
     && chmod 664 /var/www/html/.env \
     # Install dependencies
     && apt-get update \
