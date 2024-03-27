@@ -41,9 +41,6 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && ln -sf /etc/inventory-booking-system/config/.env /var/www/html/.env \
     && chown --no-dereference www-data:www-data /var/www/html/.env \
     && chmod 664 /var/www/html/.env \
-    && cp .env.template .env \
-    # Redirect Laravel logs to stdout
-    && echo '\nLOG_CHANNEL=docker' >> .env \
     # Set permissions
     && chown -R www-data:www-data /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/bootstrap/cache \
