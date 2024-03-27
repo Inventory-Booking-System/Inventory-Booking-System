@@ -19,7 +19,7 @@ if [ -z "$(ls -A $CONFIG_DIR)" ]; then
     echo "Config directory is empty. Copying .env file."
     cp .env.template $CONFIG_DIR/.env
     # Redirect Laravel logs to stdout
-    echo "\nLOG_CHANNEL=docker" >> .env
+    echo \nLOG_CHANNEL=docker >> .env
 fi
 
 # Generate a new key and certificate request
