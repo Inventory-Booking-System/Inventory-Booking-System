@@ -18,6 +18,7 @@ fi
 if [ -z "$(ls -A $CONFIG_DIR)" ]; then
     echo "Config directory is empty. Copying .env file."
     cp .env.template $CONFIG_DIR/.env
+    echo '\nLOG_CHANNEL=docker' >> .env
 fi
 
 # Generate a new key and certificate request

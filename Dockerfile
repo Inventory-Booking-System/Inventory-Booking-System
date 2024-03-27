@@ -33,8 +33,6 @@ COPY --from=node /usr/app/public/ /var/www/html/public/
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
-    # Redirect Laravel logs to stdout
-    && echo '\nLOG_CHANNEL=docker' >> .env \
     # Use the production PHP configuration
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     # Create and link .env file
@@ -43,6 +41,9 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && ln -sf /etc/inventory-booking-system/config/.env /var/www/html/.env \
     && chown --no-dereference www-data:www-data /var/www/html/.env \
     && chmod 664 /var/www/html/.env \
+    && cp .env.template .env \
+    # Redirect Laravel logs to stdout
+    && echo '\nLOG_CHANNEL=docker' >> .env \
     # Set permissions
     && chown -R www-data:www-data /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/bootstrap/cache \
