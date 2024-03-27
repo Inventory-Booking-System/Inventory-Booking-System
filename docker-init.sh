@@ -9,6 +9,8 @@ if [ -z "$(ls -A $STORAGE_DIR)" ]; then
     mkdir -p $STORAGE_DIR/framework/cache
     mkdir -p $STORAGE_DIR/framework/sessions
     mkdir -p $STORAGE_DIR/framework/views
+    chown -R www-data:www-data $STORAGE_DIR
+    find $STORAGE_DIR -type d -exec chmod 775 {} \;
 fi
 
 # Check if config directory is empty

@@ -41,6 +41,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && mkdir -p /etc/inventory-booking-system/config \
     && touch /etc/inventory-booking-system/config/.env \
     && ln -sf /etc/inventory-booking-system/config/.env /var/www/html/.env \
+    && chown --no-dereference www-data:www-data /var/www/html/.env \
+    && chmod 664 /var/www/html/.env \
     # Set permissions
     && chown -R www-data:www-data /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/bootstrap/cache \
@@ -48,9 +50,6 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html/storage -type d -exec chmod 775 {} \; \
     && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; \
-    # Give www-data write permissions to .env
-    && chown --no-dereference www-data:www-data /var/www/html/.env \
-    && chmod 664 /var/www/html/.env \
     # Install dependencies
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -75,5 +74,4 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 ENTRYPOINT ["docker-init.sh"]
 CMD ["apache2-foreground"]
 
-# Expose port 443 for SSL
 EXPOSE 443
