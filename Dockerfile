@@ -36,7 +36,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
     && mv .env.template .env \
     # Redirect Laravel logs to stdout
-    && echo 'LOG_CHANNEL=docker' >> .env \
+    && echo '\nLOG_CHANNEL=docker' >> .env \
     # Use the production PHP configuration
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     # Set permissions
