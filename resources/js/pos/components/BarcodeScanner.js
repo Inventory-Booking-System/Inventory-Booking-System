@@ -42,7 +42,7 @@ export default function BarcodeScanner() {
             if (event.key === 'Enter' && code.length) {
                 if (assets.find(x => x.tag === parseInt(code.join('')))) {
                     handleOpen(code);
-                    (new Audio('/pos-static/ding.wav')).play();
+                    (new Audio('/pos-static/notify.wav')).play();
                 } else {
                     enqueueSnackbar(`Asset ${code.join('')} not found`, {
                         variant: 'error',

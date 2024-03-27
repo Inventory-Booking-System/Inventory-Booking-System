@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Alert from '@mui/material/Alert';
 import ButtonSelect from '../components/ButtonSelect';
 import BarcodeScanner from '../components/BarcodeScanner';
 
@@ -11,23 +11,23 @@ export default function Home() {
     return (
         <>
             <BarcodeScanner />
-            <Box sx={{ paddingTop: 5 }}>
-                <Stack
-                    direction="column"
-                    spacing={2}
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                    <ButtonSelect
-                        click={navigate}
-                        buttons={[
-                        // { value: 'staff', label: 'Staff'},
-                            { value: 'student', label: 'Student'}
-                        ]}
-                    />
-                </Stack>
-            </Box>
-
+            <Stack
+                direction="column"
+                spacing={6}
+                alignItems="center"
+                justifyContent="center"
+                sx={{ paddingTop: 5 }}
+            >
+                <ButtonSelect
+                    click={navigate}
+                    buttons={[
+                        { value: 'student', label: 'Borrow Equipment' }
+                    ]}
+                />
+                <Alert severity="info" variant="outlined" sx={{ zoom: '60%' }}>
+                    Scan a barcode now to return equipment
+                </Alert>
+            </Stack>
         </>
     );
 }

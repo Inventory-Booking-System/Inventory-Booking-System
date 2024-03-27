@@ -186,7 +186,7 @@ export default function StudentSelected() {
                     {(!scannerReady || existingLoans === null) &&
                     <Stack direction="column" alignItems="center" spacing={2}>
                         <Alert severity="warning" variant="outlined">
-                            Please wait while we prepare the scanner.
+                            Please wait...
                         </Alert>
                         <CircularProgress />
                     </Stack>}
