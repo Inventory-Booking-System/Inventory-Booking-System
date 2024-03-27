@@ -39,6 +39,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     # Create and link .env file
     && mkdir -p /etc/inventory-booking-system/config \
+    && touch /etc/inventory-booking-system/config/.env \
     && ln -sf /etc/inventory-booking-system/config/.env /var/www/html/.env \
     # Set permissions
     && chown -R www-data:www-data /var/www/html/storage \
