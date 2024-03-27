@@ -35,6 +35,9 @@ COPY --from=node /usr/app/public/css/ /var/www/html/public/css/
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
     && mv .env.template .env \
+    # Redirect Laravel logs to stdout
+    && echo 'LOG_CHANNEL=docker' >> .env \
+    # Use the production PHP configuration
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     # Set permissions
     && chown -R www-data:www-data /var/www/html/storage \
@@ -43,9 +46,6 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html/storage -type d -exec chmod 775 {} \; \
     && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; \
-    # Redirect Laravel logs to stdout
-    && ln -sfT /dev/stdout /var/www/html/storage/logs/laravel.log \
-    && chown --no-dereference www-data:www-data /var/www/html/storage/logs/laravel.log \
     # Install dependencies
     && apt-get update \
     && apt-get install -y --no-install-recommends \
