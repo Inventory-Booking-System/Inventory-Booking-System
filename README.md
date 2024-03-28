@@ -78,6 +78,12 @@ Below is a basic overview of how to install the inventory booking.
 4. Navigate to the http://localhost/install (replacing localhost as appropriate)
 5. Setup scheduled as detailed [here](https://github.com/Inventory-Booking-System/Inventory-Booking-System/wiki/Create-Scheduled-Tasks)
 
+#### Docker
+
+Create config and storage volumes to persist data.
+
+<pre><code>docker run -d --name booking -v <mark>/local/config</mark>:/etc/inventory-booking-system/config -v <mark>/local/storage</mark>:/var/www/html/storage -p 443:443 angusmcd/inventory-booking-system:latest</code></pre>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
