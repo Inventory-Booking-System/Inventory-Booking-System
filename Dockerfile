@@ -38,6 +38,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     # Create and link .env file
     && mkdir -p /etc/inventory-booking-system/config \
     && touch /etc/inventory-booking-system/config/.env \
+    && chown www-data:www-data /etc/inventory-booking-system/config/.env \
     && ln -sf /etc/inventory-booking-system/config/.env /var/www/html/.env \
     && chown --no-dereference www-data:www-data /var/www/html/.env \
     && chmod 664 /var/www/html/.env \
