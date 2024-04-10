@@ -73,10 +73,10 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     # Create Laravel Scheduler Cron Job
     && echo "* * * * * cd /var/www/html && php artisan schedule:run" > /etc/cron.d/laravel-scheduler \
     # Configure Supervisor
-    && mkdir -p /etc/supervisor/conf.d \
-    && mv supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+    && mkdir -p /etc/supervisor \
+    && mv supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 ENTRYPOINT ["docker-init.sh"]
-CMD ["supervisord -c /etc/supervisor/conf.d/supervisord.conf"]
+CMD ["supervisord -c /etc/supervisor/supervisord.conf"]
 
 EXPOSE 443
