@@ -23,6 +23,8 @@ if [ -z "$(ls -A $CONFIG_DIR)" ]; then
     chown www-data:www-data $CONFIG_DIR/.env
 fi
 
+service cron start
+
 # Generate a new key and certificate request
 openssl genrsa -out /etc/ssl/private/server.key 2048
 openssl req -new -key /etc/ssl/private/server.key -out /etc/ssl/certs/server.csr -subj "/C=US/ST=State/L=City/O=Company/CN=example.com"

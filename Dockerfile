@@ -5,7 +5,7 @@ WORKDIR /usr/app
 
 COPY . /usr/app/
 
-RUN composer install --no-dev
+RUN composer install --optimize-autoloader --no-dev
 
 # Install Node packages
 FROM node:20 AS node
@@ -53,6 +53,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && apt-get install -y --no-install-recommends \
         libzip-dev \
         openssl \
+        supervisor \
+        cron \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     # Install PHP extensions
@@ -67,9 +69,13 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && chmod +x /usr/local/bin/docker-init.sh \
     # Configure Apache to use the generated SSL Certificate
     && sed -i 's|SSLCertificateFile.*|SSLCertificateFile /etc/ssl/certs/ca.crt|' /etc/apache2/sites-available/default-ssl.conf \
-    && sed -i 's|SSLCertificateKeyFile.*|SSLCertificateKeyFile /etc/ssl/private/ca.key|' /etc/apache2/sites-available/default-ssl.conf
+    && sed -i 's|SSLCertificateKeyFile.*|SSLCertificateKeyFile /etc/ssl/private/ca.key|' /etc/apache2/sites-available/default-ssl.conf \
+    # Create Laravel Scheduler Cron Job
+    && echo "* * * * * cd /var/www/html && php artisan schedule:run" > /etc/cron.d/laravel-scheduler \
+    # Configure Supervisor
+    && mv supervisor/* /etc/supervisor/conf.d/
 
 ENTRYPOINT ["docker-init.sh"]
-CMD ["apache2-foreground"]
+CMD ["supervisord"]
 
 EXPOSE 443
