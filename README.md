@@ -67,11 +67,13 @@ First create config and storage directories on the host to persist data. Then ru
 
 <pre><code>docker run -d --name booking -v <mark>/local/config</mark>:/etc/inventory-booking-system/config -v <mark>/local/storage</mark>:/var/www/html/storage -p 443:443 angusmcd/inventory-booking-system:latest</code></pre>
 
+The server will now be available at [https://localhost](https://localhost).
+
 ### Manual Install
 
 #### Prerequisites
 
-Below are the recommended prerequisities to install the Inventory Booking System. Note similar tools such as different database engines (e.g MariaDB) are supported by the Laravel Framework although have not been tested.
+Below are the recommended prerequisites to install the Inventory Booking System. Note similar tools such as different database engines (e.g MariaDB) are supported by the Laravel Framework although have not been tested.
 
 * [Microsoft IIS](https://www.iis.net/) or Apache
 * [PHP](https://windows.php.net/) >= 8.1
