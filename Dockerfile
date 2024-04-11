@@ -62,18 +62,18 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     # Enable Apache modules
     && a2enmod rewrite ssl \
     && a2ensite default-ssl \
-    # Generate CA Key and Certificate
-    && openssl genrsa -out /etc/ssl/private/ca.key 4096 \
-    && openssl req -x509 -new -nodes -key /etc/ssl/private/ca.key -sha256 -days 3650 -out /etc/ssl/certs/ca.crt -subj "/C=US/ST=State/L=City/O=Company/CN=example.com CA" \
-    && mv docker-init.sh /usr/local/bin/docker-init.sh \
-    && chmod +x /usr/local/bin/docker-init.sh \
-    # Configure Apache to use the generated SSL Certificate
-    && sed -i 's|SSLCertificateFile.*|SSLCertificateFile /etc/ssl/certs/ca.crt|' /etc/apache2/sites-available/default-ssl.conf \
-    && sed -i 's|SSLCertificateKeyFile.*|SSLCertificateKeyFile /etc/ssl/private/ca.key|' /etc/apache2/sites-available/default-ssl.conf \
+    # Create and link CA Key and Certificate
+    && touch /etc/ssl/private/ca.key \
+    && touch /etc/ssl/certs/ca.crt \
+    && ln -sf /etc/inventory-booking-system/config/ca.key /etc/ssl/private/ca.key \
+    && ln -sf /etc/inventory-booking-system/config/ca.crt /etc/ssl/certs/ca.crt \
     # Create Laravel Scheduler Cron Job
     && echo "* * * * * cd /var/www/html && php artisan schedule:run" > /etc/cron.d/laravel-scheduler \
     # Configure Supervisor
-    && mv supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+    && mv supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf \
+    # Configure Docker Init script
+    && mv docker-init.sh /usr/local/bin/docker-init.sh \
+    && chmod +x /usr/local/bin/docker-init.sh
 
 ENTRYPOINT ["docker-init.sh"]
 CMD ["/usr/bin/supervisord"]
