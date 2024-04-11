@@ -27,13 +27,13 @@ fi
 
 service cron start
 
+# Generate CA Key if it doesn't exist
 if [ ! -f "$KEY_DIR/ca.key" ]; then
-    # Generate CA Key
     openssl genrsa -out $KEY_DIR/ca.key 4096
 fi
 
+# Generate Certificate if it doesn't exist
 if [ ! -f "$CA_DIR/ca.crt" ]; then
-    # Generate Certificate
     openssl req -x509 -new -nodes -key $KEY_DIR/ca.key -sha256 -days 3650 -out $CA_DIR/ca.crt -subj "/C=US/ST=State/L=City/O=Company/CN=example.com CA"
 fi
 
