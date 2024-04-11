@@ -68,14 +68,15 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && mv docker-init.sh /usr/local/bin/docker-init.sh \
     && chmod +x /usr/local/bin/docker-init.sh \
     # Configure Apache to use the generated SSL Certificate
-    # && sed -i 's|SSLCertificateFile.*|SSLCertificateFile /etc/ssl/certs/ca.crt|' /etc/apache2/sites-available/default-ssl.conf \
-    # && sed -i 's|SSLCertificateKeyFile.*|SSLCertificateKeyFile /etc/ssl/private/ca.key|' /etc/apache2/sites-available/default-ssl.conf \
+    && sed -i 's|SSLCertificateFile.*|SSLCertificateFile /etc/ssl/certs/ca.crt|' /etc/apache2/sites-available/default-ssl.conf \
+    && sed -i 's|SSLCertificateKeyFile.*|SSLCertificateKeyFile /etc/ssl/private/ca.key|' /etc/apache2/sites-available/default-ssl.conf \
     # Create Laravel Scheduler Cron Job
     && echo "* * * * * cd /var/www/html && php artisan schedule:run" > /etc/cron.d/laravel-scheduler \
     # Configure Supervisor
     && mv supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 ENTRYPOINT ["docker-init.sh"]
-CMD ["/usr/bin/supervisord"]
+# CMD ["/usr/bin/supervisord"]
+CMD ["apache2-foreground"]
 
 EXPOSE 443
