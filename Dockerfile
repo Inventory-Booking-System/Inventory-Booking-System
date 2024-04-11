@@ -76,7 +76,6 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
     && mv supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 ENTRYPOINT ["docker-init.sh"]
-# CMD ["/usr/bin/supervisord"]
-CMD ["apache2-foreground"]
+CMD ["/usr/bin/supervisord"]
 
 EXPOSE 443
