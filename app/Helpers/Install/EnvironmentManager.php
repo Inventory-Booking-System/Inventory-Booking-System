@@ -146,8 +146,8 @@ class EnvironmentManager
         'CLEANUP_WAS_SUCCESSFUL_NOTIFICATION=mail'."\n\n".
         'NOTIFICATION_EMAIL='."\n".
         'NOTIFICATION_OVERDUE_EMAILS=1'."\n".
-        'NOTIFICATION_SETUP_EMAILS=1\n\n'.
-        'APP_TIMEZONE=Europe/London';
+        "NOTIFICATION_SETUP_EMAILS=1\n\n".
+        "APP_TIMEZONE=Europe/London";
 
         try {
             file_put_contents($this->envPath, $envFileData);
