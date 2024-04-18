@@ -23,3 +23,6 @@ jobs:
       with:
         push: true
         tags: angusmcd/inventory-booking-system:${{ github.ref_name }}
+
+    - name: Tag as latest
+      run: docker tag angusmcd/inventory-booking-system:${{ github.ref_name }} angusmcd/inventory-booking-system:latest
