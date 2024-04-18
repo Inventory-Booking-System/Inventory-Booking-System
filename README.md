@@ -61,11 +61,15 @@ Here's why:
 
 ### Docker
 
-The Docker image is the simplest way to get started. The image comes with a self-signed SSL certificate.
+The Docker image is the simplest way to get started.
 
 First create config and storage directories on the host to persist data. Then run:
 
 <pre><code>docker run -d --name booking -v <mark>/local/config</mark>:/etc/inventory-booking-system/config -v <mark>/local/storage</mark>:/var/www/html/storage -p 443:443 angusmcd/inventory-booking-system:latest</code></pre>
+
+Remember to change `/local/config` and `/local/storage` to your directories.
+ 
+The image will generate a self-signed SSL certificate on first run, which will be stored in the config volume.
 
 The server will now be available at [https://localhost](https://localhost).
 
