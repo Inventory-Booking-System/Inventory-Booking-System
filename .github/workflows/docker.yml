@@ -1,8 +1,9 @@
 name: Docker
 
 on:
-  release:
-    types: [prereleased]
+  push:
+    tags:
+      - 'V*.*'
 
 jobs:
   docker:
