@@ -22,4 +22,4 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: angusmcd/inventory-booking-system:${{ github.event.release.tag_name }}
+        tags: angusmcd/inventory-booking-system:${{ github.ref_name }}
