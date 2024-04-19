@@ -6,7 +6,7 @@ import { getCookie } from '../utils/cookie';
  * @returns {Promise<Response>}
  */
 export default async function request(input, init) {
-    return await fetch(input, {
+    const resp = await fetch(input, {
         ...init,
         headers: {
             'Accept': 'application/json',
@@ -14,4 +14,9 @@ export default async function request(input, init) {
             'X-XSRF-Token': decodeURIComponent(getCookie('XSRF-TOKEN'))
         }
     });
+    if (resp.status === 401) {
+        window.location.reload();
+        return;
+    }
+    return resp;
 }
