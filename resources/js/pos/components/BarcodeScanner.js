@@ -17,6 +17,17 @@ export default function BarcodeScanner() {
             .then(setAssets);
     }, []);
 
+    /**
+     * Disable right click
+     */
+    useEffect(() => {
+        function preventDefault(e) {
+            e.preventDefault();
+        }
+        document.addEventListener('contextmenu', preventDefault);
+        return () => document.removeEventListener('contextmenu', preventDefault);
+    }, []);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleOpen = (code) => {
         enqueueSnackbar(`Scanned in ${code.join('')}`, {

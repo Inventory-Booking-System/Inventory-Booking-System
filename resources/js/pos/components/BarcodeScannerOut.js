@@ -6,6 +6,17 @@ const BarcodeScannerOut = memo(function BarcodeScannerOut({ assets, onScan }) {
     const { enqueueSnackbar } = useSnackbar();
     const [code, setCode] = useState([]);
 
+    /**
+     * Disable right click
+     */
+    useEffect(() => {
+        function preventDefault(e) {
+            e.preventDefault();
+        }
+        document.addEventListener('contextmenu', preventDefault);
+        return () => document.removeEventListener('contextmenu', preventDefault);
+    }, []);
+
     useEffect(() => {
         /**
          * Scan codes may only contain numbers
