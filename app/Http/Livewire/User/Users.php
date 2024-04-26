@@ -31,6 +31,8 @@ class Users extends Component
     public $counter = 0;
     public User $editing;
     public $modalType;
+    public $key = 0;
+    public $allUsers = [];
 
     protected $queryString = [];
 
@@ -41,6 +43,8 @@ class Users extends Component
             'editing.surname' => 'required|string',
             'editing.email' => 'required|email|unique:users,email,'.$this->editing->id,
             'editing.has_account' => 'required|boolean',
+            'editing.pos_access' => 'required|boolean',
+            'editing.booking_authoriser_user_id' => 'nullable|exists:users,id',
         ];
     }
 
@@ -87,7 +91,15 @@ class Users extends Component
             $this->makeBlankUser();
         }
 
+        $this->populateAllUsers();
+        $this->key = rand();
+
         $this->emit('showModal', 'edit');
+    }
+
+    private function populateAllUsers()
+    {
+        $this->allUsers = User::get();
     }
 
     public function edit(User $user)
@@ -97,6 +109,9 @@ class Users extends Component
         if($this->editing->isNot($user)){
             $this->editing = $user;
         }
+
+        $this->populateAllUsers();
+        $this->key = rand();
 
         $this->emit('showModal', 'edit');
     }
