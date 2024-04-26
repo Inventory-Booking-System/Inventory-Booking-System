@@ -39,6 +39,8 @@ class UserController extends Controller
      */
     public function getAll()
     {
+        $users = User::latest()->get();
+
         $data = [];
         foreach($users as $key => $user) {
             $data[] = [
