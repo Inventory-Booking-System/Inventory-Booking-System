@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Search from '../components/Search';
+import * as api from '../../api';
 
 export default function Student() {
     const navigate = useNavigate();
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -14,6 +16,16 @@ export default function Student() {
         }, 60000);
         return () => clearTimeout(timeout);
     }, [navigate]);
+
+    useEffect(() => {
+        api.users.getUsersWithPosAccess()
+            .then(users => {
+                setUsers(users.map(user => ({
+                    userId: user.booking_authoriser_user_id,
+                    label: `${user.forename} ${user.surname}`
+                })));
+            });
+    }, []);
 
     return (
         <Box sx={{ paddingTop: 5 }}>
@@ -23,11 +35,9 @@ export default function Student() {
                 alignItems="center"
             >
                 <Search
-                    name="Student Search"
+                    name="Enter your Name"
                     onSelect={(user) => navigate(user.label, { state: { user } })}
-                    options={[
-                        { userId: 1, label: 'Test' }
-                    ]}
+                    options={users}
                 />
                 <Button
                     onClick={() => navigate('/')}
