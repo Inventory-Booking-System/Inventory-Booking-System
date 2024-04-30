@@ -75,8 +75,7 @@ export default function StudentSelected() {
             .then(loans => {
                 setExistingLoans(loans);
                 if (loans.length) {
-                    console.log(loans);
-                    enqueueSnackbar('Student already has an open booking.', {
+                    enqueueSnackbar('User already has an open booking.', {
                         variant: 'error',
                         autoHideDuration: 5000
                     });
@@ -102,6 +101,19 @@ export default function StudentSelected() {
         if (!asset.available && !pendingAssetsRef.current.includes(asset)) {
             setPendingAssets([...pendingAssetsRef.current, asset]);
             setSelectedAssets([...selectedAssetsRef.current, assetTag]);
+            (new Audio('/pos-static/warn.wav')).play();
+            return;
+        }
+
+        /**
+         * If the asset has just been scanned, do not add it to the selected
+         * list again.
+         */
+        if (selectedAssetsRef.current.includes(assetTag)) {
+            enqueueSnackbar('Asset has already been scanned.', {
+                variant: 'warning',
+                autoHideDuration: 5000
+            });
             (new Audio('/pos-static/warn.wav')).play();
             return;
         }
