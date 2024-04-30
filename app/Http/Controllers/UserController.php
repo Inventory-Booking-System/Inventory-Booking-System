@@ -33,13 +33,13 @@ class UserController extends Controller
     }
 
     /**
-     * Get all users.
+     * Get all users that don't have a POS booking authoriser.
      * 
      * @return \Illuminate\Http\Response
      */
     public function getAll()
     {
-        $users = User::latest()->get();
+        $users = User::whereNull('booking_authoriser_user_id')->get();
 
         $data = [];
         foreach($users as $key => $user) {
