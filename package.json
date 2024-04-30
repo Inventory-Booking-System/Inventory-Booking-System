@@ -20,7 +20,7 @@
         "@mui/material": "^5.15.12",
         "@popperjs/core": "^2.11.5",
         "autoprefixer": "^10.4.8",
-        "axios": "^0.21",
+        "axios": "^0.28",
         "bootstrap": "^4.6.0",
         "bwip-js": "^4.3.0",
         "eslint": "^8.33.0",

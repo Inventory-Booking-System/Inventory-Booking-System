@@ -113,6 +113,11 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'docker' => [
+            'driver' => 'errorlog',
+            'level' => 'debug',
+        ],
     ],
 
 ];

@@ -59,15 +59,31 @@ Here's why:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-### Prerequisites
+### Docker
 
-Below are the recommended prerequisities to install the Inventory Booking System. Note similar tools such as different database engines (e.g MariaDB) are supported by the Laravel Framework although have not been tested.
+The Docker image is the simplest way to get started.
+
+First create config and storage directories on the host to persist data. Then run:
+
+<pre><code>docker run -d --name booking -v <mark>/local/config</mark>:/etc/inventory-booking-system/config -v <mark>/local/storage</mark>:/var/www/html/storage -p 443:443 angusmcd/inventory-booking-system:latest</code></pre>
+
+Remember to change `/local/config` and `/local/storage` to your directories.
+ 
+The image will generate a self-signed SSL certificate on first run, which will be stored in the config volume.
+
+The server will now be available at [https://localhost](https://localhost).
+
+### Manual Install
+
+#### Prerequisites
+
+Below are the recommended prerequisites to install the Inventory Booking System. Note similar tools such as different database engines (e.g MariaDB) are supported by the Laravel Framework although have not been tested.
 
 * [Microsoft IIS](https://www.iis.net/) or Apache
 * [PHP](https://windows.php.net/) >= 8.1
 * [MySQL](https://www.mysql.com/) >= 8
 
-### Installation
+#### Installation
 
 [Click here for a step by step guide on installing using IIS](https://github.com/Dragnogd/Inventory-Booking-System/wiki/Setup-with-IIS)
 
@@ -77,6 +93,7 @@ Below is a basic overview of how to install the inventory booking.
 2. Place the website into your webserver
 4. Navigate to the http://localhost/install (replacing localhost as appropriate)
 5. Setup scheduled as detailed [here](https://github.com/Inventory-Booking-System/Inventory-Booking-System/wiki/Create-Scheduled-Tasks)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
