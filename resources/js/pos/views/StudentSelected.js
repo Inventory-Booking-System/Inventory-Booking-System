@@ -75,7 +75,8 @@ export default function StudentSelected() {
             .then(loans => {
                 setExistingLoans(loans);
                 if (loans.length) {
-                    enqueueSnackbar('User already has an open booking.', {
+                    console.log(loans);
+                    enqueueSnackbar('Return your previous item before booking another.', {
                         variant: 'error',
                         autoHideDuration: 5000
                     });
@@ -94,6 +95,14 @@ export default function StudentSelected() {
     const onScan = useCallback(async assetTag => {
         const asset = assetsRef.current.find(x => x.tag === parseInt(assetTag));
         if (!asset) return;
+
+        /**
+         * If user already has an open loan, don't allow them to book out another
+         */
+        if (existingLoans?.length) {
+            (new Audio('/pos-static/error.wav')).play();
+            return;
+        }
 
         /**
          * If the asset is not available and is not already pending, add it to the pending list.
@@ -145,7 +154,7 @@ export default function StudentSelected() {
             });
             (new Audio('/pos-static/error.wav')).play();
         }
-    }, [enqueueSnackbar, location.state.user.userId, studentId]);
+    }, [enqueueSnackbar, existingLoans?.length, location.state.user.userId, studentId]);
 
     if (existingLoans?.length) {
         return (
@@ -157,6 +166,7 @@ export default function StudentSelected() {
                     justifyContent="center"
                 >
                     <Typography variant="h4">{studentId}</Typography>
+                    <Typography variant="h5">Return this item before booking another:</Typography>
                     {existingLoans.map(loan => loan.assets.map(asset => {
                         asset.available = true;
                         return (

@@ -24,5 +24,9 @@ export async function getAll(data) {
  */
 export async function scanIn({ tag }) {
     const resp = await request(`/api/assets/${tag}/scan/in`);
-    return await resp.json();
+    const body = await resp.json();
+    if (!resp.ok) {
+        throw body;
+    }
+    return body;
 }

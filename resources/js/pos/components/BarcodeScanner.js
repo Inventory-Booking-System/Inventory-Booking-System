@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { closeSnackbar, useSnackbar } from 'notistack';
-import Button from '@mui/material/Button';
+import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { scanIn } from '../../api/assets';
 import { assets as assetsApi } from '../../api';
 
@@ -29,17 +28,30 @@ export default function BarcodeScanner() {
     }, []);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const handleOpen = (code) => {
-        enqueueSnackbar(`Scanned in ${code.join('')}`, {
-            variant: 'success',
-            autoHideDuration: 5000,
-            action: (snackbarId) => <Button onClick={() => closeSnackbar(snackbarId)}>Undo</Button>,
-            onClose: async (_, reason) => {
-                if (reason !== 'instructed') {
-                    await scanIn({ tag: code.join('') });
-                }
+    const handleOpen = async (code) => {
+        try {
+            await scanIn({ tag: code.join('') });
+            enqueueSnackbar(`Scanned in ${code.join('')}`, {
+                variant: 'success',
+                autoHideDuration: 5000
+            });
+            (new Audio('/pos-static/notify.wav')).play();
+        } catch (e) {
+            if (e.error === 'NO_OPEN_LOANS') {
+                enqueueSnackbar(`Asset ${code.join('')} has no open loans`, {
+                    variant: 'warning',
+                    autoHideDuration: 5000
+                });
+                (new Audio('/pos-static/warn.wav')).play();
+                return;
             }
-        });
+
+            enqueueSnackbar(`Failed to scan in ${code.join('')}`, {
+                variant: 'error',
+                autoHideDuration: 5000
+            });
+            (new Audio('/pos-static/error.wav')).play();
+        }
     };
 
     useEffect(() => {
@@ -53,7 +65,6 @@ export default function BarcodeScanner() {
             if (event.key === 'Enter' && code.length) {
                 if (assets.find(x => x.tag === parseInt(code.join('')))) {
                     handleOpen(code);
-                    (new Audio('/pos-static/notify.wav')).play();
                 } else {
                     enqueueSnackbar(`Asset ${code.join('')} not found`, {
                         variant: 'error',

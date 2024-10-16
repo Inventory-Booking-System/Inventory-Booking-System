@@ -142,6 +142,13 @@ class AssetController extends Controller
             ->whereIn('status_id', [0, 2])
             ->get();
 
+        if ($loans->isEmpty()) {
+            return response()->json([
+                'error' => 'NO_OPEN_LOANS',
+                'description' => 'There are no \'booked\' or \'overdue\' loans to scan in for asset.'
+            ], 400);
+        }
+
         foreach ($loans as $loan) {
             $assets = $loan->assets()->where('tag', '=', $id)->get();
             foreach ($assets as $asset) {

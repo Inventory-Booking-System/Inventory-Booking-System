@@ -4,9 +4,10 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Autocomplete from '@mui/material/Autocomplete';
 
-export default function Search({ name, options, onSelect }) {
+export default function Search({ name, options, onSelect, loading }) {
     const [value, setValue] = React.useState('');
     const [inputValue, setInputValue] = React.useState('');
+
     return (
         <Stack spacing={2} sx={{ width: 300 }}>
             <Autocomplete
@@ -23,6 +24,8 @@ export default function Search({ name, options, onSelect }) {
                     setValue(newValue);
                 }}
                 options={options.map((option) => option.label)}
+                loading={loading}
+                disableClearable
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -42,5 +45,6 @@ export default function Search({ name, options, onSelect }) {
 Search.propTypes = {
     name: PropTypes.string,
     options: PropTypes.array,
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
+    loading: PropTypes.bool
 };
