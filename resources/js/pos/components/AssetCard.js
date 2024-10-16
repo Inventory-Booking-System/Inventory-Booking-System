@@ -21,7 +21,7 @@ export default function AssetCard({ asset, endDateTime, overdue }) {
                 </Stack>
                 {!asset.available && <Chip color="error" label="Not available: Scan again to confirm" size="small" sx={{ marginBottom: 1 }} />}
                 <Typography color="text.secondary" variant="body2">
-                    Please return by the end of the day.
+                    {overdue ? 'Booking overdue.' : 'Please return by the end of the day.'}
                 </Typography>
             </Box>
             <Divider />

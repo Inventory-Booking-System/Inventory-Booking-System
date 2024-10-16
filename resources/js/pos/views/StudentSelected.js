@@ -76,7 +76,7 @@ export default function StudentSelected() {
                 setExistingLoans(loans);
                 if (loans.length) {
                     console.log(loans);
-                    enqueueSnackbar('Student already has an open booking.', {
+                    enqueueSnackbar('Return your previous item before booking another.', {
                         variant: 'error',
                         autoHideDuration: 5000
                     });
@@ -97,11 +97,32 @@ export default function StudentSelected() {
         if (!asset) return;
 
         /**
+         * If user already has an open loan, don't allow them to book out another
+         */
+        if (existingLoans?.length) {
+            (new Audio('/pos-static/error.wav')).play();
+            return;
+        }
+
+        /**
          * If the asset is not available and is not already pending, add it to the pending list.
          */
         if (!asset.available && !pendingAssetsRef.current.includes(asset)) {
             setPendingAssets([...pendingAssetsRef.current, asset]);
             setSelectedAssets([...selectedAssetsRef.current, assetTag]);
+            (new Audio('/pos-static/warn.wav')).play();
+            return;
+        }
+
+        /**
+         * If the asset has just been scanned, do not add it to the selected
+         * list again.
+         */
+        if (selectedAssetsRef.current.includes(assetTag)) {
+            enqueueSnackbar('Asset has already been scanned.', {
+                variant: 'warning',
+                autoHideDuration: 5000
+            });
             (new Audio('/pos-static/warn.wav')).play();
             return;
         }
@@ -133,7 +154,7 @@ export default function StudentSelected() {
             });
             (new Audio('/pos-static/error.wav')).play();
         }
-    }, [enqueueSnackbar, location.state.user.userId, studentId]);
+    }, [enqueueSnackbar, existingLoans?.length, location.state.user.userId, studentId]);
 
     if (existingLoans?.length) {
         return (
@@ -145,6 +166,7 @@ export default function StudentSelected() {
                     justifyContent="center"
                 >
                     <Typography variant="h4">{studentId}</Typography>
+                    <Typography variant="h5">Return this item before booking another:</Typography>
                     {existingLoans.map(loan => loan.assets.map(asset => {
                         asset.available = true;
                         return (

@@ -9,6 +9,7 @@ import * as api from '../../api';
 export default function Student() {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -18,13 +19,15 @@ export default function Student() {
     }, [navigate]);
 
     useEffect(() => {
+        setLoading(true);
         api.users.getUsersWithPosAccess()
             .then(users => {
                 setUsers(users.map(user => ({
                     userId: user.booking_authoriser_user_id,
                     label: `${user.forename} ${user.surname}`
                 })));
-            });
+            })
+            .then(() => setLoading(false));
     }, []);
 
     return (
@@ -38,6 +41,7 @@ export default function Student() {
                     name="Enter your Name"
                     onSelect={(user) => navigate(user.label, { state: { user } })}
                     options={users}
+                    loading={loading}
                 />
                 <Button
                     onClick={() => navigate('/')}

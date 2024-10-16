@@ -135,8 +135,19 @@ class AssetController extends Controller
             ->whereHas('assets', function($query) use($id) {
                 $query->where('tag', '=', $id);
             })
-            ->whereIn('status_id', [0, 2, 3])  // Only 'booked', 'overdue' or 'setup'
+            /**
+             * Only 'booked' or 'overdue'. We can't easily do setups as we don't
+             * know which setup is being completed.
+             */
+            ->whereIn('status_id', [0, 2])
             ->get();
+
+        if ($loans->isEmpty()) {
+            return response()->json([
+                'error' => 'NO_OPEN_LOANS',
+                'description' => 'There are no \'booked\' or \'overdue\' loans to scan in for asset.'
+            ], 400);
+        }
 
         foreach ($loans as $loan) {
             $assets = $loan->assets()->where('tag', '=', $id)->get();
