@@ -10,16 +10,29 @@ export default function AssetSelect({ assets, shoppingCart, onChange, isLoading,
     const [inputValue, setInputValue] = useState();
 
     const assetAvailability = useMemo(() => {
-        const updatedAssets = JSON.parse(JSON.stringify(assets));
-        for (var i = 0; i < updatedAssets.length; i++) {
-            for (var j = 0; j < shoppingCart?.length; j++) {
-                if (updatedAssets[i].id === shoppingCart[j].id) {
-                    updatedAssets[i].available = false;
-                    updatedAssets[i].isDisabled = true;
-                }
-            }
-        }
-        return updatedAssets;
+        const [groupsCopy = {}, assetsCopy = {}] = JSON.parse(JSON.stringify(assets));
+
+        const updateAvailability = (options, cart) => {
+            options.forEach(item => {
+                cart.forEach(cartItem => {
+                    if (item.id === cartItem.id) {
+                        if (item.type === 'group') {
+                            item.available = cartItem.quantity < item.available_assets_count;
+                            item.isDisabled = cartItem.quantity === item.available_assets_count;
+                            item.label = `${item.name} (${item.available_assets_count - cartItem.quantity} available)`;
+                        } else {
+                            item.available = false;
+                            item.isDisabled = true;
+                        }
+                    }
+                });
+            });
+        };
+
+        updateAvailability(groupsCopy.options || [], shoppingCart || []);
+        updateAvailability(assetsCopy.options || [], shoppingCart || []);
+
+        return [groupsCopy, assetsCopy];
     }, [assets, shoppingCart]);
 
     const handleInputChange = useCallback((query, { action }) => {

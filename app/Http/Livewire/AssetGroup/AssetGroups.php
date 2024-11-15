@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Livewire\Asset;
+namespace App\Http\Livewire\AssetGroup;
 
 use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
-use App\Models\Asset;
 use App\Models\AssetGroup;
 use App\Helpers\SQL;
 
-class Assets extends Component
+class AssetGroups extends Component
 {
     use WithPerPagePagination, WithSorting, WithBulkActions;
 
@@ -21,15 +20,13 @@ class Assets extends Component
     public $filters = [
         'search' => '',
         'name' => null,
-        'tag' => null,
-        'description' => null
+        'description' => null,
     ];
     public $expandedCells = [];
 
-    public Asset $editing;
-    public $modalType;
     public $key = 0;
-    public $allAssetGroups = [];
+    public AssetGroup $editing;
+    public $modalType;
 
     protected $queryString = [];
 
@@ -37,9 +34,7 @@ class Assets extends Component
     {
         return [
             'editing.name' => 'required|string',
-            'editing.tag' => "required|numeric|unique:assets,tag," . $this->editing->id,
-            'editing.description' => 'string',
-            'editing.asset_group_id' => 'nullable|exists:asset_groups,id',
+            'editing.description' => 'nullable|string'
         ];
     }
 
@@ -60,7 +55,7 @@ class Assets extends Component
 
     public function makeBlankAsset()
     {
-        $this->editing = Asset::make();
+        $this->editing = AssetGroup::make();
     }
 
     public function deleteSelected()
@@ -75,12 +70,7 @@ class Assets extends Component
     {
         return response()->streamDownload(function() {
             echo $this->selectedRowsQuery->toCsv();
-        }, 'assets.csv');
-    }
-
-    private function populateAllAssetGroups()
-    {
-        $this->allAssetGroups = AssetGroup::get();
+        }, 'asset-groups.csv');
     }
 
     public function create()
@@ -91,22 +81,16 @@ class Assets extends Component
             $this->makeBlankAsset();
         }
 
-        $this->populateAllAssetGroups();
-        $this->key = rand();
-
         $this->emit('showModal', 'edit');
     }
 
-    public function edit(Asset $asset)
+    public function edit(AssetGroup $asset)
     {
         $this->modalType = "Edit";
 
         if($this->editing->isNot($asset)){
             $this->editing = $asset;
         }
-
-        $this->populateAllAssetGroups();
-        $this->key = rand();
 
         $this->emit('showModal', 'edit');
     }
@@ -147,15 +131,6 @@ class Assets extends Component
         }
     }
 
-    private function searchByTag($query, $search, $orWhere = false) {
-        $search = SQL::escapeLikeString($search);
-        if ($orWhere) {
-            $query->orWhere('tag', 'like', '%'.$search.'%');
-        } else {            
-            $query->where('tag', 'like', '%'.$search.'%');
-        }
-    }
-
     private function searchByDescription($query, $search, $orWhere = false) {
         $search = SQL::escapeLikeString($search);
         if ($orWhere) {
@@ -167,15 +142,11 @@ class Assets extends Component
 
     public function getRowsQueryProperty()
     {
-        $query = Asset::query()
+        $query = AssetGroup::query()
             ->when($this->filters['name'], fn($query, $search) => $this->searchByName($query, $search))
-            ->when($this->filters['tag'], fn($query, $search) => $this->searchByTag($query, $search))
             ->when($this->filters['description'], fn($query, $search) => $this->searchByDescription($query, $search))
-            // ->when($this->filters['asset_group_id'], fn($query, $search) => $this->searchByAssetGroup($query, $search))
             ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
                 $this->searchByName($query, $search);
-                $this->searchByTag($query, $search, true);
-                // $this->searchByAssetGroup($query, $search, true);
                 $this->searchByDescription($query, $search, true);
             }));
 
@@ -193,8 +164,8 @@ class Assets extends Component
            $this->selectPageRows();
         }
 
-        return view('livewire.asset.assets', [
-            'assets' => $this->rows,
+        return view('livewire.asset-group.asset-groups', [
+            'assetGroups' => $this->rows,
         ]);
     }
 }

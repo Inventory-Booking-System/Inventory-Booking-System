@@ -4,7 +4,11 @@ import Card from 'react-bootstrap/Card';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 
-function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onReturn, action, onAdd, onSubtract, showCost, showQuantity }) {
+function ItemCard({ index, name, quantity, available_assets_count, tag, cost, returned, onRemove, onReturn, action, onAdd, onSubtract, showCost, showQuantity }) {
+
+    const shouldShowQuantity = useMemo(() => {
+        return showQuantity && quantity > 0;
+    }, [showQuantity, quantity]);
 
     const remove = useCallback(() => onRemove(index), [index, onRemove]);
     const bookIn = useCallback(() => onReturn(index), [index, onReturn]);
@@ -23,7 +27,7 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
 
                     <div className="d-flex flex-row align-items-center">
 
-                        {showQuantity && <div style={{ width: 50 }}>
+                        {shouldShowQuantity && <div style={{ width: 50 }}>
                             <h5 className="fw-normal mb-0">x{quantity}</h5>
                         </div>}
 
@@ -36,7 +40,7 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
                         </div>}
 
                         <ButtonGroup>
-                            {action !== 'Create' && !showQuantity && <Button
+                            {action !== 'Create' && !shouldShowQuantity && <Button
                                 variant={returned ? 'success' : 'light'}
                                 onClick={bookIn}
                                 size="sm"
@@ -46,18 +50,19 @@ function ItemCard({ index, name, quantity, tag, cost, returned, onRemove, onRetu
                                     style={returned ? { color: '#fff' } : null}
                                 />
                             </Button>}
-                            {!showQuantity && <Button
+                            {!shouldShowQuantity && <Button
                                 variant={returned ? 'success' : 'light'}
                                 onClick={remove}
                                 size="sm"
                             >
                                 <i className="fas fa-trash-alt"></i>
                             </Button>}
-                            {showQuantity && <>
+                            {shouldShowQuantity && <>
                                 <Button
                                     variant="light"
                                     onClick={add}
                                     size="sm"
+                                    disabled={quantity === available_assets_count}
                                 >
                                     <i className="fas fa-plus"></i>
                                 </Button>
@@ -81,6 +86,7 @@ ItemCard.propTypes = {
     index: PropTypes.number,
     name: PropTypes.string,
     quantity: PropTypes.number,
+    available_assets_count: PropTypes.number,
     tag: PropTypes.number,
     returned: PropTypes.bool,
     cost: PropTypes.number,
@@ -109,6 +115,10 @@ export default function ShoppingCart({ action, assets, onChange, showCost, showQ
 
     const onAdd = useCallback(index => {
         let updatedShoppingCart = [...assets];
+        if (
+            updatedShoppingCart[index].available_assets_count &&
+            updatedShoppingCart[index].quantity === updatedShoppingCart[index].available_assets_count
+        ) return;
         updatedShoppingCart[index].quantity++;
         onChange(updatedShoppingCart);
     }, [assets, onChange]);

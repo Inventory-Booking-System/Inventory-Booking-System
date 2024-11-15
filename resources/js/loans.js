@@ -134,7 +134,10 @@ function App() {
         setUser({ value: loan.user_id, label: loan.user.forename+' '+loan.user.surname });
         setDetails(loan.details);
         setReservation(loan.status_id === 1 ? 'true' : 'false');
-        setShoppingCart(loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned })));
+        setShoppingCart([
+            ...loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned, type: 'assets' })),
+            ...loan.asset_groups.map(group => ({ ...group, quantity: group.pivot.quantity, type: 'group' }))
+        ]);
 
         setModalAction('Edit');
         setOpen(true);
@@ -185,9 +188,27 @@ function App() {
     useEffect(() => { validate('reservation'); }, [validate, reservation]);
 
     const handleAssetChange = useCallback(e => {
-        setShoppingCart(shoppingCart ? [...shoppingCart, assets.find(x => x.id === e.value)] : [assets.find(x => x.id === e.value)]);
+        let item;
+        if (e.type === 'group') {
+            item = assets[0].options.find(x => x.id === e.value);
+
+            if (shoppingCart && shoppingCart.find(x => x.id === e.value)) {
+                item = shoppingCart.find(x => x.id === e.value);
+                if (item.quantity === item.available_assets_count) return;
+                item.quantity++;
+                setShoppingCart([...shoppingCart]);
+                return;
+            }
+
+            item.quantity = 1;
+        } else {
+            item = assets[1].options.find(x => x.id === e.value);
+        }
+        setShoppingCart(shoppingCart ? [...shoppingCart, item] : [item]);
     }, [shoppingCart, assets]);
+
     const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
+
     useEffect(() => { validate('shoppingCart'); }, [validate, shoppingCart]);
 
     const validate = useCallback((field) => {
@@ -254,7 +275,8 @@ function App() {
                 startDateTime: startDate.unix(),
                 endDateTime: endDate.unix(),
                 user: user.value,
-                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                assets: shoppingCart.filter(item => item.type === 'assets').map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                groups: shoppingCart.filter(item => item.type === 'group').map(group => ({ id: group.id, quantity: group.quantity })),
                 details,
                 reservation: reservation === 'true'
             });
@@ -324,9 +346,36 @@ function App() {
                 endDateTime: endDate ? moment(endDate).unix() : moment().add(1, 'day').unix()
             });
 
-            setAssets(body.map(asset => {
-                return {...asset, value: asset.id, label: asset.name+' ('+asset.tag+')', isDisabled: !asset.available};
-            }));
+            const groups = body.groups.map(group => {
+                return {
+                    ...group,
+                    type: 'group',
+                    value: group.id,
+                    label: `${group.name} (${group.available_assets_count} available)`,
+                    isDisabled: group.available_assets_count === 0,
+                    available: group.available_assets_count > 0
+                };
+            });
+
+            const assets = body.assets.map(asset => {
+                return {
+                    ...asset,
+                    type: 'asset',
+                    value: asset.id,
+                    label: `${asset.name} (${asset.tag})`,
+                    isDisabled: !asset.available
+                };
+            });
+
+            setAssets([
+                {
+                    label: 'Groups',
+                    options: groups
+                }, {
+                    label: 'Assets',
+                    options: assets
+                }
+            ]);
             setAssetsLoading(false);
         }
         if (open) {
@@ -473,6 +522,7 @@ function App() {
                             action={modalAction}
                             assets={shoppingCart}
                             onChange={onShoppingCartChange}
+                            showQuantity
                         />
                     </Col>
                 </Row>

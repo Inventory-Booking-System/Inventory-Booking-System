@@ -9,7 +9,7 @@ use Response;
 use App\Models\Asset;
 use Carbon\Carbon;
 
-class AssetController extends Controller
+class AssetGroupController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
-        return view('asset.assets');
+        return view('asset-group.asset-groups');
     }
 
     /**
@@ -29,8 +29,8 @@ class AssetController extends Controller
      */
     public function show($id)
     {
-        return view('asset.show',[
-            'asset' => $id
+        return view('asset-group.show',[
+            'assetGroup' => $id
         ]);
     }
 
@@ -56,12 +56,6 @@ class AssetController extends Controller
         ];
 
         $assets = Asset::latest()->get();
-
-        // Get all unique asset_group_id
-        $assetGroupIds = $assets->pluck('asset_group_id')->unique()->toArray();
-        $assetGroups = DB::table('asset_groups')
-            ->whereIn('id', $assetGroupIds)
-            ->get();
 
         $startDateTime = $validatedDate['start_date_time'];
         $endDateTime = $validatedDate['end_date_time'];
@@ -122,27 +116,6 @@ class AssetController extends Controller
             }
         }
 
-        $availableAssetCounts = [];
-        // Count the available assets for each group
-        foreach ($assets as $asset) {
-            if ($asset->available) {
-                $groupId = $asset->asset_group_id;
-                if (!isset($availableAssetCounts[$groupId])) {
-                    $availableAssetCounts[$groupId] = 0;
-                }
-                $availableAssetCounts[$groupId]++;
-            }
-        }
-
-        // Update the $assetGroups array with the available asset counts
-        foreach ($assetGroups as &$group) {
-            $groupId = $group->id;
-            $group->available_assets_count = $availableAssetCounts[$groupId] ?? 0;
-        }
-
-        return [
-            'groups' => $assetGroups,
-            'assets' => $assets
-        ];
+        return $assets;
     }
 }

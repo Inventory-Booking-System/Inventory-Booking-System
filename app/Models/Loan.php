@@ -22,6 +22,11 @@ class Loan extends Model
         return $this->belongsToMany(Asset::class)->withPivot('returned');
     }
 
+    public function assetGroups()
+    {
+        return $this->belongsToMany(AssetGroup::class)->withPivot('quantity');
+    }
+
     /**
      * Get the user who requested the loan.
      */

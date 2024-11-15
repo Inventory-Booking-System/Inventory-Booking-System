@@ -291,6 +291,7 @@ class Loans extends Component
             ->select('loans.*')
             ->with('user')
             ->with('assets')
+            ->with('assetGroups')
             ->join('users', 'loans.user_id', '=', 'users.id') // Join users table so we can search by user name
             ->where('loans.status_id', '<>', 3) #Setups
             ->where('loans.status_id', '<>', 4) #Cancelled bookings
