@@ -56,12 +56,7 @@ class AssetController extends Controller
         ];
 
         $assets = Asset::latest()->get();
-
-        // Get all unique asset_group_id
-        $assetGroupIds = $assets->pluck('asset_group_id')->unique()->toArray();
-        $assetGroups = DB::table('asset_groups')
-            ->whereIn('id', $assetGroupIds)
-            ->get();
+        $assetGroups = DB::table('asset_groups')->get();
 
         $startDateTime = $validatedDate['start_date_time'];
         $endDateTime = $validatedDate['end_date_time'];
