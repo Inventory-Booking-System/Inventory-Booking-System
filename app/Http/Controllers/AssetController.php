@@ -109,13 +109,13 @@ class AssetController extends Controller
         }
 
         // Mark non-available equipment in master equipment list
-        foreach($nonAvailableAssets as $nonAvailableAsset){
-            foreach($assets as $key => $asset){
-                if($nonAvailableAsset->id === $asset['id']){
+        foreach ($nonAvailableAssets as $nonAvailableAsset) {
+            foreach ($assets as $key => $asset) {
+                if ($nonAvailableAsset->id === $asset['id']) {
                     $assets[$key]['available'] = false;
                 }
             }
-        }
+        }        
 
         $availableAssetCounts = [];
         // Count the available assets for each group

@@ -1,13 +1,13 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { DateTimePicker } from 'react-tempusdominus-bootstrap';
 import moment from 'moment';
+import Select from 'react-select';
 import UserSelect from './components/UserSelect';
 import AssetSelect from './components/AssetSelect';
 import ShoppingCart from './components/ShoppingCart';
@@ -16,11 +16,6 @@ import { assets as assetsApi, loans } from './api';
 import * as livewire from './utils/livewire';
 import ValidationError from './errors/ValidationError';
 import 'tempusdominus-bootstrap/src/sass/tempusdominus-bootstrap-build.scss';
-
-const radios = [
-    { name: 'Reservation', value: 'true' },
-    { name: 'Booked', value: 'false' }
-];
 
 function validateStartDate(startDate) {
     if (!startDate) {
@@ -181,10 +176,7 @@ function App() {
 
     const handleDetailsChange = useCallback(e => setDetails(e.target.value), []);
 
-    const handleReservationChange = useCallback(e => {
-        e.preventDefault();
-        setReservation(e.currentTarget.value);
-    }, []);
+    const handleReservationChange = useCallback(e => setReservation(e.value), []);
     useEffect(() => { validate('reservation'); }, [validate, reservation]);
 
     const handleAssetChange = useCallback(e => {
@@ -210,6 +202,16 @@ function App() {
     const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
 
     useEffect(() => { validate('shoppingCart'); }, [validate, shoppingCart]);
+
+    const assetDropdownContent = useMemo(() => {
+        if (!assets.length) return [];
+
+        if (reservation === 'true') {
+            return assets;
+        }
+        // don't show groups if booking type is not reservation
+        return [assets[1]];
+    }, [assets, reservation]);
 
     const validate = useCallback((field) => {
         clearHelperText(field);
@@ -307,7 +309,8 @@ function App() {
                 startDateTime: startDate.unix(),
                 endDateTime: endDate.unix(),
                 user: user.value,
-                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                assets: shoppingCart.filter(item => item.type === 'assets').map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                groups: shoppingCart.filter(item => item.type === 'group').map(group => ({ id: group.id, quantity: group.quantity })),
                 details,
                 reservation: reservation === 'true'
             });
@@ -360,7 +363,7 @@ function App() {
             const assets = body.assets.map(asset => {
                 return {
                     ...asset,
-                    type: 'asset',
+                    type: 'assets',
                     value: asset.id,
                     label: `${asset.name} (${asset.tag})`,
                     isDisabled: !asset.available
@@ -418,7 +421,7 @@ function App() {
                 <Row>
                     <Col md={6}>
                         <Form>
-                            <Form.Group>
+                            <Form.Group className="mb-3">
                                 <FormLabel
                                     helperText={startDateHelperText}
                                 >
@@ -435,7 +438,7 @@ function App() {
                                 />
                             </Form.Group>
 
-                            <Form.Group>
+                            <Form.Group className="mb-3">
                                 <FormLabel
                                     helperText={endDateHelperText}
                                 >
@@ -451,7 +454,7 @@ function App() {
                                 />
                             </Form.Group>
 
-                            <Form.Group>
+                            <Form.Group className="mb-3">
                                 <FormLabel
                                     helperText={userHelperText}
                                 >
@@ -464,14 +467,31 @@ function App() {
                                 />
                             </Form.Group>
 
-                            <Form.Group>
+                            <Form.Group className="mb-3">
+                                <FormLabel
+                                    helperText={reservationHelperText}
+                                >
+                                    Booking Type
+                                </FormLabel>
+                                <Select
+                                    options={[
+                                        { value: 'true', label: 'Reservation' },
+                                        { value: 'false', label: 'Booked' }
+                                    ]}
+                                    onChange={handleReservationChange}
+                                    isDisabled={submitLoading}
+                                    defaultValue={reservation}
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
                                 <FormLabel
                                     helperText={assetsHelperText}
                                 >
                                     Equipment
                                 </FormLabel>
                                 <AssetSelect
-                                    assets={assets}
+                                    assets={assetDropdownContent}
                                     shoppingCart={shoppingCart}
                                     onChange={handleAssetChange}
                                     isLoading={assetsLoading}
@@ -490,30 +510,6 @@ function App() {
                                     onChange={handleDetailsChange}
                                     disabled={submitLoading}
                                 />
-                            </Form.Group>
-
-                            <Form.Group>
-                                <FormLabel
-                                    helperText={reservationHelperText}
-                                >
-                                    Booking Type
-                                </FormLabel>
-                            </Form.Group>
-
-                            <Form.Group className="mb-3">
-                                <ButtonGroup>
-                                    {radios.map((radio, idx) => (
-                                        <Button
-                                            key={idx}
-                                            variant={radio.value === 'true' ? 'warning' : 'success'}
-                                            value={radio.value}
-                                            className={reservation === radio.value ? 'btn-active' : ''}
-                                            onClick={handleReservationChange}
-                                        >
-                                            {radio.name}
-                                        </Button>
-                                    ))}
-                                </ButtonGroup>
                             </Form.Group>
                         </Form>
                     </Col>

@@ -34,12 +34,13 @@ export async function create(data) {
  *  endDateTime: number,
  *  user: number,
  *  assets: Array<{id: number, returned: boolean}>,
+ *  groups: Array<{id: number, returned: boolean}>,
  *  details: string,
  *  reservation: boolean
  * }} data
  */
 export async function update(id, data) {
-    const { startDateTime, endDateTime, user, assets, details, reservation } = data;
+    const { startDateTime, endDateTime, user, assets, groups, details, reservation } = data;
 
     return await request('/api/loans/'+id, {
         method: 'PUT',
@@ -48,6 +49,7 @@ export async function update(id, data) {
             endDateTime,
             user,
             assets,
+            groups,
             details,
             reservation
         })

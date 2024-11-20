@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import '../css/signage.css';
 
 function dateToString() {
-    return (new Date()).toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'medium' });
+    return (new Date()).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
 function Header() {
@@ -31,8 +31,10 @@ function Header() {
     );
 }
 
-function Entry({ item }) {
-    const { assets, details, status_id, start_date_time, end_date_time, user, setup } = item;
+function Entry({ assets = [], groups = [], details, status_id, start_date_time, end_date_time, user, setup }) {
+    assets.map(asset => asset.type = 'asset');
+    groups.map(group => group.type = 'group');
+    const items = [...groups, ...assets];
 
     const cardClass = useMemo(() => {
         switch(status_id) {
@@ -51,6 +53,22 @@ function Entry({ item }) {
         return null;
     }
 
+    const renderItem = ((item, index) => {
+        return (
+            <div
+                key={index}
+                style={{
+                    textDecoration: item.pivot.returned ? 'line-through' : undefined,
+                    background: item.type === 'group' ? 'rgba(0,0,0,0.2)' : undefined,
+                    borderRadius: item.type === 'group' ? '.25rem' : undefined,
+                    color: item.type === 'group' ? '#fff' : undefined
+                }}
+            >
+                {item.name} {item.type === 'group' ? `(x${item.pivot.quantity})` : `(${item.tag})`}
+            </div>
+        );
+    });
+
     return (
         <div className="col-md-4">
             <div className={`card ${cardClass} w-100`}>
@@ -68,12 +86,12 @@ function Entry({ item }) {
                     <div className="row">
                         <div className="col-6">
                             <div style={{ listStyleType: 'none' }} className="text-center">
-                                {assets.map((asset, index) => index % 2 === 0 ? (asset.pivot.returned ? <div key={index} style={{ textDecoration: 'line-through' }}>{asset.name} ({asset.tag})</div> : <div key={index}>{asset.name} ({asset.tag})</div>) : null)}
+                                {items.map((item, index) => index % 2 === 0 ? renderItem(item, index) : null)}
                             </div>
                         </div>
                         <div className="col-6">
                             <div style={{ listStyleType: 'none' }} className="text-center">
-                                {assets.map((asset, index) => !(index % 2 === 0) ? (asset.pivot.returned ? <div key={index} style={{ textDecoration: 'line-through' }}>{asset.name} ({asset.tag})</div> : <div key={index}>{asset.name} ({asset.tag})</div>) : null)}
+                                {items.map((item, index) => !(index % 2 === 0) ? renderItem(item, index) : null)}
                             </div>
                         </div>
                     </div>
@@ -84,20 +102,19 @@ function Entry({ item }) {
 }
 
 Entry.propTypes = {
-    item: PropTypes.shape({
-        assets: PropTypes.array,
-        details: PropTypes.string,
-        status_id: PropTypes.number,
-        start_date_time: PropTypes.string,
-        end_date_time: PropTypes.string,
-        user: PropTypes.shape({
-            forename: PropTypes.string,
-            surname: PropTypes.string
-        }),
-        setup: PropTypes.shape({
-            location: PropTypes.shape({
-                name: PropTypes.string
-            })
+    assets: PropTypes.array,
+    groups: PropTypes.array,
+    details: PropTypes.string,
+    status_id: PropTypes.number,
+    start_date_time: PropTypes.string,
+    end_date_time: PropTypes.string,
+    user: PropTypes.shape({
+        forename: PropTypes.string,
+        surname: PropTypes.string
+    }),
+    setup: PropTypes.shape({
+        location: PropTypes.shape({
+            name: PropTypes.string
         })
     })
 };
@@ -122,7 +139,7 @@ function App() {
 
         const intervalId = setInterval(() => {
             get();
-        }, 10000);
+        }, 5000);
 
         return () => clearInterval(intervalId);
     }, []);
@@ -132,7 +149,17 @@ function App() {
         masonry.layout();
     }, [masonry, items]);
 
-    return items.map((item, index) => <Entry item={item} key={index} />);
+    return items.map((item, index) => <Entry
+        assets={item.assets}
+        groups={item.asset_groups}
+        details={item.details}
+        status_id={item.status_id}
+        start_date_time={item.start_date_time}
+        end_date_time={item.end_date_time}
+        user={item.user}
+        setup={item.setup}
+        key={index}
+    />);
 }
 
 createRoot(document.getElementById('header')).render(<Header />);

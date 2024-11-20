@@ -107,9 +107,12 @@ class LoanController extends Controller
             'user' => 'required|integer',
             'details' => 'nullable|string',
             'reservation' => 'required|boolean',
-            'assets' => 'required|array',
+            'assets' => 'array',
             'assets.*.id' => 'required|integer',
             'assets.*.returned' => 'required|boolean',
+            'groups' => 'array',
+            'groups.*.id' => 'required|integer',
+            'groups.*.quantity' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
