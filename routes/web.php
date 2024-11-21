@@ -24,6 +24,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\SignageController;
+use App\Http\Controllers\PosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,6 +72,8 @@ Route::middleware(['auth', 'checkpassword'])->group(function () {
     Route::get('logout', [LogoutController::class, 'index'])->name('logout');
     Route::get('profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('settings', [AppSettingsController::class, 'index'])->name('settings');
+    
+    Route::get('pos', [PosController::class, 'index'])->name('pos');
 });
 
 /**

@@ -1,0 +1,87 @@
+input {
+    width: 100%;
+    height: 100px;
+    padding: 20px;
+    font-size: 20px;
+    border: none;
+    box-sizing: border-box;
+}
+
+/**
+* hg-theme-default theme
+*/
+.simple-keyboard.hg-theme-ios {
+    width: 750px;
+    margin: auto;
+    color: #000
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-row .hg-button {
+    flex-grow: 1;
+    cursor: pointer;
+    max-width: initial;
+}
+.simple-keyboard.hg-theme-ios .hg-row {
+    display: flex;
+}
+.simple-keyboard.hg-theme-ios .hg-row:not(:last-child) {
+    margin-bottom: 5px;
+}
+.simple-keyboard.hg-theme-ios .hg-row .hg-button:not(:last-child) {
+    margin-right: 5px;
+}
+.simple-keyboard.hg-theme-ios .hg-row:nth-child(2) {
+    margin-left: 18px;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 5px;
+    border-radius: 5px;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default.hg-layout-custom {
+    background-color: #e5e5e5;
+    padding: 5px;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button {
+    border-radius: 5px;
+    box-sizing: border-box;
+    padding: 0;
+    background: white;
+    border-bottom: 1px solid #b5b5b5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    font-weight: 400;
+    font-size: 20px;
+    max-width: 60px;
+    min-width: 60px;
+    height: 60px;
+    min-height: 60px;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button:active,
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button:focus {
+    background: #e4e4e4;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button.hg-functionBtn {
+    background-color: #adb5bb;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button.hg-button-space,
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button.hg-button-shift,
+.simple-keyboard.hg-theme-ios.hg-theme-default
+.hg-button.hg-button-shiftactivated {
+    background-color: #ffffff;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button-space {
+    max-width: 448px;
+    min-width: 448px;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button-enter {
+    max-width: 110px;
+    min-width: 110px;
+}
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button-altright,
+.simple-keyboard.hg-theme-ios.hg-theme-default .hg-button-back {
+    min-width: 80px;
+    max-width: 80px;
+}

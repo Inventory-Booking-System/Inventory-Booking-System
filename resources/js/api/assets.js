@@ -14,3 +14,19 @@ export async function getAll(data) {
     const resp = await request('/api/assets?'+params);
     return await resp.json();
 }
+
+/**
+ * Book in the asset from any existing loans or setups. Whitespace is trimmed
+ * and leading 0s are removed.
+ * @param {{
+ *  tag: number
+ * }} data
+ */
+export async function scanIn({ tag }) {
+    const resp = await request(`/api/assets/${tag}/scan/in`);
+    const body = await resp.json();
+    if (!resp.ok) {
+        throw body;
+    }
+    return body;
+}
