@@ -14,7 +14,6 @@
 
         <style>
             html {
-                zoom: 250%;
                 overflow: hidden;
             }
         </style>
