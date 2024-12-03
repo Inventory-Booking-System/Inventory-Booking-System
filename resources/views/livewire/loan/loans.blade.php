@@ -78,7 +78,10 @@
                             <x-table.cell class="col-2">
                                 
                                 @if(
-                                    ( !(new Carbon\Carbon($loan->start_date_time))->isCurrentDay() && !(new Carbon\Carbon($loan->end_date_time))->isCurrentDay() ) && 
+                                    (
+                                        !(new Carbon\Carbon($loan->start_date_time))->isCurrentDay() && 
+                                        !(new Carbon\Carbon($loan->end_date_time))->isCurrentDay()
+                                    ) && 
                                     count($loan->assets) > 9 && 
                                     !in_array('assets-'.$loan->id, $expandedCells)
                                 )
@@ -92,6 +95,9 @@
                                     @endforeach
                                     <div><x-button.link wire:click.prevent="collapseCell('assets-{{ $loan->id }}')"><strong>Show less</strong></x-button.link></div>
                                 @else
+                                    @foreach($loan->assetGroups as $assetGroup)
+                                        <x-link route="asset-groups" id="{{ $assetGroup->id }}" value="{{ $assetGroup->name }} (x{{ $assetGroup->pivot->quantity }})" class="text-secondary"></x-link><br>
+                                    @endforeach
                                     @foreach($loan->assets as $asset)
                                         <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" lineThrough="{{ $asset->pivot->returned }}"></x-link><br>
                                     @endforeach

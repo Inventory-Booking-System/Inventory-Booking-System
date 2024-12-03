@@ -54,9 +54,12 @@ class LoanController extends Controller
             'user' => 'required|integer',
             'details' => 'nullable|string',
             'reservation' => 'required|boolean',
-            'assets' => 'required|array',
+            'assets' => 'array',
             'assets.*.id' => 'required|integer',
             'assets.*.returned' => 'required|boolean',
+            'groups' => 'array',
+            'groups.*.id' => 'required|integer',
+            'groups.*.quantity' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -73,11 +76,18 @@ class LoanController extends Controller
         $loan->status_id = $validated['reservation'] ? 1 : 0;
         $loan->created_by = $request->user()->id;
         $loan->push();
+
         $assets = [];
         foreach($validated['assets'] as $key => $asset) {
             $assets[$asset['id']] = ['returned' => $asset['returned']];
         }
         $loan->assets()->sync($assets);
+
+        $groups = [];
+        foreach($validated['groups'] as $key => $group) {
+            $groups[$group['id']] = ['quantity' => $group['quantity']];
+        }
+        $loan->assetGroups()->sync($groups);
 
         $user = User::find($loan->user_id);
         if (Config::get('mail.cc.address')) {
@@ -97,9 +107,12 @@ class LoanController extends Controller
             'user' => 'required|integer',
             'details' => 'nullable|string',
             'reservation' => 'required|boolean',
-            'assets' => 'required|array',
+            'assets' => 'array',
             'assets.*.id' => 'required|integer',
             'assets.*.returned' => 'required|boolean',
+            'groups' => 'array',
+            'groups.*.id' => 'required|integer',
+            'groups.*.quantity' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -116,11 +129,18 @@ class LoanController extends Controller
         $loan->status_id = $validated['reservation'] ? 1 : 0;
         $loan->created_by = $request->user()->id;
         $loan->push();
+    
         $assets = [];
         foreach($validated['assets'] as $key => $asset) {
             $assets[$asset['id']] = ['returned' => $asset['returned']];
         }
         $loan->assets()->sync($assets);
+
+        $groups = [];
+        foreach($validated['groups'] as $key => $group) {
+            $groups[$group['id']] = ['quantity' => $group['quantity']];
+        }
+        $loan->assetGroups()->sync($groups);
 
         $user = User::find($loan->user_id);
         if (Config::get('mail.cc.address')) {
@@ -139,6 +159,17 @@ class LoanController extends Controller
     {
         return $loans = Loan::query()
             ->whereNotIn('status_id', [4, 5])  // Not cancelled or completed
+            ->get();
+    }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getReservations()
+    {
+        return $loans = Loan::query()
+            ->whereIn('status_id', [1])
+            ->orderBy('start_date_time', 'asc')
             ->get();
     }
 }

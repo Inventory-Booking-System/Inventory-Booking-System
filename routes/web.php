@@ -9,6 +9,7 @@ use App\Http\Controllers\Install\PermissionsController;
 use App\Http\Controllers\Install\FinalController;
 
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AssetGroupController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
@@ -61,6 +62,7 @@ Route::middleware(['auth', 'checkpassword'])->group(function () {
     Route::resource('loans', LoanController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('setups', SetupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('assets', AssetController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+    Route::resource('asset-groups', AssetGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('locations', LocationController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('distributionGroups', DistributionGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('equipmentIssues', EquipmentIssueController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);

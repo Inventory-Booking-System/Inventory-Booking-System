@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Validator;
 use Response;
 use App\Models\Asset;
+use App\Models\AssetGroup;
 use App\Models\Loan;
 use App\Models\User;
 use App\Mail\Loan\LoanOrder;
@@ -61,6 +62,7 @@ class AssetController extends Controller
         ];
 
         $assets = Asset::latest()->get();
+        $assetGroups = AssetGroup::latest()->get();
 
         $startDateTime = $validatedDate['start_date_time'];
         $endDateTime = $validatedDate['end_date_time'];
@@ -113,15 +115,36 @@ class AssetController extends Controller
         }
 
         // Mark non-available equipment in master equipment list
-        foreach($nonAvailableAssets as $nonAvailableAsset){
-            foreach($assets as $key => $asset){
-                if($nonAvailableAsset->id === $asset['id']){
+        foreach ($nonAvailableAssets as $nonAvailableAsset) {
+            foreach ($assets as $key => $asset) {
+                if ($nonAvailableAsset->id === $asset['id']) {
                     $assets[$key]['available'] = false;
                 }
             }
+        }        
+
+        $availableAssetCounts = [];
+        // Count the available assets for each group
+        foreach ($assets as $asset) {
+            if ($asset->available) {
+                $groupId = $asset->asset_group_id;
+                if (!isset($availableAssetCounts[$groupId])) {
+                    $availableAssetCounts[$groupId] = 0;
+                }
+                $availableAssetCounts[$groupId]++;
+            }
         }
 
-        return $assets;
+        // Update the $assetGroups array with the available asset counts
+        foreach ($assetGroups as &$group) {
+            $groupId = $group->id;
+            $group->available_assets_count = $availableAssetCounts[$groupId] ?? 0;
+        }
+
+        return [
+            'groups' => $assetGroups,
+            'assets' => $assets
+        ];
     }
 
     /**

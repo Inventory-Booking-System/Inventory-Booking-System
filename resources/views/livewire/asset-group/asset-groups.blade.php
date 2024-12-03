@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="Asset" perPage="{{ $perPage }}" />
+    <x-table.controls name="Asset Group" perPage="{{ $perPage }}" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -10,10 +10,8 @@
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('name')" :direction="$sorts['name'] ?? null" class="col-3">Name</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('tag')" :direction="$sorts['tag'] ?? null" class="col-1">Tag</x-table.heading>
                         <x-table.heading sortable wire:click="sortBy('description')" :direction="$sorts['description'] ?? null" class="col">Description</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('asset-group')" :direction="$sorts['asset-group'] ?? null" class="col-2">Group</x-table.heading>
-                        <x-table.heading class="col-1"/>
+                        <x-table.heading class="col-2"/>
                     </x-table.row>
 
                     @if($showFilters)
@@ -22,10 +20,8 @@
                                 <x-input.checkbox />
                             </x-table.heading>
                             <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.name" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.tag" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col" direction="null"><x-input.text wire:model="filters.description" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.asset-group" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-1" direction="null"/>
+                            <x-table.heading class="col-2" direction="null"/>
                         </x-table.row>
                     @endif
                 </x-slot>
@@ -37,24 +33,23 @@
                                 <div class="d-flex justify-content-center">
                                     @unless($selectAll)
                                         <div>
-                                            <span>You selected <strong> {{ $assets->count() }} </strong> assets, do you want to select all <strong> {{ $assets->total() }} </strong>?</span>
+                                            <span>You selected <strong> {{ $assetGroups->count() }} </strong> asset groups, do you want to select all <strong> {{ $assetGroups->total() }} </strong>?</span>
                                             <x-button.link wire:click="selectAll">Select All</x-button.link>
                                         </div>
                                     @else
-                                        <span>You have selected all <strong> {{ $assets->total() }} </strong> assets.</span>
+                                        <span>You have selected all <strong> {{ $assetGroups->total() }} </strong> asset groups.</span>
                                     @endif
                                 </div>
                             </x-table.cell>
                         </x-table.row>
                     @endif
 
-                    @forelse ($assets as $asset)
+                    @forelse ($assetGroups as $asset)
                         <x-table.row wire:key="row-{{ $asset->id }}">
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $asset->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3"><x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }}"></x-link></x-table.cell>
-                            <x-table.cell class="col-1">{{ $asset->tag }}</x-table.cell>
+                            <x-table.cell class="col-3"><x-link route="asset-groups" id="{{ $asset->id }}" value="{{ $asset->name }}"></x-link></x-table.cell>
                             <x-table.cell class="col" title="{{ $asset->description }}">
                                 @if(strlen($asset->description) > 300 && !in_array('description-'.$asset->id, $expandedCells))
                                     {{ substr($asset->description, 0, 297) }}...
@@ -66,8 +61,7 @@
                                     {{ $asset->description }}
                                 @endif
                             </x-table.cell>
-                            <x-table.cell class="col-2"><x-link route="asset-groups" id="{{ $asset->assetGroup->id ?? '' }}" value="{{ $asset->assetGroup->name ?? '' }}"></x-link></x-table.cell>
-                            <x-table.cell class="col-1">
+                            <x-table.cell class="col-2">
                                 <x-button.primary wire:click="edit({{ $asset->id }})" ><x-loading wire:target="edit({{ $asset->id }})" />Edit</x-button.primary>
                             </x-table.cell>
                         </x-table.row>
@@ -75,7 +69,7 @@
                         <x-table.row>
                             <x-table.cell width="12">
                                 <div class="d-flex justify-content-center">
-                                    No assets found
+                                    No asset groups found
                                 </div>
                             </x-table.cell>
                         </x-table.row>
@@ -83,17 +77,17 @@
                 </x-slot>
             </x-table>
 
-            <x-table.pagination-summary :model="$assets" />
+            <x-table.pagination-summary :model="$assetGroups" />
         </div>
     </div>
 
     <!-- Delete Modal -->
     <form wire:submit.prevent="deleteSelected">
         <x-modal.dialog type="confirmModal">
-            <x-slot name="title">Delete Assets</x-slot>
+            <x-slot name="title">Delete Asset Groups</x-slot>
 
             <x-slot name="content">
-                Are you sure you want to delete these assets? This action is irreversible.
+                Are you sure you want to delete these asset groups? This action is irreversible.
             </x-slot>
 
             <x-slot name="footer">
@@ -106,32 +100,15 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal">
-            <x-slot name="title">{{ $modalType }} Asset</x-slot>
+            <x-slot name="title">{{ $modalType }} Asset Group</x-slot>
 
             <x-slot name="content">
                 <x-input.group for="name" label="Name" :error="$errors->first('editing.name')">
                     <x-input.text wire:model.defer="editing.name" id="name" />
                 </x-input.group>
 
-                <x-input.group for="tag" label="Tag" :error="$errors->first('editing.tag')">
-                    <x-input.text wire:model.defer="editing.tag" id="tag" />
-                </x-input.group>
-
                 <x-input.group for="description" label="Description" :error="$errors->first('editing.description')">
                     <x-input.textarea wire:model.defer="editing.description" id="description" />
-                </x-input.group>
-                
-                <x-input.group label="Group" for="asset_group_id" :error="$errors->first('editing.asset_group_id')">
-                    <x-input.select wire:model="editing.asset_group_id" id="asset_group_id" iteration="{{ $key }}" fullWidth>
-                        @foreach ($allAssetGroups as $assetGroup)
-                            <option
-                                value="{{ $assetGroup['id'] }}"
-                                @if (isset($editing->assetGroup->id) && $assetGroup['id'] === $editing->assetGroup->id) selected @endif
-                            >
-                                {{ $assetGroup['name'] }}
-                            </option>
-                        @endforeach
-                    </x-input.select>
                 </x-input.group>
             </x-slot>
 

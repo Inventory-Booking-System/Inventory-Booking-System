@@ -12,7 +12,7 @@ class Loan extends Model
 
     protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details', 'created_by'];
 
-    protected $with = ['assets', 'user', 'user_created_by'];
+    protected $with = ['assets', 'user', 'user_created_by', 'assetGroups'];
 
     /**
      * An asset can belong to many loan
@@ -20,6 +20,11 @@ class Loan extends Model
     public function assets()
     {
         return $this->belongsToMany(Asset::class)->withPivot('returned');
+    }
+
+    public function assetGroups()
+    {
+        return $this->belongsToMany(AssetGroup::class)->withPivot('quantity');
     }
 
     /**
