@@ -17,7 +17,7 @@ class AssetGroup extends Model
      */
     public function assets()
     {
-        return $this->belongsToMany(Asset::class);
+        return $this->hasMany(Asset::class);
     }
 
     public function loans()

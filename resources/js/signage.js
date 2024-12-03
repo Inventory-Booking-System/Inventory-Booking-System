@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import Masonry from 'masonry-layout';
-import PropTypes from 'prop-types';
+import LoanCard from './components/LoanCard';
 import '../css/signage.css';
 
 function dateToString() {
@@ -30,94 +30,6 @@ function Header() {
         </div>
     );
 }
-
-function Entry({ assets = [], groups = [], details, status_id, start_date_time, end_date_time, user, setup }) {
-    assets.map(asset => asset.type = 'asset');
-    groups.map(group => group.type = 'group');
-    const items = [...groups, ...assets];
-
-    const cardClass = useMemo(() => {
-        switch(status_id) {
-            case 0:
-                return 'bg-success';
-            case 1:
-                return 'bg-warning';
-            case 2:
-                return 'bg-danger';
-            case 3:
-                return 'bg-secondary';
-        }
-    }, [status_id]);
-
-    if (status_id > 3) {
-        return null;
-    }
-
-    const renderItem = ((item, index) => {
-        return (
-            <div
-                key={index}
-                style={{
-                    textDecoration: item.pivot.returned ? 'line-through' : undefined,
-                    background: item.type === 'group' ? 'rgba(0,0,0,0.2)' : undefined,
-                    borderRadius: item.type === 'group' ? '.25rem' : undefined,
-                    color: item.type === 'group' ? '#fff' : undefined
-                }}
-            >
-                {item.name} {item.type === 'group' ? `(x${item.pivot.quantity})` : `(${item.tag})`}
-            </div>
-        );
-    });
-
-    return (
-        <div className="col-md-4">
-            <div className={`card ${cardClass} w-100`}>
-                <div className="card-header text-center">{user.forename} {user.surname} : {status_id === 2 ? end_date_time : start_date_time.split(' ')[3]}</div>
-                <div className="card-body p-1 ">
-                    <div className="row mb-2">
-                        {setup?.location?.name && <div className="col-12 text-center truncate">
-                            {setup.location.name}
-                        </div>}
-                        <div className="col-12 text-center truncate">
-                            {details}
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-6">
-                            <div style={{ listStyleType: 'none' }} className="text-center">
-                                {items.map((item, index) => index % 2 === 0 ? renderItem(item, index) : null)}
-                            </div>
-                        </div>
-                        <div className="col-6">
-                            <div style={{ listStyleType: 'none' }} className="text-center">
-                                {items.map((item, index) => !(index % 2 === 0) ? renderItem(item, index) : null)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-Entry.propTypes = {
-    assets: PropTypes.array,
-    groups: PropTypes.array,
-    details: PropTypes.string,
-    status_id: PropTypes.number,
-    start_date_time: PropTypes.string,
-    end_date_time: PropTypes.string,
-    user: PropTypes.shape({
-        forename: PropTypes.string,
-        surname: PropTypes.string
-    }),
-    setup: PropTypes.shape({
-        location: PropTypes.shape({
-            name: PropTypes.string
-        })
-    })
-};
 
 function App() {
     const [masonry] = useState(new Masonry(document.querySelector('#masonry'), {
@@ -149,7 +61,7 @@ function App() {
         masonry.layout();
     }, [masonry, items]);
 
-    return items.map((item, index) => <Entry
+    return items.map((item, index) => <LoanCard
         assets={item.assets}
         groups={item.asset_groups}
         details={item.details}

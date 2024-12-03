@@ -161,4 +161,15 @@ class LoanController extends Controller
             ->whereNotIn('status_id', [4, 5])  // Not cancelled or completed
             ->get();
     }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function getReservations()
+    {
+        return $loans = Loan::query()
+            ->whereIn('status_id', [1])
+            ->orderBy('start_date_time', 'asc')
+            ->get();
+    }
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Validator;
 use Response;
 use App\Models\Asset;
+use App\Models\AssetGroup;
 use App\Models\Loan;
 use App\Models\User;
 use App\Mail\Loan\LoanOrder;
@@ -61,7 +62,7 @@ class AssetController extends Controller
         ];
 
         $assets = Asset::latest()->get();
-        $assetGroups = DB::table('asset_groups')->get();
+        $assetGroups = AssetGroup::latest()->get();
 
         $startDateTime = $validatedDate['start_date_time'];
         $endDateTime = $validatedDate['end_date_time'];

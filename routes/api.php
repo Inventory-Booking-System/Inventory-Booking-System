@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Loan;
 use App\Http\Controllers\SignageController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AssetGroupController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DistributionGroupController;
 use App\Http\Controllers\EquipmentIssueController;
@@ -50,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/distributionGroups', [DistributionGroupController::class, 'getAll']);
     Route::get('/equipmentIssues', [EquipmentIssueController::class, 'getAll']);
     Route::get('/loans', [LoanController::class, 'getAll']);
+    Route::get('/loans/reservations', [LoanController::class, 'getReservations']);
     Route::post('/loans', [LoanController::class, 'create']);
     Route::put('/loans/{id}', [LoanController::class, 'put']);
     Route::get('/locations', [LocationController::class, 'getAll']);

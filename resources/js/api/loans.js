@@ -60,3 +60,8 @@ export async function update(id, data) {
         })
     });
 }
+
+export async function getReservations() {
+    const resp = await request('/api/loans/reservations');
+    return await resp.json();
+}
