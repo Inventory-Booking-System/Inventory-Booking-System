@@ -57,8 +57,18 @@ export default function CollectConfirm() {
             });
     }, [loanId]);
 
-    useEffect(() => {
-    }, []);
+    const handleBeginLoan = async () => {
+        await api.loans.update(loanId, {
+            startDateTime: moment().unix(),
+            endDateTime: moment(reservation.end_date_time, 'DD MMM YYYY HH:mm').unix(),
+            user: reservation.user.id,
+            assets: reservation.assets.map(asset => ({ id: asset.id, returned: false })),
+            groups: reservation.asset_groups.map(group => ({ id: group.id, quantity: group.quantity })),
+            details: reservation.details,
+            reservation: false
+        });
+        navigate('/');
+    };
 
     return (
         <Box sx={{ paddingTop: 5 }}>
@@ -84,7 +94,7 @@ export default function CollectConfirm() {
                             </Card>)}
                         </Masonry>
                         <Button
-                            onClick={() => navigate('/')}
+                            onClick={handleBeginLoan}
                             variant="outlined"
                             color="success"
                         >
