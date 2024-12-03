@@ -15,6 +15,7 @@
                     <a href="/loans" class="nav-item nav-link {{ \Request::route()->getName() === 'loans.index' ? 'active' : '' }}"><i class="fa-solid fa-cart-shopping"></i><span>Loans</span></a>
                     <a href="/setups" class="nav-item nav-link {{ \Request::route()->getName() === 'setups.index' ? 'active' : '' }}"><i class="fa-solid fa-truck-ramp-box"></i><span>Setups</span></a>
                     <a href="/incidents" class="nav-item nav-link {{ \Request::route()->getName() === 'incidents.index' ? 'active' : '' }}"><i class="fa-solid fa-triangle-exclamation"></i><span>Incidents</span></a>
+                    <a href="/asset-groups" class="nav-item nav-link {{ \Request::route()->getName() === 'asset-groups.index' ? 'active' : '' }}"><i class="fa-solid fa-box-open"></i><span>Asset Groups</span></a>
                     <a href="/assets" class="nav-item nav-link {{ \Request::route()->getName() === 'assets.index' ? 'active' : '' }}"><i class="fa-solid fa-camera"></i><span>Assets</span></a>
                     <a href="/users" class="nav-item nav-link {{ \Request::route()->getName() === 'users.index' ? 'active' : '' }}"><i class="fa fa-users"></i><span>Accounts</span></a>
                     <a href="/locations" class="nav-item nav-link {{ \Request::route()->getName() === 'locations.index' ? 'active' : '' }}"><i class="fa fa-house-chimney"></i><span>Locations</span></a>

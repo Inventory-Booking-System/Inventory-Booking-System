@@ -7,6 +7,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Home from './pos/views/Home';
 import Student from './pos/views/Student';
 import StudentSelected from './pos/views/StudentSelected';
+import Collect from './pos/views/Collect';
+import CollectConfirm from './pos/views/CollectConfirm';
 
 const theme = createTheme({
     palette: {
@@ -23,8 +25,10 @@ function App() {
                     <MemoryRouter>
                         <Routes>
                             <Route path="/" element={<Home />} />
-                            <Route path="student" element={<Student />} />
-                            <Route path="student/:studentId" element={<StudentSelected />} />
+                            <Route path="book" element={<Student />} />
+                            <Route path="book/:studentId" element={<StudentSelected />} />
+                            <Route path="collect" element={<Collect />} />
+                            <Route path="collect/:loanId" element={<CollectConfirm />} />
                         </Routes>
                     </MemoryRouter>
                 </SnackbarProvider>

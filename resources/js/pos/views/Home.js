@@ -13,20 +13,34 @@ export default function Home() {
             <BarcodeScanner />
             <Stack
                 direction="column"
-                spacing={6}
                 alignItems="center"
-                justifyContent="center"
-                sx={{ paddingTop: 5 }}
+                justifyContent="space-around"
+                sx={{ height: '100vh' }}
             >
+                <Stack
+                    direction="column"
+                    spacing={6}
+                    alignItems="center"
+                    justifyContent="center"
+                    sx={{ paddingTop: 5 }}
+                >
+                    <ButtonSelect
+                        click={navigate}
+                        buttons={[
+                            { value: 'student', label: 'Borrow Equipment' }
+                        ]}
+                    />
+                    <Alert severity="info" variant="outlined" sx={{ zoom: '60%' }}>
+                        Scan a barcode now to return equipment
+                    </Alert>
+                </Stack>
                 <ButtonSelect
                     click={navigate}
+                    color="warning"
                     buttons={[
-                        { value: 'student', label: 'Borrow Equipment' }
+                        { value: 'collect', label: 'Collect Reservation' }
                     ]}
                 />
-                <Alert severity="info" variant="outlined" sx={{ zoom: '60%' }}>
-                    Scan a barcode now to return equipment
-                </Alert>
             </Stack>
         </>
     );

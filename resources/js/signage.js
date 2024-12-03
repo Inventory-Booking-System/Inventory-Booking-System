@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import Masonry from 'masonry-layout';
-import PropTypes from 'prop-types';
+import LoanCard from './components/LoanCard';
 import '../css/signage.css';
 
 function dateToString() {
-    return (new Date()).toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'medium' });
+    return (new Date()).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
 function Header() {
@@ -31,77 +31,6 @@ function Header() {
     );
 }
 
-function Entry({ item }) {
-    const { assets, details, status_id, start_date_time, end_date_time, user, setup } = item;
-
-    const cardClass = useMemo(() => {
-        switch(status_id) {
-            case 0:
-                return 'bg-success';
-            case 1:
-                return 'bg-warning';
-            case 2:
-                return 'bg-danger';
-            case 3:
-                return 'bg-secondary';
-        }
-    }, [status_id]);
-
-    if (status_id > 3) {
-        return null;
-    }
-
-    return (
-        <div className="col-md-4">
-            <div className={`card ${cardClass} w-100`}>
-                <div className="card-header text-center">{user.forename} {user.surname} : {status_id === 2 ? end_date_time : start_date_time.split(' ')[3]}</div>
-                <div className="card-body p-1 ">
-                    <div className="row mb-2">
-                        {setup?.location?.name && <div className="col-12 text-center truncate">
-                            {setup.location.name}
-                        </div>}
-                        <div className="col-12 text-center truncate">
-                            {details}
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-6">
-                            <div style={{ listStyleType: 'none' }} className="text-center">
-                                {assets.map((asset, index) => index % 2 === 0 ? (asset.pivot.returned ? <div key={index} style={{ textDecoration: 'line-through' }}>{asset.name} ({asset.tag})</div> : <div key={index}>{asset.name} ({asset.tag})</div>) : null)}
-                            </div>
-                        </div>
-                        <div className="col-6">
-                            <div style={{ listStyleType: 'none' }} className="text-center">
-                                {assets.map((asset, index) => !(index % 2 === 0) ? (asset.pivot.returned ? <div key={index} style={{ textDecoration: 'line-through' }}>{asset.name} ({asset.tag})</div> : <div key={index}>{asset.name} ({asset.tag})</div>) : null)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-Entry.propTypes = {
-    item: PropTypes.shape({
-        assets: PropTypes.array,
-        details: PropTypes.string,
-        status_id: PropTypes.number,
-        start_date_time: PropTypes.string,
-        end_date_time: PropTypes.string,
-        user: PropTypes.shape({
-            forename: PropTypes.string,
-            surname: PropTypes.string
-        }),
-        setup: PropTypes.shape({
-            location: PropTypes.shape({
-                name: PropTypes.string
-            })
-        })
-    })
-};
-
 function App() {
     const [masonry] = useState(new Masonry(document.querySelector('#masonry'), {
         percentPosition: true,
@@ -122,7 +51,7 @@ function App() {
 
         const intervalId = setInterval(() => {
             get();
-        }, 10000);
+        }, 5000);
 
         return () => clearInterval(intervalId);
     }, []);
@@ -132,7 +61,17 @@ function App() {
         masonry.layout();
     }, [masonry, items]);
 
-    return items.map((item, index) => <Entry item={item} key={index} />);
+    return items.map((item, index) => <LoanCard
+        assets={item.assets}
+        groups={item.asset_groups}
+        details={item.details}
+        status_id={item.status_id}
+        start_date_time={item.start_date_time}
+        end_date_time={item.end_date_time}
+        user={item.user}
+        setup={item.setup}
+        key={index}
+    />);
 }
 
 createRoot(document.getElementById('header')).render(<Header />);

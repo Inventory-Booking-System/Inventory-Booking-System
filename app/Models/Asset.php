@@ -10,7 +10,7 @@ class Asset extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'tag', 'description', 'cost', 'bookable'];
+    protected $fillable = ['name', 'tag', 'description', 'cost', 'bookable', 'asset_group_id'];
 
     /**
      * Get the loans for the asset.
@@ -18,5 +18,10 @@ class Asset extends Model
     public function loans()
     {
         return $this->belongsToMany(Loan::class)->withPivot('returned');
+    }
+
+    public function assetGroup()
+    {
+        return $this->belongsTo(AssetGroup::class, 'asset_group_id');
     }
 }
