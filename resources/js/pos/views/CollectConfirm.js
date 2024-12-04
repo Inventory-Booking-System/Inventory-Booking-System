@@ -31,7 +31,11 @@ export default function CollectConfirm() {
                     return newReservation;
                 }
 
-                newReservation.asset_groups = newReservation.asset_groups.filter(group => group.id !== asset.asset_group_id);
+                const groupToRemove = newReservation.asset_groups.find(group => group.id === asset.asset_group_id);
+                groupToRemove.pivot.quantity -= 1;
+                if (groupToRemove.pivot.quantity === 0) {
+                    newReservation.asset_groups = newReservation.asset_groups.filter(group => group.id !== asset.asset_group_id);
+                }
                 asset.scanned = true;
                 newReservation.assets = [...newReservation.assets, asset];
                 return newReservation;
