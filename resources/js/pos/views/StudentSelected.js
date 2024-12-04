@@ -62,7 +62,7 @@ export default function StudentSelected() {
             startDateTime: Math.round(Date.now() / 1000),
             endDateTime: Math.round(new Date(new Date().setHours(15, 30, 0, 0)).getTime() / 1000),
         })
-            .then(setAssets)
+            .then(data => setAssets(data.assets))
             .then(() => setScannerReady(true))
             .catch(error => {
                 enqueueSnackbar(error.message, {
