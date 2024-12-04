@@ -27,7 +27,7 @@ export default function Home() {
                     <ButtonSelect
                         click={navigate}
                         buttons={[
-                            { value: 'student', label: 'Borrow Equipment' }
+                            { value: 'book', label: 'Borrow Equipment' }
                         ]}
                     />
                     <Alert severity="info" variant="outlined" sx={{ zoom: '60%' }}>
