@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-export function LoanItem({ item }) {
+export function LoanItem({ item, textColor }) {
     return (
         <div
             style={{
                 textDecoration: item.pivot.returned ? 'line-through' : undefined,
-                background: item.type === 'group' ? 'rgba(0,0,0,0.2)' : undefined,
+                background: item.type === 'group' ? 'rgba(255,255,255,0.3)' : undefined,
                 borderRadius: item.type === 'group' ? '.25rem' : undefined,
-                color: item.type === 'group' ? '#fff' : undefined
+                padding: '.25rem',
+                color: textColor ? textColor : item.type === 'group' ? '#000' : undefined
             }}
         >
             {item.name} {item.type === 'group' ? `(x${item.pivot.quantity})` : `(${item.tag})`}
@@ -25,7 +26,8 @@ LoanItem.propTypes = {
         }),
         type: PropTypes.string,
         tag: PropTypes.number
-    })
+    }),
+    textColor: PropTypes.string
 };
 
 export default function LoanCard({ assets = [], groups = [], details, status_id, start_date_time, end_date_time, user, setup }) {
