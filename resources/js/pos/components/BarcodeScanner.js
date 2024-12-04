@@ -13,7 +13,7 @@ export default function BarcodeScanner() {
             startDateTime: Math.round(Date.now() / 1000),
             endDateTime: Math.round(Date.now() / 1000) + 1,
         })
-            .then(setAssets);
+            .then(data => setAssets(data.assets));
     }, []);
 
     /**

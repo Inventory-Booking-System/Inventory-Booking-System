@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
@@ -12,8 +12,7 @@ import CardContent from '@mui/material/CardContent';
 import CircularProgress from '@mui/material/CircularProgress';
 import CardActionArea from '@mui/material/CardActionArea';
 import Divider from '@mui/material/Divider';
-import Search from '../components/Search';
-import LoanCard, { LoanItem } from '../../components/LoanCard';
+import { LoanItem } from '../../components/LoanCard';
 import * as api from '../../api';
 import { Typography } from '@mui/material';
 
@@ -23,7 +22,7 @@ dayjs.extend(isTomorrow);
 export default function Collect() {
     const navigate = useNavigate();
     const [reservations, setReservations] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -80,24 +79,25 @@ export default function Collect() {
                                 onClick={() => navigate(`/collect/${item.id}`)}
                             >
                                 <CardContent>
-                                    <Typography variant="body2" color="textPrimary" sx={{ textAlign: 'center' }}>
+                                    <Typography variant="body2" color="#000" sx={{ textAlign: 'center' }}>
                                         {item.user.forename} {item.user.surname}
                                     </Typography>
-                                    <Typography variant="body2" sx={{ textAlign: 'center' }}>
+                                    <Typography variant="body2" color="#000" sx={{ textAlign: 'center' }}>
                                         {formatRelativeDate(item.start_date_time)}
                                     </Typography>
                                 </CardContent>
                                 <Divider />
                                 <CardContent>
                                     <Stack direction="row" spacing={2} justifyContent="center">
-                                        {lineItems.map((lineItem, index) => index % 2 === 0 ? <LoanItem key={lineItem.id} item={lineItem} /> : null)}
-                                        {lineItems.map((lineItem, index) => !(index % 2 === 0) ? <LoanItem key={lineItem.id} item={lineItem} /> : null)}
+                                        {lineItems.map((lineItem, index) => index % 2 === 0 ? <LoanItem key={lineItem.id} item={lineItem} textColor="#000" /> : null)}
+                                        {lineItems.map((lineItem, index) => !(index % 2 === 0) ? <LoanItem key={lineItem.id} item={lineItem} textColor="#000" /> : null)}
                                     </Stack>
                                 </CardContent>
                             </CardActionArea>
                         </Card>;
                     })}
                 </Masonry>}
+                {!loading && reservations.length === 0 && <Typography variant="h5">There are no reservations</Typography>}
                 <Button
                     onClick={() => navigate('/')}
                     variant="outlined"

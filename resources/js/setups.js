@@ -132,7 +132,10 @@ function App() {
         setUser({ value: setup.loan.user_id, label: setup.loan.user.forename+' '+setup.loan.user.surname });
         setLocation({ value: setup.location.id, label: setup.location.name });
         setDetails(setup.loan.details);
-        setShoppingCart(setup.loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned })));
+        setShoppingCart([
+            ...setup.loan.assets.map(asset => ({ ...asset, returned: !!asset.pivot.returned, type: 'assets' })),
+            ...setup.loan.asset_groups.map(group => ({ ...group, quantity: group.pivot.quantity, type: 'group' }))
+        ]);
 
         setModalAction('Edit');
         setOpen(true);
@@ -184,8 +187,25 @@ function App() {
     const handleDetailsChange = useCallback(e => setDetails(e.target.value), []);
 
     const handleAssetChange = useCallback(e => {
-        setShoppingCart([...shoppingCart, assets.find(x => x.id === e.value)]);
+        let item;
+        if (e.type === 'group') {
+            item = assets[0].options.find(x => x.id === e.value);
+
+            if (shoppingCart && shoppingCart.find(x => x.id === e.value)) {
+                item = shoppingCart.find(x => x.id === e.value);
+                if (item.quantity === item.available_assets_count) return;
+                item.quantity++;
+                setShoppingCart([...shoppingCart]);
+                return;
+            }
+
+            item.quantity = 1;
+        } else {
+            item = assets[1].options.find(x => x.id === e.value);
+        }
+        setShoppingCart(shoppingCart ? [...shoppingCart, item] : [item]);
     }, [shoppingCart, assets]);
+
     const onShoppingCartChange = useCallback(assets => setShoppingCart(assets), []);
     useEffect(() => { validate('shoppingCart'); }, [validate, shoppingCart]);
 
@@ -328,9 +348,36 @@ function App() {
                 endDateTime: endDate ? moment(endDate).unix() : moment().add(1, 'day').unix()
             });
 
-            setAssets(body.map(asset => {
-                return {...asset, value: asset.id, label: asset.name+' ('+asset.tag+')', isDisabled: !asset.available};
-            }));
+            const groups = body.groups.map(group => {
+                return {
+                    ...group,
+                    type: 'group',
+                    value: group.id,
+                    label: `${group.name} (${group.available_assets_count} available)`,
+                    isDisabled: group.available_assets_count === 0,
+                    available: group.available_assets_count > 0
+                };
+            });
+
+            const assets = body.assets.map(asset => {
+                return {
+                    ...asset,
+                    type: 'assets',
+                    value: asset.id,
+                    label: `${asset.name} (${asset.tag})`,
+                    isDisabled: !asset.available
+                };
+            });
+
+            setAssets([
+                {
+                    label: 'Groups',
+                    options: []
+                }, {
+                    label: 'Assets',
+                    options: assets
+                }
+            ]);
             setAssetsLoading(false);
         }
         if (open) {
@@ -481,6 +528,7 @@ function App() {
                             action={modalAction}
                             assets={shoppingCart}
                             onChange={onShoppingCartChange}
+                            showQuantity
                         />
                     </Col>
                 </Row>

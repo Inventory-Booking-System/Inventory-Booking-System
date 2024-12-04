@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 import Masonry from '@mui/lab/Masonry';
+import { useSnackbar } from 'notistack';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -9,18 +10,29 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import * as api from '../../api';
 
 export default function CollectConfirm() {
     const navigate = useNavigate();
     const { loanId } = useParams();
+    const { enqueueSnackbar } = useSnackbar();
     const [reservation, setReservation] = useState();
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const handleScanComplete = (code) => {
         const asset = assets.find(asset => asset.tag === code);
+        if (!asset) {
+            enqueueSnackbar('Asset not found.', {
+                variant: 'error',
+                autoHideDuration: 5000
+            });
+            (new Audio('/pos-static/error.wav')).play();
+            return;
+        }
         if (asset && asset.asset_group_id) {
             setReservation(prev => {
                 const newReservation = { ...prev };
@@ -31,11 +43,16 @@ export default function CollectConfirm() {
                     return newReservation;
                 }
 
-                newReservation.asset_groups = newReservation.asset_groups.filter(group => group.id !== asset.asset_group_id);
+                const groupToRemove = newReservation.asset_groups.find(group => group.id === asset.asset_group_id);
+                groupToRemove.pivot.quantity -= 1;
+                if (groupToRemove.pivot.quantity === 0) {
+                    newReservation.asset_groups = newReservation.asset_groups.filter(group => group.id !== asset.asset_group_id);
+                }
                 asset.scanned = true;
                 newReservation.assets = [...newReservation.assets, asset];
                 return newReservation;
             });
+            (new Audio('/pos-static/success.wav')).play();
         }
     };
 
@@ -58,16 +75,30 @@ export default function CollectConfirm() {
     }, [loanId]);
 
     const handleBeginLoan = async () => {
-        await api.loans.update(loanId, {
-            startDateTime: moment().unix(),
-            endDateTime: moment(reservation.end_date_time, 'DD MMM YYYY HH:mm').unix(),
-            user: reservation.user.id,
-            assets: reservation.assets.map(asset => ({ id: asset.id, returned: false })),
-            groups: reservation.asset_groups.map(group => ({ id: group.id, quantity: group.quantity })),
-            details: reservation.details,
-            reservation: false
-        });
-        navigate('/');
+        setSubmitLoading(true);
+        try {
+            const resp = await api.loans.update(loanId, {
+                startDateTime: moment().unix(),
+                endDateTime: moment(reservation.end_date_time, 'DD MMM YYYY HH:mm').unix(),
+                user: reservation.user.id,
+                assets: reservation.assets.map(asset => ({ id: asset.id, returned: false })),
+                groups: reservation.asset_groups.map(group => ({ id: group.id, quantity: group.pivot.quantity })),
+                details: reservation.details,
+                reservation: false
+            });
+            if (!resp.ok) {
+                throw new Error((await resp.json()));
+            }
+            navigate('/');
+        } catch (e) {
+            console.error(e);
+            enqueueSnackbar('An error occurred while modifying the booking.', {
+                variant: 'error',
+                autoHideDuration: 5000
+            });
+            (new Audio('/pos-static/error.wav')).play();
+        }
+        setSubmitLoading(false);
     };
 
     return (
@@ -82,24 +113,31 @@ export default function CollectConfirm() {
                     <React.Fragment>
                         <Typography variant="h5">Scan the following items:</Typography>
                         <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
-                            {reservation.asset_groups.map((group, index) => <Card key={index} sx={{ backgroundColor: 'warning.main' }}>
-                                <CardContent>
-                                    <Typography variant="h6" color="black">{group.name}</Typography>
-                                </CardContent>
-                            </Card>)}
+                            {reservation.asset_groups.map((group, index) => {
+                                let cards = [];
+                                for (let i = 0; i < group.pivot.quantity; i++) {
+                                    cards.push(<Card key={index} sx={{ backgroundColor: 'warning.main' }}>
+                                        <CardContent>
+                                            <Typography variant="h6" color="black">{group.name}</Typography>
+                                        </CardContent>
+                                    </Card>);
+                                }
+                                return cards;
+                            })}
                             {reservation.assets.map((asset, index) => <Card key={index} sx={{ backgroundColor: asset.scanned ? 'success.main' : undefined }}>
                                 <CardContent>
                                     <Typography variant="h6">{asset.name} ({asset.tag})</Typography>
                                 </CardContent>
                             </Card>)}
                         </Masonry>
-                        <Button
+                        <LoadingButton
                             onClick={handleBeginLoan}
                             variant="outlined"
                             color="success"
+                            loading={submitLoading}
                         >
                             Begin Loan
-                        </Button>
+                        </LoadingButton>
                     </React.Fragment>}
                 <Button
                     onClick={() => navigate('/')}
