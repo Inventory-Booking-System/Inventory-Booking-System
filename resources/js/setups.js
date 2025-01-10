@@ -275,7 +275,8 @@ function App() {
                 endDateTime: endDate.unix(),
                 user: user.value,
                 location: location.value,
-                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                assets: shoppingCart.filter(item => item.type === 'assets').map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                groups: shoppingCart.filter(item => item.type === 'group').map(group => ({ id: group.id, quantity: group.quantity })),
                 details
             });
             await livewire.render();
@@ -307,7 +308,8 @@ function App() {
                 endDateTime: endDate.unix(),
                 user: user.value,
                 location: location.value,
-                assets: shoppingCart.map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                assets: shoppingCart.filter(item => item.type === 'assets').map(asset => ({ id: asset.id, returned: !!asset.returned })),
+                groups: shoppingCart.filter(item => item.type === 'group').map(group => ({ id: group.id, quantity: group.quantity })),
                 details
             });
             await livewire.render();
@@ -372,7 +374,7 @@ function App() {
             setAssets([
                 {
                     label: 'Groups',
-                    options: []
+                    options: groups
                 }, {
                     label: 'Assets',
                     options: assets

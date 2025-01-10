@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import * as api from '../../api';
+import { Status } from '../../api/loans';
 
 export default function CollectConfirm() {
     const navigate = useNavigate();
@@ -26,9 +27,17 @@ export default function CollectConfirm() {
     const handleScanComplete = (code) => {
         const asset = assets.find(asset => asset.tag === code);
         if (!asset) {
-            enqueueSnackbar('Asset not found.', {
+            enqueueSnackbar(`Asset ${code} not found.`, {
                 variant: 'error',
-                autoHideDuration: 5000
+                autoHideDuration: 8000
+            });
+            (new Audio('/pos-static/error.wav')).play();
+            return;
+        }
+        if (!asset.available) {
+            enqueueSnackbar(`Asset ${asset.tag} is not available.`, {
+                variant: 'error',
+                autoHideDuration: 8000
             });
             (new Audio('/pos-static/error.wav')).play();
             return;
@@ -52,7 +61,7 @@ export default function CollectConfirm() {
                 newReservation.assets = [...newReservation.assets, asset];
                 return newReservation;
             });
-            (new Audio('/pos-static/success.wav')).play();
+            (new Audio('/pos-static/ding.wav')).play();
         }
     };
 
@@ -77,17 +86,27 @@ export default function CollectConfirm() {
     const handleBeginLoan = async () => {
         setSubmitLoading(true);
         try {
-            const resp = await api.loans.update(loanId, {
-                startDateTime: moment().unix(),
-                endDateTime: moment(reservation.end_date_time, 'DD MMM YYYY HH:mm').unix(),
-                user: reservation.user.id,
-                assets: reservation.assets.map(asset => ({ id: asset.id, returned: false })),
-                groups: reservation.asset_groups.map(group => ({ id: group.id, quantity: group.pivot.quantity })),
-                details: reservation.details,
-                reservation: false
-            });
-            if (!resp.ok) {
-                throw new Error((await resp.json()));
+            if (reservation.status_id === Status.RESERVATION) {
+                const resp = await api.loans.update(loanId, {
+                    startDateTime: moment().unix(),
+                    endDateTime: moment(reservation.end_date_time, 'DD MMM YYYY HH:mm').unix(),
+                    user: reservation.user.id,
+                    assets: reservation.assets.map(asset => ({ id: asset.id, returned: false })),
+                    groups: reservation.asset_groups.map(group => ({ id: group.id, quantity: group.pivot.quantity })),
+                    details: reservation.details,
+                    reservation: false
+                });
+                if (!resp.ok) {
+                    throw new Error((await resp.json()));
+                }
+            } else {
+                const resp = await api.setups.patch(reservation.setup.id, {
+                    assets: reservation.assets.map(asset => ({ id: asset.id, returned: false })),
+                    groups: reservation.asset_groups.map(group => ({ id: group.id, quantity: group.pivot.quantity }))
+                });
+                if (!resp.ok) {
+                    throw new Error((await resp.json()));
+                }
             }
             navigate('/');
         } catch (e) {
@@ -116,7 +135,7 @@ export default function CollectConfirm() {
                             {reservation.asset_groups.map((group, index) => {
                                 let cards = [];
                                 for (let i = 0; i < group.pivot.quantity; i++) {
-                                    cards.push(<Card key={index} sx={{ backgroundColor: 'warning.main' }}>
+                                    cards.push(<Card key={index} sx={{ backgroundColor: 'grey.500' }}>
                                         <CardContent>
                                             <Typography variant="h6" color="black">{group.name}</Typography>
                                         </CardContent>
@@ -136,7 +155,7 @@ export default function CollectConfirm() {
                             color="success"
                             loading={submitLoading}
                         >
-                            Begin Loan
+                            Begin {reservation.status_id === Status.RESERVATION ? 'Loan' : 'Setup'}
                         </LoadingButton>
                     </React.Fragment>}
                 <Button

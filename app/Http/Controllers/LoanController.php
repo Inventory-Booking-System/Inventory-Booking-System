@@ -168,7 +168,8 @@ class LoanController extends Controller
     public function getReservations()
     {
         return $loans = Loan::query()
-            ->whereIn('status_id', [1])
+            ->with('setup')
+            ->whereIn('status_id', [1, 3]) // Reservation or Setup
             ->orderBy('start_date_time', 'asc')
             ->get();
     }

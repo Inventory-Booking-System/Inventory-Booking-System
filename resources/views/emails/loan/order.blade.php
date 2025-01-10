@@ -11,6 +11,10 @@
                             <b>Start Date</b><br>{{ $loan->start_date_time }}<br><br>
                             <b>End Date</b><br>{{ $loan->end_date_time }}<br><br>
                             <b>Resources</b><br>
+                            @foreach ($loan->assetGroups as $assetGroup)
+                                {{ $assetGroup->name }} (x{{ $assetGroup->pivot->quantity }})
+                                <br>
+                            @endforeach
                             @foreach ($loan->assets as $asset)
                                 @if($bookingType !== 'completed' && $asset->pivot->returned)
                                     <s>{{ $asset->name }} ({{ $asset->tag }})</s><br>

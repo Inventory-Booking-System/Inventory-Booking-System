@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/locations', [LocationController::class, 'getAll']);
     Route::post('/setups', [SetupController::class, 'create']);
     Route::put('/setups/{id}', [SetupController::class, 'put']);
+    Route::patch('/setups/{id}', [SetupController::class, 'patch']);
     Route::post('/incidents', [IncidentController::class, 'create']);
     Route::put('/incidents/{id}', [IncidentController::class, 'put']);
 });
