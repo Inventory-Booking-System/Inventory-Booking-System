@@ -14,6 +14,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import Divider from '@mui/material/Divider';
 import { LoanItem } from '../../components/LoanCard';
 import * as api from '../../api';
+import { Status } from '../../api/loans';
 import { Typography } from '@mui/material';
 
 dayjs.extend(isToday);
@@ -66,7 +67,7 @@ export default function Collect() {
                 {loading && <CircularProgress />}
                 {!loading &&  <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
                     {reservations.map((item) => {
-                        if (item.status_id !== 1) {
+                        if (item.status_id !== Status.RESERVATION && item.status_id !== Status.SETUP) {
                             return null;
                         }
 
@@ -74,7 +75,7 @@ export default function Collect() {
                         item.asset_groups.map(group => group.type = 'group');
                         const lineItems = [...item.asset_groups, ...item.assets];
 
-                        return <Card key={item.id} sx={{ backgroundColor: 'warning.main' }}>
+                        return <Card key={item.id} sx={{ backgroundColor: item.status_id === Status.RESERVATION ? 'warning.main' : 'grey.500' }}>
                             <CardActionArea
                                 onClick={() => navigate(`/collect/${item.id}`)}
                             >

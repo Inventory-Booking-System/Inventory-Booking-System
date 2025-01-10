@@ -28,10 +28,12 @@ export default function AssetSelect({ assets, shoppingCart, onChange, isLoading,
                          */
                         if (asset.asset_group_id && asset.originalAvailable) {
                             const group = groups.find(group => group.id === asset.asset_group_id);
-                            group.available_assets_count--;
-                            group.available = group.available_assets_count > 0;
-                            group.isDisabled = group.available_assets_count === 0;
-                            group.label = `${group.name} (${group.available_assets_count} available)`;
+                            if (group) {
+                                group.available_assets_count--;
+                                group.available = group.available_assets_count > 0;
+                                group.isDisabled = group.available_assets_count === 0;
+                                group.label = `${group.name} (${group.available_assets_count} available)`;
+                            }
                         }
 
                         asset.originalAvailable = false;

@@ -1,5 +1,15 @@
 import request from './request';
 
+export const Status = {
+    BOOKED: 0,
+    RESERVATION: 1,
+    OVERDUE: 2,
+    SETUP: 3,
+    CANCELLED: 4,
+    COMPLETED: 5,
+    MODIFIED: 6
+};
+
 export async function getAll() {
     const resp = await request('/api/loans');
     return await resp.json();
@@ -11,6 +21,7 @@ export async function getAll() {
  *  endDateTime: number,
  *  user: number,
  *  assets: Array<{id: number, returned: boolean}>,
+ *  groups: Array<{id: number, quantity: number}>,
  *  details: string,
  *  reservation: boolean
  * }} data
@@ -39,7 +50,7 @@ export async function create(data) {
  *  endDateTime: number,
  *  user: number,
  *  assets: Array<{id: number, returned: boolean}>,
- *  groups: Array<{id: number, returned: boolean}>,
+ *  groups: Array<{id: number, quantity: number}>,
  *  details: string,
  *  reservation: boolean
  * }} data

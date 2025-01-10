@@ -76,6 +76,9 @@
                             @endif
                         </x-table.cell>
                         <x-table.cell class="col-2">
+                            @foreach($setup->loan->assetGroups as $assetGroup)
+                                <x-link route="asset-groups" id="{{ $assetGroup->id }}" value="{{ $assetGroup->name }} (x{{ $assetGroup->pivot->quantity }})" class="text-secondary"></x-link><br>
+                            @endforeach
                             @foreach($setup->loan->assets as $asset)
                                 <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" style="{{ $asset->pivot->returned ? 'text-decoration: line-through' : '' }}" class="{{ $asset->pivot->returned ? 'text-secondary' : '' }}"></x-link><br>
                             @endforeach
