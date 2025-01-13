@@ -53,8 +53,8 @@ export default function CollectConfirm() {
                 }
 
                 const groupToRemove = newReservation.asset_groups.find(group => group.id === asset.asset_group_id);
-                groupToRemove.pivot.quantity -= 1;
-                if (groupToRemove.pivot.quantity === 0) {
+                if (groupToRemove?.pivot?.quantity) groupToRemove.pivot.quantity -= 1;
+                if (groupToRemove?.pivot?.quantity === 0) {
                     newReservation.asset_groups = newReservation.asset_groups.filter(group => group.id !== asset.asset_group_id);
                 }
                 asset.scanned = true;
@@ -135,7 +135,7 @@ export default function CollectConfirm() {
                             {reservation.asset_groups.map((group, index) => {
                                 let cards = [];
                                 for (let i = 0; i < group.pivot.quantity; i++) {
-                                    cards.push(<Card key={index} sx={{ backgroundColor: 'grey.500' }}>
+                                    cards.push(<Card key={index} sx={{ backgroundColor: reservation.status_id === Status.RESERVATION ? 'warning.main' : 'grey.500' }}>
                                         <CardContent>
                                             <Typography variant="h6" color="black">{group.name}</Typography>
                                         </CardContent>
