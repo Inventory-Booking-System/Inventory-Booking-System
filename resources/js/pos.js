@@ -9,6 +9,7 @@ import Student from './pos/views/Student';
 import StudentSelected from './pos/views/StudentSelected';
 import Collect from './pos/views/Collect';
 import CollectConfirm from './pos/views/CollectConfirm';
+import StaffBooking from './pos/views/StaffBooking';
 
 const theme = createTheme({
     palette: {
@@ -29,6 +30,7 @@ function App() {
                             <Route path="book/:studentId" element={<StudentSelected />} />
                             <Route path="collect" element={<Collect />} />
                             <Route path="collect/:loanId" element={<CollectConfirm />} />
+                            <Route path="staff-booking" element={<StaffBooking />} />
                         </Routes>
                     </MemoryRouter>
                 </SnackbarProvider>

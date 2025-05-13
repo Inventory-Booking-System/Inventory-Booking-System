@@ -27,7 +27,7 @@ export async function getAll() {
  * }} data
  */
 export async function create(data) {
-    const { startDateTime, endDateTime, user, assets, groups, details, reservation } = data;
+    const { startDateTime, endDateTime, user, assets = [], groups = [], details, reservation } = data;
 
     return await request('/api/loans', {
         method: 'POST',

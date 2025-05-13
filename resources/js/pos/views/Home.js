@@ -36,9 +36,11 @@ export default function Home() {
                 </Stack>
                 <ButtonSelect
                     click={navigate}
-                    color="warning"
+                    size="medium"
+                    variant="outlined"
                     buttons={[
-                        { value: 'collect', label: 'Collect Reservation' }
+                        { value: 'collect', label: 'Collect Reservation', color: 'warning' },
+                        { value: 'staff-booking', label: 'New Staff Loan', color: 'success' }
                     ]}
                 />
             </Stack>
