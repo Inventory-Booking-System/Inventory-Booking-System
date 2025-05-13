@@ -1,0 +1,26 @@
+{
+    "name": "Inventory Booking System",
+    "dockerComposeFile": [
+        "docker-compose.yml"
+    ],
+    "workspaceFolder": "/var/www/html",
+    "service": "app",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+				"dbaeumer.vscode-eslint",
+                "streetsidesoftware.code-spell-checker"
+			]
+        }
+    },
+    "forwardPorts": [80],
+	"portsAttributes": {
+		"80": {
+			"label": "HTTP",
+			"onAutoForward": "silent",
+            "requireLocalPort": true
+		}
+	},
+    "postCreateCommand": "composer install --optimize-autoloader && npm install",
+    "postStartCommand": "npm run watch-poll"
+}
