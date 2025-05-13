@@ -40,7 +40,7 @@ export default function BarcodeScanner() {
             if (e.error === 'NO_OPEN_LOANS') {
                 enqueueSnackbar(`Asset ${code.join('')} has no open loans`, {
                     variant: 'warning',
-                    autoHideDuration: 5000
+                    autoHideDuration: 7000
                 });
                 (new Audio('/pos-static/warn.wav')).play();
                 return;
@@ -48,7 +48,7 @@ export default function BarcodeScanner() {
 
             enqueueSnackbar(`Failed to scan in ${code.join('')}`, {
                 variant: 'error',
-                autoHideDuration: 5000
+                autoHideDuration: 7000
             });
             (new Audio('/pos-static/error.wav')).play();
         }

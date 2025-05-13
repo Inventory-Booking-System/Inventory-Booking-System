@@ -40,6 +40,20 @@ class AssetController extends Controller
         ]);
     }
 
+    public function get(Request $request, $id)
+    {
+        $asset = Asset::with('loans')->where('tag', $id)->first();
+        if ($asset === null) {
+            return response()->json([
+                'error' => 'ASSET_NOT_FOUND',
+                'description' => 'The asset with the specified ID does not exist.',
+                'id' => $id
+            ], 404);
+        }
+
+        return response()->json($asset, 200);
+    }
+
     /**
      * @return \Illuminate\Http\Response
      */

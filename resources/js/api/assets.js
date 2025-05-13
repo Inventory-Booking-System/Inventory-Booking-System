@@ -1,6 +1,15 @@
 import request from './request';
 
 /**
+ * Gets the asset with the specified id
+ * @param {*} id
+ */
+export async function get(id) {
+    const resp = await request(`/api/assets/${id}`);
+    return await resp.json();
+}
+
+/**
  * Gets all assets, with availability data between startDateTime and endDateTime
  * @param {{
  *  startDateTime: number,

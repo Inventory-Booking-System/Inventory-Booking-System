@@ -78,14 +78,18 @@ class LoanController extends Controller
         $loan->push();
 
         $assets = [];
-        foreach($validated['assets'] as $key => $asset) {
-            $assets[$asset['id']] = ['returned' => $asset['returned']];
+        if (isset($validated['assets'])) {
+            foreach($validated['assets'] as $key => $asset) {
+                $assets[$asset['id']] = ['returned' => $asset['returned']];
+            }
         }
         $loan->assets()->sync($assets);
 
         $groups = [];
-        foreach($validated['groups'] as $key => $group) {
-            $groups[$group['id']] = ['quantity' => $group['quantity']];
+        if (isset($validated['groups'])) {
+            foreach($validated['groups'] as $key => $group) {
+                $groups[$group['id']] = ['quantity' => $group['quantity']];
+            }
         }
         $loan->assetGroups()->sync($groups);
 

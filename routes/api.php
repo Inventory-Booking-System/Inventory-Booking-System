@@ -46,6 +46,7 @@ Route::get('/signage', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assets', [AssetController::class, 'getAll']);
+    Route::get('/assets/{id}', [AssetController::class, 'get']);
     Route::get('/users', [UserController::class, 'getAll']);
     Route::get('/users/pos', [UserController::class, 'getUsersWithPosAccess']);
     Route::get('/distributionGroups', [DistributionGroupController::class, 'getAll']);
