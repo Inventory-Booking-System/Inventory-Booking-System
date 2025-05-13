@@ -12,7 +12,6 @@ input {
 */
 .simple-keyboard.hg-theme-ios {
     width: 750px;
-    margin: auto;
     color: #000
 }
 .simple-keyboard.hg-theme-ios.hg-theme-default .hg-row .hg-button {
@@ -33,7 +32,7 @@ input {
     margin-left: 18px;
 }
 .simple-keyboard.hg-theme-ios.hg-theme-default {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
     padding: 5px;
     border-radius: 5px;
 }
@@ -54,14 +53,14 @@ input {
     box-shadow: none;
     font-weight: 400;
     font-size: 20px;
-    max-width: 60px;
-    min-width: 60px;
-    height: 60px;
-    min-height: 60px;
+    max-width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
 }
 .simple-keyboard.hg-theme-ios.hg-theme-default .hg-button:active,
 .simple-keyboard.hg-theme-ios.hg-theme-default .hg-button:focus {
-    background: #e4e4e4;
+    background: #90caf9 !important;
 }
 .simple-keyboard.hg-theme-ios.hg-theme-default .hg-button.hg-functionBtn {
     background-color: #adb5bb;
