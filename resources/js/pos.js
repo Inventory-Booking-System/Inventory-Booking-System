@@ -1,9 +1,9 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, MaterialDesignContent } from 'notistack';
 import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import Home from './pos/views/Home';
 import Student from './pos/views/Student';
 import StudentSelected from './pos/views/StudentSelected';
@@ -18,12 +18,30 @@ const theme = createTheme({
     }
 });
 
+const StyledMaterialDesignContent = styled(MaterialDesignContent)(() => ({
+    '&.notistack-MuiContent': {
+        fontSize: '1.5rem',
+        padding: '10px 20px'
+    },
+    '&.notistack-MuiContent svg': {
+        width: '1.5rem !important',
+        height: '1.5rem !important',
+    },
+}));
+
 function App() {
     return (
         <>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
-                <SnackbarProvider>
+                <SnackbarProvider
+                    Components={{
+                        success: StyledMaterialDesignContent,
+                        warning: StyledMaterialDesignContent,
+                        error: StyledMaterialDesignContent,
+                        info: StyledMaterialDesignContent,
+                    }}
+                >
                     <MemoryRouter>
                         <Routes>
                             <Route path="/" element={<Home />} />
@@ -32,6 +50,7 @@ function App() {
                             <Route path="collect" element={<Collect />} />
                             <Route path="collect/:loanId" element={<CollectConfirm />} />
                             <Route path="staff-booking" element={<StaffBooking />} />
+                            <Route path="return" element={<Return />} />
                         </Routes>
                     </MemoryRouter>
                 </SnackbarProvider>

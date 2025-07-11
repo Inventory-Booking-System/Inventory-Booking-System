@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Search from '../components/Search';
+import Paper from '@mui/material/Paper';
 import Keyboard from '../components/Keyboard';
 import * as api from '../../api';
+import NameSearch from '../components/NameSearch';
 
 export default function Student() {
     const navigate = useNavigate();
@@ -33,40 +34,47 @@ export default function Student() {
     }, []);
 
     return (
-        <Box sx={{ paddingTop: 5, height: '100vh' }}>
+        <Box sx={{ pt: 5, pb: 10, height: '100vh' }}>
             <Stack
                 direction="column"
-                spacing={2}
                 alignItems="center"
                 justifyContent="space-between"
                 sx={{ height: '100%' }}
             >
-                <Search
+                <NameSearch
+                    sx={{ zoom: 1.6 }}
                     name="Enter your Name"
                     onSelect={(user) => navigate(user.label, { state: { user } })}
                     options={users}
                     loading={loading}
                     value={search}
-                    onChange={(value) => setSearch(value)}
                 />
+                <Keyboard
+                    sx={{ zoom: 1.6 }}
+                    onChange={value => {
+                        console.log('Keyboard value', value);
+                        setSearch(value);
+                    }}
+                />
+            </Stack>
+            <Paper
+                elevation={3}
+                sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 2 }}
+            >
                 <Stack
-                    direction="column"
-                    spacing={4}
+                    direction="row"
+                    spacing={2}
+                    justifyContent="center"
                 >
-                    <Keyboard
-                        onChange={value => {
-                            console.log('Keyboard value', value);
-                            setSearch(value);
-                        }}
-                    />
                     <Button
                         onClick={() => navigate('/')}
                         variant="outlined"
+                        size="large"
                     >
                         Start again
                     </Button>
                 </Stack>
-            </Stack>
+            </Paper>
         </Box>
     );
 }

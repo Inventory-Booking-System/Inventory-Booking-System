@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/loans', [LoanController::class, 'getAll']);
     Route::get('/loans/reservations', [LoanController::class, 'getReservations']);
     Route::post('/loans', [LoanController::class, 'create']);
+    Route::get('/loans/{id}', [LoanController::class, 'get']);
     Route::put('/loans/{id}', [LoanController::class, 'put']);
     Route::get('/locations', [LocationController::class, 'getAll']);
     Route::post('/setups', [SetupController::class, 'create']);

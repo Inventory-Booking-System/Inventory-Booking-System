@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 
-export default function BasicButtonGroup({ buttons, click, color = 'primary', size = 'large', variant = 'contained' }) {
+export default function BasicButtonGroup({ buttons, click, color = 'primary', size = 'large', variant = 'contained', sx }) {
 
     return (
         <ButtonGroup
+            sx={sx}
             variant={variant}
             size={size}
         >
@@ -30,4 +31,5 @@ BasicButtonGroup.propTypes = {
     color: PropTypes.string,
     size: PropTypes.string,
     variant: PropTypes.string,
+    sx: PropTypes.object
 };

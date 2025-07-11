@@ -5,6 +5,7 @@ import moment from 'moment';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -17,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -31,6 +33,15 @@ import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import Keyboard from '../components/Keyboard';
 import NameSearch from '../components/NameSearch';
 import * as api from '../../api';
+
+const Clock = styled(MultiSectionDigitalClock)(() => ({
+    '& .MuiMultiSectionDigitalClockSection-root': {
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+            display: 'none',
+        },
+    },
+}));
 
 function Asset({ asset, onDelete }) {
 
@@ -87,7 +98,7 @@ function Asset({ asset, onDelete }) {
     }, [asset, previousLoanReturned, nextLoanDate]);
 
     return (
-        <Card sx={{ marginTop: 2, width: '100%' }}>
+        <Card sx={{ marginTop: 2, width: '100%' }} variant="outlined">
             <CardHeader
                 action={
                     <IconButton onClick={onDelete}>
@@ -193,7 +204,7 @@ export default function StaffBooking() {
                     New Staff Loan
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Grid item xs={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Typography variant="h5">
                             Cart
                         </Typography>
@@ -214,7 +225,7 @@ export default function StaffBooking() {
                     <Grid item xs={1}>
                         <Divider orientation="vertical" />
                     </Grid>
-                    {!user && <Grid item xs={7}>
+                    {!user && <Grid item xs={8}>
                         <Stack
                             direction="column"
                             spacing={2}
@@ -222,6 +233,7 @@ export default function StaffBooking() {
                             justifyContent="flex-start"
                         >
                             <NameSearch
+                                sx={{ zoom: 1.6 }}
                                 name="Staff Name"
                                 onSelect={setUser}
                                 options={users}
@@ -230,6 +242,7 @@ export default function StaffBooking() {
                                 onChange={setSearch}
                             />
                             <Keyboard
+                                sx={{ zoom: 1.5 }}
                                 onChange={setSearch}
                             />
                         </Stack>
@@ -257,7 +270,7 @@ export default function StaffBooking() {
                                 <Typography variant="h5">{user.label}</Typography>
                                 <Box />
                             </Stack>
-                            <Card>
+                            <Card sx={{ zoom: 1.4 }}>
                                 <CardHeader
                                     subheader="Loan End Time"
                                 />
@@ -273,7 +286,7 @@ export default function StaffBooking() {
                                                 disablePast
                                                 sx={{ overflow: 'visible' }}
                                             />
-                                            <MultiSectionDigitalClock
+                                            <Clock
                                                 value={dateTime}
                                                 onChange={(newValue) => setDateTime(prev => prev.set('hour', newValue.hour()).set('minute', newValue.minute()))}
                                                 ampm={false}
@@ -327,15 +340,26 @@ export default function StaffBooking() {
                         </Stack>
                     </Grid>}
                 </Grid>
-                <Button
-                    onClick={() => navigate('/')}
-                    variant="outlined"
-                    color="error"
-                    sx={{ position: 'fixed', bottom: 5 }}
-                >
-                    Cancel
-                </Button>
             </Stack>
+            <Paper
+                elevation={3}
+                sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 2 }}
+            >
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    justifyContent="center"
+                >
+                    <Button
+                        onClick={() => navigate('/')}
+                        variant="outlined"
+                        color="error"
+                        size="large"
+                    >
+                        Cancel
+                    </Button>
+                </Stack>
+            </Paper>
         </Box>
     );
 }

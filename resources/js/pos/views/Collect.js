@@ -13,6 +13,7 @@ import CardContent from '@mui/material/CardContent';
 import CircularProgress from '@mui/material/CircularProgress';
 import CardActionArea from '@mui/material/CardActionArea';
 import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
 import { LoanItem } from '../../components/LoanCard';
 import * as api from '../../api';
 import { Status } from '../../api/loans';
@@ -48,13 +49,13 @@ function Item({ item }) {
             onClick={() => navigate(`/collect/${item.id}`)}
         >
             <CardContent>
-                <Typography variant="body2" color="#000" sx={{ textAlign: 'center' }}>
+                <Typography variant="h5" color="#000" sx={{ textAlign: 'center' }}>
                     {item.user.forename} {item.user.surname} : {formatRelativeDate(item.start_date_time)}
                 </Typography>
-                {item.setup?.location?.name && <Typography variant="body2" color="#000" sx={{ textAlign: 'center' }}>
+                {item.setup?.location?.name && <Typography variant="h5" color="#000" sx={{ textAlign: 'center' }}>
                     {item.setup?.location?.name}
                 </Typography>}
-                {item.details && <Typography variant="body2" color="#000" sx={{ textAlign: 'center' }}>
+                {item.details && <Typography variant="h5" color="#000" sx={{ textAlign: 'center' }}>
                     {item.details}
                 </Typography>}
             </CardContent>
@@ -62,8 +63,8 @@ function Item({ item }) {
                 <Divider />
                 <CardContent>
                     <Stack direction="row" spacing={2} justifyContent="center">
-                        {lineItems.map((lineItem, index) => index % 2 === 0 ? <LoanItem key={lineItem.id} item={lineItem} textColor="#000" /> : null)}
-                        {lineItems.map((lineItem, index) => !(index % 2 === 0) ? <LoanItem key={lineItem.id} item={lineItem} textColor="#000" /> : null)}
+                        {lineItems.map((lineItem, index) => index % 2 === 0 ? <LoanItem key={lineItem.id} item={lineItem} textColor="#000" style={{ fontSize: '1.25rem'}} /> : null)}
+                        {lineItems.map((lineItem, index) => !(index % 2 === 0) ? <LoanItem key={lineItem.id} item={lineItem} textColor="#000" style={{ fontSize: '1.25rem'}} /> : null)}
                     </Stack>
                 </CardContent>
             </>}
@@ -102,11 +103,12 @@ export default function Collect() {
     }, []);
 
     return (
-        <Box sx={{ paddingTop: 5 }}>
+        <Box sx={{ paddingTop: 5, overflow: 'auto', height: '100vh' }}>
             <Stack
                 direction="column"
                 spacing={2}
                 alignItems="center"
+                sx={{ marginBottom: 8 }}
             >
                 {loading && <CircularProgress />}
                 {!loading &&  <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
@@ -116,14 +118,25 @@ export default function Collect() {
                     {reservations.filter(item => !dayjs(item.start_date_time, 'DD MMM YYYY HH:mm').isToday()).map((item) => <Item item={item} key={item.id} /> )}
                 </Masonry>}
                 {!loading && reservations.length === 0 && <Typography variant="h5">There are no reservations</Typography>}
-                <Button
-                    onClick={() => navigate('/')}
-                    variant="outlined"
-                    sx={{ position: 'fixed', bottom: 5 }}
-                >
-                    Start again
-                </Button>
             </Stack>
+            <Paper
+                elevation={3}
+                sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: 2 }}
+            >
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    justifyContent="center"
+                >
+                    <Button
+                        onClick={() => navigate('/')}
+                        variant="outlined"
+                        size="large"
+                    >
+                        Start again
+                    </Button>
+                </Stack>
+            </Paper>
         </Box>
     );
 }

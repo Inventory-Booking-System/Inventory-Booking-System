@@ -5,6 +5,7 @@ import Masonry from '@mui/lab/Masonry';
 import { useSnackbar } from 'notistack';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -130,14 +131,14 @@ export default function CollectConfirm() {
                 {loading && <CircularProgress />}
                 {!loading && reservation &&
                     <React.Fragment>
-                        <Typography variant="h5">Scan the following items:</Typography>
+                        <Typography variant="h3">Scan the following items:</Typography>
                         <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
                             {reservation.asset_groups.map((group, index) => {
                                 let cards = [];
                                 for (let i = 0; i < group.pivot.quantity; i++) {
                                     cards.push(<Card key={index} sx={{ backgroundColor: reservation.status_id === Status.RESERVATION ? 'warning.main' : 'grey.500' }}>
                                         <CardContent>
-                                            <Typography variant="h6" color="black">{group.name}</Typography>
+                                            <Typography variant="h5" color="black">{group.name}</Typography>
                                         </CardContent>
                                     </Card>);
                                 }
@@ -145,28 +146,40 @@ export default function CollectConfirm() {
                             })}
                             {reservation.assets.map((asset, index) => <Card key={index} sx={{ backgroundColor: asset.scanned ? 'success.main' : undefined }}>
                                 <CardContent>
-                                    <Typography variant="h6">{asset.name} ({asset.tag})</Typography>
+                                    <Typography variant="h5">{asset.name} ({asset.tag})</Typography>
                                 </CardContent>
                             </Card>)}
                         </Masonry>
                         <LoadingButton
                             onClick={handleBeginLoan}
-                            variant="outlined"
+                            variant="contained"
                             color="success"
+                            size="large"
                             loading={submitLoading}
                         >
                             Begin {reservation.status_id === Status.RESERVATION ? 'Loan' : 'Setup'}
                         </LoadingButton>
                     </React.Fragment>}
-                <Button
-                    onClick={() => navigate('/')}
-                    variant="outlined"
-                    sx={{ position: 'fixed', bottom: 5 }}
-                    color="error"
-                >
-                    Cancel
-                </Button>
             </Stack>
+            <Paper
+                elevation={3}
+                sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: 2 }}
+            >
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    justifyContent="center"
+                >
+                    <Button
+                        onClick={() => navigate('/')}
+                        variant="outlined"
+                        size="large"
+                        color="error"
+                    >
+                        Cancel
+                    </Button>
+                </Stack>
+            </Paper>
         </Box>
     );
 }

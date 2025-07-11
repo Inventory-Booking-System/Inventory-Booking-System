@@ -26,17 +26,18 @@ export default function Home() {
                 >
                     <ButtonSelect
                         click={navigate}
+                        sx={{ transform: 'scale(1.6)' }}
                         buttons={[
                             { value: 'book', label: 'Borrow Equipment' }
                         ]}
                     />
-                    <Alert severity="info" variant="outlined" sx={{ zoom: '60%' }}>
+                    <Alert severity="info" variant="outlined">
                         Scan a barcode now to return equipment
                     </Alert>
                 </Stack>
                 <ButtonSelect
                     click={navigate}
-                    size="medium"
+                    size="large"
                     variant="outlined"
                     buttons={[
                         { value: 'collect', label: 'Collect Reservation', color: 'warning' },
