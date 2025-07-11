@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+      - CA_BUNDLE=.devcontainer/cacert.pem
+    volumes:
+      - ..:/var/www/html:cached
+      - app-vendor:/var/www/html/vendor
+      - app-node_modules:/var/www/html/node_modules
+      - config:/etc/inventory-booking-system/config
+      - storage:/var/www/html/storage
+    network_mode: service:db
+    depends_on:
+      - db
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: appdb
+      DB_USERNAME: devuser
+      DB_PASSWORD: devpass
+      APP_URL: http://localhost
+      APP_ENV: local
+      APP_DEBUG: true
+      MAIL_HOST: ''
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpass
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  app-vendor:
+  app-node_modules:
+  config:
+  storage:
+  mysql-data:
