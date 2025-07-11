@@ -200,13 +200,13 @@ class AssetController extends Controller
                 // All assets are returned, update loan status
                 $loan->status_id = 5;
                 $loan->save();
-            }
 
-            $user = User::find($loan->user_id);
-            if (Config::get('mail.cc.address')) {
-                Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
-            } else {
-                Mail::to($user->email)->queue(new LoanOrder($loan, false));
+                $user = User::find($loan->user_id);
+                if (Config::get('mail.cc.address')) {
+                    Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
+                } else {
+                    Mail::to($user->email)->queue(new LoanOrder($loan, false));
+                }
             }
         }
 

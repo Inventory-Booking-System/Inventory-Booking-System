@@ -10,6 +10,7 @@ import StudentSelected from './pos/views/StudentSelected';
 import Collect from './pos/views/Collect';
 import CollectConfirm from './pos/views/CollectConfirm';
 import StaffBooking from './pos/views/StaffBooking';
+import Return from './pos/views/Return';
 
 const theme = createTheme({
     palette: {

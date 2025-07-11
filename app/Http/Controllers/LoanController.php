@@ -169,6 +169,16 @@ class LoanController extends Controller
     /**
      * @return \Illuminate\Http\Response
      */
+    public function get(Request $request, $id)
+    {
+        return $loan = Loan::query()
+            ->with(['assets', 'assetGroups', 'user', 'setup'])
+            ->findOrFail($id);
+    }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
     public function getReservations()
     {
         return $loans = Loan::query()
