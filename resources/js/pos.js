@@ -32,6 +32,7 @@ function App() {
                             <Route path="collect" element={<Collect />} />
                             <Route path="collect/:loanId" element={<CollectConfirm />} />
                             <Route path="staff-booking" element={<StaffBooking />} />
+                            <Route path="return" element={<Return />} />
                         </Routes>
                     </MemoryRouter>
                 </SnackbarProvider>
