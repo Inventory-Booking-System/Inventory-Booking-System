@@ -16,6 +16,14 @@ export async function getAll() {
 }
 
 /**
+ * @param {number} id Loan ID
+ */
+export async function get(id) {
+    const resp = await request(`/api/loans/${id}`);
+    return await resp.json();
+}
+
+/**
  * @param {{
  *  startDateTime: number,
  *  endDateTime: number,

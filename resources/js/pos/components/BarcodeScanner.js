@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { scanIn } from '../../api/assets';
+import { scanIn, get, getAssetCurrentLoan } from '../../api/assets';
 import { assets as assetsApi } from '../../api';
 
 export default function BarcodeScanner() {
+    const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const [code, setCode] = useState([]);
     const [assets, setAssets] = useState([]);
@@ -30,12 +32,31 @@ export default function BarcodeScanner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleOpen = async (code) => {
         try {
+            const asset = await get(code.join(''));
+            const assetCurrentLoan = getAssetCurrentLoan(asset);
+            console.log(assetCurrentLoan);
+
             await scanIn({ tag: code.join('') });
+            (new Audio('/pos-static/notify.wav')).play();
             enqueueSnackbar(`Scanned in ${code.join('')}`, {
                 variant: 'success',
                 autoHideDuration: 5000
             });
-            (new Audio('/pos-static/notify.wav')).play();
+
+            if (assetCurrentLoan) {
+
+                if (assetCurrentLoan.assets.length > 1) {
+                    navigate('/return', {
+                        state: {
+                            loan: assetCurrentLoan
+                        }
+                    });
+                    return;
+                }
+            } else {
+                throw 'NO_OPEN_LOANS';
+            }
+
         } catch (e) {
             if (e.error === 'NO_OPEN_LOANS') {
                 enqueueSnackbar(`Asset ${code.join('')} has no open loans`, {
