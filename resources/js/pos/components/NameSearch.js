@@ -5,13 +5,13 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 
-export default function NameSearch({ name, options, onSelect, value }) {
+export default function NameSearch({ name, options, onSelect, value, sx }) {
     const results = value.length ? options.filter(option => option.label.toLowerCase().includes(value.toLowerCase())) : [];
 
     return (
         <Stack
             spacing={2}
-            sx={{ width: '100%' }}
+            sx={{ width: '100%', ...sx }}
             alignItems='center'
         >
             <Grid
@@ -26,8 +26,17 @@ export default function NameSearch({ name, options, onSelect, value }) {
                     width: '100%'
                 }}
             >
-                {results.slice(0,6).map(option => (
-                    <Grid item xs={4} key={option.label}>
+                {results.slice(0,4).map(option => (
+                    <Grid
+                        item
+                        xs={3}
+                        key={option.label}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
                         <Button
                             variant='contained'
                             onClick={() => {

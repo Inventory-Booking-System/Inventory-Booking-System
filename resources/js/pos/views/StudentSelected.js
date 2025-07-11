@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import AssetCard from '../components/AssetCard';
@@ -165,8 +166,8 @@ export default function StudentSelected() {
                     alignItems="center"
                     justifyContent="center"
                 >
-                    <Typography variant="h4">{studentId}</Typography>
-                    <Typography variant="h5">Return this item before booking another:</Typography>
+                    <Typography variant="h3">{studentId}</Typography>
+                    <Typography variant="h4" gutterBottom>Return this item before booking another:</Typography>
                     {existingLoans.map(loan => loan.assets.map(asset => {
                         asset.available = true;
                         return (
@@ -178,14 +179,25 @@ export default function StudentSelected() {
                             />
                         );
                     }))}
-                    <Button
-                        onClick={() => navigate('/')}
-                        variant="outlined"
-                        sx={{ position: 'fixed', bottom: 5 }}
-                    >
-                        Cancel
-                    </Button>
                 </Stack>
+                <Paper
+                    elevation={3}
+                    sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 2 }}
+                >
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        justifyContent="center"
+                    >
+                        <Button
+                            onClick={() => navigate('/')}
+                            variant="outlined"
+                            size="large"
+                        >
+                            Cancel
+                        </Button>
+                    </Stack>
+                </Paper>
             </Box>
         );
     }
@@ -203,7 +215,7 @@ export default function StudentSelected() {
                     alignItems="center"
                     justifyContent="center"
                 >
-                    <Typography variant="h4">{studentId}</Typography>
+                    <Typography variant="h2">{studentId}</Typography>
 
                     {(!scannerReady || existingLoans === null) &&
                     <Stack direction="column" alignItems="center" spacing={2}>
@@ -231,15 +243,26 @@ export default function StudentSelected() {
                             />
                         );
                     })}
-                    <Button
-                        onClick={() => navigate('/')}
-                        variant="outlined"
-                        sx={{ position: 'fixed', bottom: 5 }}
-                        color={selectedAssets.length ? 'primary' : 'error'}
-                    >
-                        {selectedAssets.length ? 'Finish' : 'Cancel'}
-                    </Button>
                 </Stack>
+                <Paper
+                    elevation={3}
+                    sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 2 }}
+                >
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        justifyContent="center"
+                    >
+                        <Button
+                            onClick={() => navigate('/')}
+                            variant="outlined"
+                            size="large"
+                            color={selectedAssets.length ? 'primary' : 'error'}
+                        >
+                            {selectedAssets.length ? 'Finish' : 'Cancel'}
+                        </Button>
+                    </Stack>
+                </Paper>
             </Box>
         </>
     );
