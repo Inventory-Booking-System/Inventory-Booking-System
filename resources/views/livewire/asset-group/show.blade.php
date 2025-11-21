@@ -3,23 +3,26 @@
         <div class="row">
             <div class="card w-100 mr-3">
                 <div class="card-header bg-dark text-center">
-                    <h1>{{ $asset->name }}</h1>
+                    <h1>{{ $assetGroup->name }}</h1>
                 </div>
                 <div class="card-body">
-                    <strong>Tag:</strong><p class="card-text">{{ $asset->tag }}</p>
-                    <strong>Description:</strong><p class="card-text">{{ $asset->description }}</p>
-                    <strong>Created Date:</strong><p class="card-text">{{ $asset->humanFormat($asset->created_at) }}</p>
-                    <strong>Last Updated:</strong><p class="card-text">{{ $asset->humanFormat($asset->updated_at) }}</p>
+                    <strong>Description:</strong><p class="card-text">{{ $assetGroup->description }}</p>
+                    <strong>Created Date:</strong><p class="card-text">{{ $assetGroup->humanFormat($assetGroup->created_at) }}</p>
+                    <strong>Last Updated:</strong><p class="card-text">{{ $assetGroup->humanFormat($assetGroup->updated_at) }}</p>
                     
                     <hr>
                     
-                    <strong>Asset Group:</strong>
-                    @if($asset->assetGroup)
-                        <p class="card-text mt-2">
-                            <x-link route="asset-groups" id="{{ $asset->assetGroup->id }}" value="{{ $asset->assetGroup->name }}"></x-link>
-                        </p>
+                    <strong>Assets in this Group:</strong>
+                    @if($assetGroup->assets->count() > 0)
+                        <ul class="list-unstyled mt-2">
+                            @foreach($assetGroup->assets as $asset)
+                                <li class="mb-1">
+                                    <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
+                                </li>
+                            @endforeach
+                        </ul>
                     @else
-                        <p class="card-text text-muted">Not assigned to any group.</p>
+                        <p class="card-text text-muted">No assets in this group yet.</p>
                     @endif
                 </div>
             </div>
