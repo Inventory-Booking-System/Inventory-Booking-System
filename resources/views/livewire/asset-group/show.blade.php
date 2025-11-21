@@ -96,6 +96,9 @@
                             @foreach($loan->assets as $asset)
                                 <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" lineThrough="{{ $asset->pivot->returned }}"></x-link><br>
                             @endforeach
+                            @foreach($loan->assetGroups as $group)
+                                <x-link route="asset-groups" id="{{ $group->id }}" value="{{ $group->name }} (x{{ $group->pivot->quantity }})"></x-link><br>
+                            @endforeach
                         </x-table.cell>
                     </x-table.row>
                 @empty
