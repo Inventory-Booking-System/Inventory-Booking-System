@@ -10,6 +10,17 @@
                     <strong>Description:</strong><p class="card-text">{{ $asset->description }}</p>
                     <strong>Created Date:</strong><p class="card-text">{{ $asset->humanFormat($asset->created_at) }}</p>
                     <strong>Last Updated:</strong><p class="card-text">{{ $asset->humanFormat($asset->updated_at) }}</p>
+                    
+                    <hr>
+                    
+                    <strong>Asset Group:</strong>
+                    @if($asset->assetGroup)
+                        <p class="card-text mt-2">
+                            <x-link route="asset-groups" id="{{ $asset->assetGroup->id }}" value="{{ $asset->assetGroup->name }}"></x-link>
+                        </p>
+                    @else
+                        <p class="card-text text-muted">Not assigned to any group.</p>
+                    @endif
                 </div>
             </div>
         </div>

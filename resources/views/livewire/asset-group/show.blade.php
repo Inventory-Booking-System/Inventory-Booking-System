@@ -9,6 +9,21 @@
                     <strong>Description:</strong><p class="card-text">{{ $assetGroup->description }}</p>
                     <strong>Created Date:</strong><p class="card-text">{{ $assetGroup->humanFormat($assetGroup->created_at) }}</p>
                     <strong>Last Updated:</strong><p class="card-text">{{ $assetGroup->humanFormat($assetGroup->updated_at) }}</p>
+                    
+                    <hr>
+                    
+                    <strong>Assets in this Group:</strong>
+                    @if($assetGroup->assets->count() > 0)
+                        <ul class="list-unstyled mt-2">
+                            @foreach($assetGroup->assets as $asset)
+                                <li class="mb-1">
+                                    <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})"></x-link>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="card-text text-muted">No assets in this group yet.</p>
+                    @endif
                 </div>
             </div>
         </div>
