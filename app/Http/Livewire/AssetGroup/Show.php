@@ -150,10 +150,18 @@ class Show extends Component
         $assetGroup = $this->assetGroup;
 
         $query = Loan::query()
+            ->distinct()
             ->select('loans.*')
             ->join('users', 'loans.user_id', '=', 'users.id') // Join users table so we can search by user name
-            ->whereHas('assetGroups', function($query) use($assetGroup){
-                $query->where('asset_groups.id', '=', $assetGroup->id);
+            ->where(function($query) use ($assetGroup) {
+                // Include loans with the asset group directly
+                $query->whereHas('assetGroups', function($query) use ($assetGroup) {
+                    $query->where('asset_groups.id', '=', $assetGroup->id);
+                })
+                // Or include loans with individual assets from this group
+                ->orWhereHas('assets', function($query) use ($assetGroup) {
+                    $query->where('assets.asset_group_id', '=', $assetGroup->id);
+                });
             })
             ->when($this->filters['id'], fn($query, $search) => $this->searchById($query, $search))
             ->when($this->filters['user_id'], fn($query, $search) => $this->searchByUser($query, $search))
