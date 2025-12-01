@@ -169,6 +169,7 @@ class AssetController extends Controller
     public function scanIn(Request $request, $id)
     {
         $loans = Loan::query()
+            ->with(['assets', 'user']) // Eager load relationships
             ->whereHas('assets', function($query) use($id) {
                 $query->where('tag', '=', $id);
             })
@@ -187,10 +188,8 @@ class AssetController extends Controller
         }
 
         foreach ($loans as $loan) {
-            $assets = $loan->assets()->where('tag', '=', $id)->get();
-            foreach ($assets as $asset) {
-                $loan->assets()->updateExistingPivot($asset->id, ['returned' => 1]);
-            }
+            $asset = $loan->assets->firstWhere('tag', $id);
+            $loan->assets()->updateExistingPivot($asset->id, ['returned' => 1]);
 
             // Check if all assets for this loan are returned
             $totalAssets = $loan->assets->count();
@@ -201,15 +200,14 @@ class AssetController extends Controller
                 $loan->status_id = 5;
                 $loan->save();
 
-                $user = User::find($loan->user_id);
                 if (Config::get('mail.cc.address')) {
-                    Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
+                    Mail::to($loan->user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
                 } else {
-                    Mail::to($user->email)->queue(new LoanOrder($loan, false));
+                    Mail::to($loan->user->email)->queue(new LoanOrder($loan, false));
                 }
             }
         }
 
-        return response()->json($loans, 200);
+        return response()->json($loans[0], 200);
     }
 }

@@ -1,4 +1,3 @@
-import moment from 'moment';
 import request from './request';
 
 export const ASSET_STATUS = {
@@ -10,26 +9,6 @@ export const ASSET_STATUS = {
     5: 'Completed',
     6: 'Modified'
 };
-
-export function getAssetCurrentLoan(asset) {
-    if (!asset || !asset.loans) {
-        return null;
-    }
-
-    asset.loans.sort((a, b) => moment(a.start_date_time, 'DD MMM YYYY HH:mm').diff(moment(b.start_date_time, 'DD MMM YYYY HH:mm')));
-
-    for (const loan of asset.loans) {
-        if (loan.status_id === 0 || loan.status_id === 2 || loan.status_id === 3) {
-            if (loan.pivot.returned) {
-                continue;
-            }
-            return loan;
-        }
-    }
-
-    return null;
-}
-
 
 /**
  * Gets the asset with the specified id
