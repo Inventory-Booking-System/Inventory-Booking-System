@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { scanIn, get, getAssetCurrentLoan } from '../../api/assets';
+import { scanIn } from '../../api/assets';
 import { assets as assetsApi } from '../../api';
 
 export default function BarcodeScanner() {
@@ -32,29 +32,20 @@ export default function BarcodeScanner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleOpen = async (code) => {
         try {
-            const asset = await get(code.join(''));
-            const assetCurrentLoan = getAssetCurrentLoan(asset);
-            console.log(assetCurrentLoan);
-
-            await scanIn({ tag: code.join('') });
+            const loan = await scanIn({ tag: code.join('') });
             (new Audio('/pos-static/notify.wav')).play();
             enqueueSnackbar(`Scanned in ${code.join('')}`, {
                 variant: 'success',
                 autoHideDuration: 5000
             });
 
-            if (assetCurrentLoan) {
-
-                if (assetCurrentLoan.assets.length > 1) {
-                    navigate('/return', {
-                        state: {
-                            loan: assetCurrentLoan
-                        }
-                    });
-                    return;
-                }
-            } else {
-                throw 'NO_OPEN_LOANS';
+            if (loan && loan.assets.length > 1) {
+                navigate('/return', {
+                    state: {
+                        loan: loan
+                    }
+                });
+                return;
             }
 
         } catch (e) {
@@ -67,6 +58,7 @@ export default function BarcodeScanner() {
                 return;
             }
 
+            console.warn(e);
             enqueueSnackbar(`Failed to scan in ${code.join('')}`, {
                 variant: 'error',
                 autoHideDuration: 7000
