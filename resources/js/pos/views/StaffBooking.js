@@ -32,6 +32,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import Keyboard from '../components/Keyboard';
 import NameSearch from '../components/NameSearch';
+import BookingAssetCard from '../components/BookingAssetCard';
 import * as api from '../../api';
 
 const Clock = styled(MultiSectionDigitalClock)(() => ({
@@ -98,22 +99,17 @@ function Asset({ asset, onDelete }) {
     }, [asset, previousLoanReturned, nextLoanDate]);
 
     return (
-        <Card sx={{ marginTop: 2, width: '100%' }} variant="outlined">
-            <CardHeader
-                action={
-                    <IconButton onClick={onDelete}>
-                        <DeleteIcon />
-                    </IconButton>
-                }
-                title={asset.name}
-                subheader={`(${asset.tag})`}
-            />
-            <CardContent>
-                <Alert variant="outlined" severity={status === 'Available' ? 'success' : (status?.startsWith('Must be returned') ? 'warning' : 'error')}>
-                    {status}
-                </Alert>
-            </CardContent>
-        </Card>
+        <BookingAssetCard
+            title={asset.name}
+            subtitle={`(${asset.tag})`}
+            action={
+                <IconButton onClick={onDelete}>
+                    <DeleteIcon />
+                </IconButton>
+            }
+            statusText={status}
+            statusSeverity={status === 'Available' ? 'success' : (status?.startsWith('Must be returned') ? 'warning' : 'error')}
+        />
     );
 
 }

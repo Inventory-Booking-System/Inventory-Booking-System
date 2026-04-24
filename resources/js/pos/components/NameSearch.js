@@ -54,7 +54,8 @@ export default function NameSearch({ name, options, onSelect, value, sx }) {
                 autoFocus
                 sx={{ width: 300 }}
                 InputProps={{
-                    type: 'search'
+                    type: 'search',
+                    autoComplete: 'off'
                 }}
             />
         </Stack>

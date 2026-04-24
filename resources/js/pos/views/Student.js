@@ -69,9 +69,10 @@ export default function Student() {
                     <Button
                         onClick={() => navigate('/')}
                         variant="outlined"
+                        color="error"
                         size="large"
                     >
-                        Start again
+                        Cancel
                     </Button>
                 </Stack>
             </Paper>
