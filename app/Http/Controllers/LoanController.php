@@ -17,6 +17,33 @@ use Carbon\Carbon;
 
 class LoanController extends Controller
 {
+    private function queueLoanEmail(Loan $loan, bool $isCreateOperation)
+    {
+        $student = User::find($loan->user_id);
+        if (!$student || !$student->email) {
+            return;
+        }
+
+        $cc = [];
+        if ($loan->authorised_by) {
+            $authoriser = User::find($loan->authorised_by);
+            if ($authoriser && $authoriser->email && $authoriser->email !== $student->email) {
+                $cc[] = $authoriser->email;
+            }
+        }
+
+        if (Config::get('mail.cc.address')) {
+            $cc[] = Config::get('mail.cc.address');
+        }
+
+        $mail = Mail::to($student->email);
+        if (!empty($cc)) {
+            $mail->cc(array_values(array_unique($cc)));
+        }
+
+        $mail->queue(new LoanOrder($loan, $isCreateOperation));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -51,8 +78,9 @@ class LoanController extends Controller
         $validator = Validator::make($request->all(), [
             'startDateTime' => 'required|integer|lt:endDateTime',
             'endDateTime' => 'required|integer|gt:startDateTime',
-            'user' => 'required|integer',
+            'user' => 'required|integer|exists:users,id',
             'details' => 'nullable|string',
+            'authorisedBy' => 'nullable|integer|exists:users,id',
             'reservation' => 'required|boolean',
             'assets' => 'array',
             'assets.*.id' => 'required|integer',
@@ -73,6 +101,7 @@ class LoanController extends Controller
         $loan->end_date_time = Carbon::createFromTimestamp($validated['endDateTime']);
         $loan->user_id = $validated['user'];
         $loan->details = isset($validated['details']) ? $validated['details'] : null;
+        $loan->authorised_by = isset($validated['authorisedBy']) ? $validated['authorisedBy'] : null;
         $loan->status_id = $validated['reservation'] ? 1 : 0;
         $loan->created_by = $request->user()->id;
         $loan->push();
@@ -93,12 +122,7 @@ class LoanController extends Controller
         }
         $loan->assetGroups()->sync($groups);
 
-        $user = User::find($loan->user_id);
-        if (Config::get('mail.cc.address')) {
-            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, true));
-        } else {
-            Mail::to($user->email)->queue(new LoanOrder($loan, true));
-        }
+        $this->queueLoanEmail($loan, true);
 
         return $loan->toJSON();
     }
@@ -108,8 +132,9 @@ class LoanController extends Controller
         $validator = Validator::make($request->all(), [
             'startDateTime' => 'required|integer|lt:endDateTime',
             'endDateTime' => 'required|integer|gt:startDateTime',
-            'user' => 'required|integer',
+            'user' => 'required|integer|exists:users,id',
             'details' => 'nullable|string',
+            'authorisedBy' => 'nullable|integer|exists:users,id',
             'reservation' => 'required|boolean',
             'assets' => 'array',
             'assets.*.id' => 'required|integer',
@@ -130,6 +155,7 @@ class LoanController extends Controller
         $loan->end_date_time = Carbon::createFromTimestamp($validated['endDateTime']);
         $loan->user_id = $validated['user'];
         $loan->details = isset($validated['details']) ? $validated['details'] : null;
+        $loan->authorised_by = isset($validated['authorisedBy']) ? $validated['authorisedBy'] : null;
         $loan->status_id = $validated['reservation'] ? 1 : 0;
         $loan->created_by = $request->user()->id;
         $loan->push();
@@ -146,12 +172,7 @@ class LoanController extends Controller
         }
         $loan->assetGroups()->sync($groups);
 
-        $user = User::find($loan->user_id);
-        if (Config::get('mail.cc.address')) {
-            Mail::to($user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
-        } else {
-            Mail::to($user->email)->queue(new LoanOrder($loan, false));
-        }
+        $this->queueLoanEmail($loan, false);
 
         return $loan->toJSON();
     }

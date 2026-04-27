@@ -16,6 +16,10 @@ class DistributionGroups extends Component
 {
     use WithPerPagePagination, WithSorting, WithBulkActions, WithShoppingCart;
 
+    public const ACCESS_DISABLED = -1;
+    public const ACCESS_NOT_CONFIGURED = 0;
+    public const ACCESS_ENABLED = 1;
+
     protected $paginationTheme = 'bootstrap';       #Use boostrap theme when displaying data with pagination
     protected $queryString = [];                    #Use on tables when displaying data based on the user request
     public $showFilters = false;                    #These are displayed above each column in the table
@@ -38,6 +42,8 @@ class DistributionGroups extends Component
     {
         return [
             'editing.name' => 'nullable|string',
+            'editing.pos_staff_screen_access' => 'required|integer|in:-1,0,1',
+            'editing.pos_student_screen_access' => 'required|integer|in:-1,0,1',
             'user_id' => 'nullable|numeric|exists:assets,id',
         ];
     }
@@ -62,9 +68,16 @@ class DistributionGroups extends Component
     public function makeBlankDistributionGroup()
     {
         $this->editing = DistributionGroup::make();
+        $this->editing->pos_staff_screen_access = self::ACCESS_NOT_CONFIGURED;
+        $this->editing->pos_student_screen_access = self::ACCESS_NOT_CONFIGURED;
         $user_id = null;
         $this->emptyCart();
         $this->iteration ++;
+    }
+
+    public function getAccessStateLabel($state)
+    {
+        return DistributionGroup::posAccessLabel($state);
     }
 
     public function deleteSelected()
@@ -179,6 +192,7 @@ class DistributionGroups extends Component
     {
         $query = DistributionGroup::query()
             ->with('users')
+            ->withCount('users')
             ->when($this->filters['name'], fn($query, $search) => $this->searchByName($query, $search))
             ->when($this->filters['users'], fn($query, $search) => $this->searchByUsers($query, $search))
             ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {

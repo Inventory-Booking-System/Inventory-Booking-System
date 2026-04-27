@@ -62,7 +62,7 @@
                             <x-table.cell class="col-1"><x-link route="incidents" id="{{ $incident->id }}" value="#{{ $incident->id }}"></x-link></x-table.cell>
                             <x-table.cell class="col-1">{{ $incident->start_date_time }}</x-table.cell>
                             <x-table.cell class="col-1"><x-link route="locations" id="{{ $incident->location->id }}" value="{{ $incident->location->name }}"></x-link></x-table.cell>
-                            <x-table.cell class="col-1"><x-link route="distributionGroups" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></x-table.cell>
+                            <x-table.cell class="col-1"><x-link route="user-groups" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></x-table.cell>
 
                             <x-table.cell class="col">
                                 @foreach($incident->issues as $issue)
@@ -165,9 +165,9 @@
                             <x-input.datetime wire:model.defer="editing.start_date_time" id="start_date_time" />
                         </x-input.group>
 
-                        <!-- Distribution Group -->
-                        <x-input.group for="distribution_id" label="Alert" :error="$errors->first('editing.distribution_id')">
-                            <x-input.select wire:model.defer="editing.distribution_id" id="distribution_id" placeholder="Select who to alert" fullWidth inModal>
+                        <!-- User Group -->
+                        <x-input.group for="distribution_id" label="Alert Group" :error="$errors->first('editing.distribution_id')">
+                            <x-input.select wire:model.defer="editing.distribution_id" id="distribution_id" placeholder="Select alert group" fullWidth inModal>
                                 @foreach ($distributions as $distribution)
                                     <option value="{{ $distribution->id }}">{{ $distribution->name }}</option>
                                 @endforeach

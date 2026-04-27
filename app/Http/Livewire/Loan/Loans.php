@@ -39,6 +39,7 @@ class Loans extends Component
         'start_date_time' => null,
         'end_date_time' => null,
         'details' => null,
+        'authorised_by' => null,
         'assets' => null,
     ];
     public $expandedCells = [];
@@ -60,6 +61,7 @@ class Loans extends Component
             'editing.start_date_time' => 'required|date|before:editing.end_date_time',
             'editing.end_date_time' => 'required|date|after:editing.start_date_time',
             'editing.details' => 'nullable|string',
+            'editing.authorised_by' => 'nullable|integer|exists:users,id',
             'equipment_id' => 'nullable|integer|exists:assets,id',
         ];
     }

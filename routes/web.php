@@ -64,7 +64,9 @@ Route::middleware(['auth', 'checkpassword'])->group(function () {
     Route::resource('assets', AssetController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('asset-groups', AssetGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('locations', LocationController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
-    Route::resource('distributionGroups', DistributionGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+    Route::resource('user-groups', DistributionGroupController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+    Route::get('distributionGroups', fn() => redirect()->route('user-groups.index'))->name('distributionGroups.index');
+    Route::get('distributionGroups/{distributionGroup}', fn($distributionGroup) => redirect()->route('user-groups.show', ['user_group' => $distributionGroup]))->name('distributionGroups.show');
     Route::resource('equipmentIssues', EquipmentIssueController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('users', UserController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('incidents', IncidentController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);

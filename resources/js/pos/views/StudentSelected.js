@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -12,56 +12,65 @@ import AssetCard from '../components/AssetCard';
 import BarcodeScannerOut from '../components/BarcodeScannerOut';
 import { assets as assetsApi, loans } from '../../api';
 
-async function getOpenLoans(studentName) {
+function getDefaultEndDateTime() {
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(15, 30, 0, 0);
+
+    if (now.getTime() > end.getTime()) {
+        end.setDate(end.getDate() + 1);
+    }
+
+    return Math.round(end.getTime() / 1000);
+}
+
+async function getOpenLoans(userId) {
     const openLoans = [];
     const allLoans = await loans.getAll();
     for (const loan of allLoans) {
-        if (loan.details === studentName) {
+        if (loan.user.id === userId) {
             openLoans.push(loan);
         }
     }
     return openLoans;
 }
 
-async function scanOut({ user, studentName, asset }) {
+async function scanOut({ user, authorisedBy, asset }) {
     return loans.create({
         user,
         assets: [{
             id: asset.id,
             returned: false
         }],
-        details: studentName,
+        authorisedBy,
         reservation: false,
         startDateTime: Math.round(Date.now() / 1000),
-        endDateTime:  Math.round(new Date(new Date().setHours(15, 30, 0, 0)).getTime() / 1000)
+        endDateTime: getDefaultEndDateTime()
     });
 }
 
 export default function StudentSelected() {
-    const { studentId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const { userId, authorisedByUserId, label: studentName } = location.state.user;
     const { enqueueSnackbar } = useSnackbar();
     const [assets, setAssets] = useState([]);
     const [selectedAssets, setSelectedAssets] = useState([]);
-    const [pendingAssets, setPendingAssets] = useState([]);
     const [existingLoans, setExistingLoans] = useState(null);
     const [scannerReady, setScannerReady] = useState(false);
 
     const assetsRef = useRef(assets);
-    const pendingAssetsRef = useRef(pendingAssets);
     const selectedAssetsRef = useRef(selectedAssets);
 
     useEffect(() => {
         assetsRef.current = assets;
-        pendingAssetsRef.current = pendingAssets;
         selectedAssetsRef.current = selectedAssets;
-    }, [assets, pendingAssets, selectedAssets]);
+    }, [assets, selectedAssets]);
 
     useEffect(() => {
         assetsApi.getAll({
             startDateTime: Math.round(Date.now() / 1000),
-            endDateTime: Math.round(new Date(new Date().setHours(15, 30, 0, 0)).getTime() / 1000),
+            endDateTime: getDefaultEndDateTime(),
         })
             .then(data => setAssets(data.assets))
             .then(() => setScannerReady(true))
@@ -72,19 +81,11 @@ export default function StudentSelected() {
                 });
             });
 
-        getOpenLoans(studentId)
+        getOpenLoans(userId)
             .then(loans => {
                 setExistingLoans(loans);
-                if (loans.length) {
-                    console.log(loans);
-                    enqueueSnackbar('Return your previous item before booking another.', {
-                        variant: 'error',
-                        autoHideDuration: 5000
-                    });
-                    (new Audio('/pos-static/error.wav')).play();
-                }
             });
-    }, [enqueueSnackbar, studentId]);
+    }, [enqueueSnackbar, userId]);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -106,21 +107,10 @@ export default function StudentSelected() {
         }
 
         /**
-         * If the asset is not available and is not already pending, add it to the pending list.
+         * Don't allow more than one asset to be scanned
          */
-        if (!asset.available && !pendingAssetsRef.current.includes(asset)) {
-            setPendingAssets([...pendingAssetsRef.current, asset]);
-            setSelectedAssets([...selectedAssetsRef.current, assetTag]);
-            (new Audio('/pos-static/warn.wav')).play();
-            return;
-        }
-
-        /**
-         * If the asset has just been scanned, do not add it to the selected
-         * list again.
-         */
-        if (selectedAssetsRef.current.includes(assetTag)) {
-            enqueueSnackbar('Asset has already been scanned.', {
+        if (selectedAssetsRef.current.length > 0) {
+            enqueueSnackbar('You can only borrow 1 item at a time.', {
                 variant: 'warning',
                 autoHideDuration: 5000
             });
@@ -129,24 +119,20 @@ export default function StudentSelected() {
         }
 
         /**
-         * If the asset is pending, remove it from the pending list and set it to available.
+         * If the asset is not available, show snackbar and don't add to selected assets.
          */
-        if (pendingAssetsRef.current.includes(asset)) {
-            const index = pendingAssetsRef.current.indexOf(asset);
-            pendingAssetsRef.current.splice(index, 1);
-            setPendingAssets(pendingAssetsRef.current);
-
-            asset.available = true;
-            setAssets([...assetsRef.current]);
-
-            scanOut({ user: location.state.user.userId, studentName: studentId, asset });
-            (new Audio('/pos-static/ding.wav')).play();
+        if (!asset.available) {
+            enqueueSnackbar(`Asset ${asset.tag} is unavailable. Try a different item.`, {
+                variant: 'warning',
+                autoHideDuration: 7000
+            });
+            (new Audio('/pos-static/error.wav')).play();
             return;
         }
 
         setSelectedAssets([...selectedAssetsRef.current, assetTag]);
         try {
-            await scanOut({ user: location.state.user.userId, studentName: studentId, asset });
+            await scanOut({ user: userId, authorisedBy: authorisedByUserId, asset });
             (new Audio('/pos-static/ding.wav')).play();
         } catch (error) {
             enqueueSnackbar(error.message, {
@@ -155,19 +141,28 @@ export default function StudentSelected() {
             });
             (new Audio('/pos-static/error.wav')).play();
         }
-    }, [enqueueSnackbar, existingLoans?.length, location.state.user.userId, studentId]);
+    }, [enqueueSnackbar, existingLoans?.length, authorisedByUserId, userId]);
 
     if (existingLoans?.length) {
         return (
             <Box sx={{ paddingTop: 5 }}>
                 <Stack
                     direction="column"
-                    spacing={2}
+                    spacing={4}
                     alignItems="center"
                     justifyContent="center"
                 >
-                    <Typography variant="h3">{studentId}</Typography>
-                    <Typography variant="h4" gutterBottom>Return this item before booking another:</Typography>
+                    <Typography variant="h4" gutterBottom>
+                        New Student Loan
+                    </Typography>
+                    <Typography variant="h3" gutterBottom>{studentName}</Typography>
+                    <Alert
+                        severity="error"
+                        variant="filled"
+                        sx={{ transform: 'scale(1.25)' }}
+                    >
+                        You have an existing loan - you cannot borrow another item until it has been returned.
+                    </Alert>
                     {existingLoans.map(loan => loan.assets.map(asset => {
                         asset.available = true;
                         return (
@@ -192,6 +187,7 @@ export default function StudentSelected() {
                         <Button
                             onClick={() => navigate('/')}
                             variant="outlined"
+                            color="error"
                             size="large"
                         >
                             Cancel
@@ -211,11 +207,14 @@ export default function StudentSelected() {
             <Box sx={{ paddingTop: 5 }}>
                 <Stack
                     direction="column"
-                    spacing={2}
+                    spacing={4}
                     alignItems="center"
                     justifyContent="center"
                 >
-                    <Typography variant="h2">{studentId}</Typography>
+                    <Typography variant="h4" gutterBottom>
+                        New Student Loan
+                    </Typography>
+                    <Typography variant="h3">{studentName}</Typography>
 
                     {(!scannerReady || existingLoans === null) &&
                     <Stack direction="column" alignItems="center" spacing={2}>

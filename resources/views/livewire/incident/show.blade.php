@@ -11,7 +11,7 @@
                             <strong>Start Date: </strong><p class="card-text">{{ $incident->start_date_time }}</p>
                             <strong>Status:</strong><p class="card-text">{{ $incident->status }}</p>
                             <strong>Location:</strong><p class="card-text"><x-link route="locations" id="{{ $incident->location->id }}" value="{{ $incident->location->name }}"></x-link></p>
-                            <strong>Alert: <x-link route="distributionGroups" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></strong>
+                            <strong>Alert Group: <x-link route="user-groups" id="{{ $incident->group->id }}" value="{{ $incident->group->name }}"></x-link></strong>
                             <ul>
                                 @foreach($incident->group->users as $user)
                                     <li>

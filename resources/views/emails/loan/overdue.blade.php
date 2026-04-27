@@ -20,6 +20,9 @@
                             @endforeach
                             <br><br>
                             <b>Additional Details</b><br>{{ $loan->details }}<br><br>
+                            @if($loan->authorised_by_user)
+                            <b>Authorised By</b><br>{{ $loan->authorised_by_user->forename }} {{ $loan->authorised_by_user->surname }}<br><br>
+                            @endif
                             <center>If you have any queries about this {{ lcfirst($bookingTitle) }}, contact us at <a href="mailto:{{ Config::get('mail.reply_to.address') }}">{{ Config::get('mail.reply_to.address') }}</a></center>
                         </td>
                     </tr>

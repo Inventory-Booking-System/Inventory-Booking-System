@@ -7,12 +7,37 @@
                 </div>
                 <div class="card-body">
                     <strong>Email: </strong><p class="card-text">{{ $user->email }}</p>
-                    <strong>Has Account: </strong><p class="card-text">{{ $user->has_account ? 'Yes' : 'No' }}</p>
+                    <strong>Description: </strong><p class="card-text">{{ $user->description ?: '-' }}</p>
+                    <strong>Has Dashboard access: </strong><p class="card-text">{{ $user->has_account ? 'Yes' : 'No' }}</p>
                     @if($user->has_account)
                         <strong>Password Set: </strong><p class="card-text">{{ $user->password_set ? 'Yes' : 'No' }}</p>
                     @endif
+                    <strong>Staff Checkout Screen Access:</strong><p class="card-text">{{ $this->staffCheckoutAccess }}</p>
+                    <strong>Student Checkout Screen Access:</strong><p class="card-text">{{ $this->studentCheckoutAccess }}</p>
+                    <strong>Checkout Authoriser:</strong><p class="card-text">{{ $this->checkoutAuthoriser }}</p>
                     <strong>Created Date:</strong><p class="card-text">{{ $user->humanFormat($user->created_at) }}</p>
                     <strong>Last Updated:</strong><p class="card-text">{{ $user->humanFormat($user->updated_at) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="card w-100 mr-3">
+                <div class="card-header bg-dark text-center">
+                    <h4>User Groups</h4>
+                </div>
+                <div class="card-body">
+                    @forelse ($groups as $group)
+                        <div class="form-check mb-2">
+                            <x-input.checkbox wire:model="selectedGroupIds" id="group_{{ $group->id }}" value="{{ $group->id }}" class="form-check-input" />
+                            <label class="form-check-label" for="group_{{ $group->id }}">{{ $group->name }}</label>
+                        </div>
+                    @empty
+                        <p class="card-text mb-0">No user groups have been created yet.</p>
+                    @endforelse
+                </div>
+                <div class="card-footer">
+                    <x-button.primary wire:click="saveGroups"><x-loading wire:target="saveGroups" />Save Groups</x-button.primary>
                 </div>
             </div>
         </div>

@@ -6,6 +6,16 @@
                     <h1>{{ $distributionGroup->name }}</h1>
                 </div>
                 <div class="card-body">
+                    <strong>Staff Checkout Screen Access:</strong><p class="card-text">{{ \App\Models\DistributionGroup::posAccessLabel($distributionGroup->pos_staff_screen_access) }}</p>
+                    <strong>Student Checkout Screen Access:</strong><p class="card-text">{{ \App\Models\DistributionGroup::posAccessLabel($distributionGroup->pos_student_screen_access) }}</p>
+                    <strong>Members:</strong>
+                    <p class="card-text">
+                        @forelse ($distributionGroup->users as $user)
+                            <x-link route="users" id="{{ $user->id }}" value="{{ $user->forename }} {{ $user->surname }}"></x-link><br>
+                        @empty
+                            No users assigned
+                        @endforelse
+                    </p>
                     <strong>Created Date:</strong><p class="card-text">{{ $distributionGroup->humanFormat($distributionGroup->created_at) }}</p>
                     <strong>Last Updated:</strong><p class="card-text">{{ $distributionGroup->humanFormat($distributionGroup->updated_at) }}</p>
                 </div>
@@ -16,7 +26,7 @@
     <div wire:poll.10s class="col-lg-8">
         <div class="row">
             <div class="col-lg-3 mb-3">
-                <x-input.text wire:model="filters.search" placeholder="Search Incidents..." />
+                <x-input.text wire:model="filters.search" placeholder="Search loans..." />
             </div>
 
             <div class="col-lg-2">
@@ -36,47 +46,47 @@
             <x-slot name="head">
                 <x-table.row>
                     <x-table.heading sortable wire:click="sortBy('id')" :direction="$sorts['id'] ?? null" class="col-1">ID</x-table.heading>
+                    <x-table.heading sortable wire:click="sortBy('user_full_name')" :direction="$sorts['user_full_name'] ?? null" class="col-2">User</x-table.heading>
                     <x-table.heading sortable wire:click="sortBy('status_id')" :direction="$sorts['status_id'] ?? null" class="col-1">Status</x-table.heading>
                     <x-table.heading sortable wire:click="sortBy('start_date_time')" :direction="$sorts['start_date_time'] ?? null" class="col-2">Start Date</x-table.heading>
-                    <x-table.heading sortable wire:click="sortBy('locations.name')" :direction="$sorts['locations.name'] ?? null" class="col-1">Location</x-table.heading>
-                    <x-table.heading class="col-2">Issues</x-table.heading>
-                    <x-table.heading sortable wire:click="sortBy('evidence')" :direction="$sorts['evidence'] ?? null" class="col-2">Evidence</x-table.heading>
+                    <x-table.heading sortable wire:click="sortBy('end_date_time')" :direction="$sorts['end_date_time'] ?? null" class="col-2">End Date</x-table.heading>
                     <x-table.heading sortable wire:click="sortBy('details')" :direction="$sorts['details'] ?? null" class="col-2">Details</x-table.heading>
+                    <x-table.heading class="col-2">Assets</x-table.heading>
                 </x-table.row>
 
                 @if($showFilters)
                     <x-table.row>
                         <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.id" class="form-control-sm p-0" /></x-table.heading>
+                        <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
                         <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.status_id" class="form-control-sm p-0" /></x-table.heading>
                         <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
-                        <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.location_id" class="form-control-sm p-0" /></x-table.heading>
-                        <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.equipment_id" class="form-control-sm p-0" /></x-table.heading>
-                        <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.evidence" class="form-control-sm p-0" /></x-table.heading>
+                        <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.end_date_time" class="form-control-sm p-0" /></x-table.heading>
                         <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.details" class="form-control-sm p-0" /></x-table.heading>
+                        <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.assets" class="form-control-sm p-0" /></x-table.heading>
                     </x-table.row>
                 @endif
             </x-slot>
 
             <x-slot name="body">
-                @forelse ($incidents as $incident)
-                    <x-table.row wire:key="row-{{ $incident->id }}">
-                        <x-table.cell class="col-1"><x-link route="incidents" id="{{ $incident->id }}" value="#{{ $incident->id }}"></x-link></x-table.cell>
-                        <x-table.cell class="col-1"><span class="badge badge-pill badge-{{ $incident->status_type }}">{{ $incident->status }}</span></x-table.cell>
-                        <x-table.cell class="col-2">{{ $incident->start_date_time }}</x-table.cell>
-                        <x-table.cell class="col-1"><x-link route="locations" id="{{ $incident->location->id }}" value="{{ $incident->location->name }}"></x-link></x-table.cell>
+                @forelse ($loans as $loan)
+                    <x-table.row wire:key="row-{{ $loan->id }}">
+                        <x-table.cell class="col-1"><x-link route="loans" id="{{ $loan->id }}" value="#{{ $loan->id }}"></x-link></x-table.cell>
+                        <x-table.cell class="col-2"><x-link route="users" id="{{ $loan->user->id }}" value="{{ $loan->user->forename }} {{ $loan->user->surname }}"></x-link></x-table.cell>
+                        <x-table.cell class="col-1"><span class="badge badge-pill badge-{{ $loan->status_type }}">{{ $loan->status }}</span></x-table.cell>
+                        <x-table.cell class="col-2">{{ $loan->start_date_time }}</x-table.cell>
+                        <x-table.cell class="col-2">{{ $loan->end_date_time }}</x-table.cell>
+                        <x-table.cell class="col-2">{{ $loan->details }}</x-table.cell>
                         <x-table.cell class="col-2">
-                            @foreach($incident->issues as $issue)
-                                <x-link route="equipmentIssues" id="{{ $issue->id }}" value="x{{ $issue->pivot->quantity }} {{ $issue->title }}"></x-link><br>
+                            @foreach($loan->assets as $asset)
+                                <x-link route="assets" id="{{ $asset->id }}" value="{{ $asset->name }} ({{ $asset->tag }})" lineThrough="{{ $asset->pivot->returned }}"></x-link><br>
                             @endforeach
                         </x-table.cell>
-                        <x-table.cell class="col-2">{{ $incident->evidence }}</x-table.cell>
-                        <x-table.cell class="col-2">{{ $incident->details }}</x-table.cell>
                     </x-table.row>
                 @empty
                     <x-table.row>
                         <x-table.cell width="12">
                             <div class="d-flex justify-content-center">
-                                No incidents found
+                                No loans found
                             </div>
                         </x-table.cell>
                     </x-table.row>
@@ -84,6 +94,6 @@
             </x-slot>
         </x-table>
 
-        <x-table.pagination-summary :model="$incidents" />
+        <x-table.pagination-summary :model="$loans" />
     </div>
 </div>

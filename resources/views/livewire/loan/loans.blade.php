@@ -148,79 +148,8 @@
         </x-modal.dialog>
     </form>
     
+    <!-- React component -->
     <div id="create-edit-modal"></div>
-
-    <!-- Create/Edit Modal -->
-    <form wire:submit.prevent="save">
-        <x-modal.dialog type="editModal" class="modal-xl">
-            <x-slot name="title">{{ $modalType }} Loan</x-slot>
-
-            <x-slot name="content">
-                <div class="row">
-                    <div class="col-md-6">
-                        <!-- Start Date Time -->
-                        <x-input.group label="Start Date" for="start_date_time" :error="$errors->first('editing.start_date_time')">
-                            <x-input.datetime wire:model="editing.start_date_time" id="start_date_time" />
-                        </x-input.group>
-
-                        <!-- End Date Time -->
-                        <x-input.group label="End Date" for="end_date_time" :error="$errors->first('editing.end_date_time')">
-                            <x-input.datetime wire:model="editing.end_date_time" id="end_date_time" />
-                        </x-input.group>
-
-                        <!-- Users -->
-                        <x-input.group label="Users" for="user_id" :error="$errors->first('editing.user_id')">
-                            <x-input.select wire:model.defer="editing.user_id" id="user_id" placeholder="Select User" fullWidth inModal>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->forename }} {{ $user->surname }}</option>
-                                @endforeach
-                            </x-input.select>
-                        </x-input.group>
-
-                        <!-- Equipment -->
-                        <x-input.group label="Equipment" for="equipment_id" :error="$errors->first('equipment_id')">
-                            <x-input.select wire:model="equipment_id" id="equipment_id" clearSelection disabledSelected iteration="{{ $iteration }}" placeholder="Select Equipment" fullWidth inModal>
-                                @foreach ($equipmentList as $equipment)
-                                @if($equipment['avaliable'] == true)
-                                    <option value="{{ $equipment['id'] }}">{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
-                                @else
-                                    <option value="{{ $equipment['id'] }}" disabled>{{ $equipment['name'] }} ({{ $equipment['tag'] }})</option>
-                                @endif
-                                @endforeach
-                            </x-input.select>
-                        </x-input.group>
-
-                        <!-- Details -->
-                        <x-input.group label="Details" for="details" :error="$errors->first('editing.details')">
-                            <x-input.textarea wire:model.defer="editing.details" id="details" rows="8" />
-                        </x-input.group>
-
-                        <!-- Reservation -->
-                        <x-input.group label="Reservation" for="status_id" :error="$errors->first('editing.status_id')" buttonGroup>
-                            <x-input.radioButton wire:model.defer="editing.status_id" id="status_id_yes" value="1" text="Yes" checked="{{ $editing->status_id }}" />
-                            <x-input.radioButton wire:model.defer="editing.status_id" id="status_id_no" value="0" text="No" checked="{{ $editing->status_id }}" />
-                        </x-input.group>
-                    </div>
-
-                    <div class="col-md-6">
-                        <!-- Shopping Cart -->
-                        <div wire:model="shoppingCart" iteration="{{ $iteration }}">
-                            <x-shoppingCart.group>
-                                @foreach ($shoppingCart as $key => $asset)
-                                    <x-shoppingCart.cartCard id="{{ $asset['id'] }}" name="{{ $asset['name'] }}" assetId="{{ $asset['tag'] }}" returned="{{ $asset['pivot']['returned'] }}" new="{{ (int)$asset['new'] }}" />
-                                @endforeach
-                            </x-shoppingCart.group>
-                        </div>
-                    </div>
-                </div>
-            </x-slot>
-
-            <x-slot name="footer">
-                <x-button.secondary wire:click="$emit('hideModal','edit')">Cancel</x-button.secondary>
-                <x-button.primary type="submit">Save</x-button.primary>
-            </x-slot>
-        </x-modal.dialog>
-    </form>
 
     <script src="{{ mix('js/vendor-react.js') }}"></script>
     <script src="{{ mix('js/loans.js') }}"></script>
