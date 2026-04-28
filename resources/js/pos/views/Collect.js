@@ -49,6 +49,9 @@ function Item({ item }) {
             onClick={() => navigate(`/collect/${item.id}`)}
         >
             <CardContent>
+                {item.setup?.title && <Typography variant="h5" color="#000" sx={{ textAlign: 'center' }}>
+                    {item.setup.title}
+                </Typography>}
                 <Typography variant="h5" color="#000" sx={{ textAlign: 'center' }}>
                     {item.user.forename} {item.user.surname} : {formatRelativeDate(item.start_date_time)}
                 </Typography>
@@ -107,16 +110,33 @@ export default function Collect() {
             <Stack
                 direction="column"
                 spacing={2}
-                alignItems="center"
-                sx={{ marginBottom: 8 }}
             >
-                {loading && <CircularProgress />}
-                {!loading &&  <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
-                    {reservations.filter(item => dayjs(item.start_date_time, 'DD MMM YYYY HH:mm').isToday()).map((item) => <Item item={item} key={item.id} /> )}
-                </Masonry>}
-                {!loading &&  <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
-                    {reservations.filter(item => !dayjs(item.start_date_time, 'DD MMM YYYY HH:mm').isToday()).map((item) => <Item item={item} key={item.id} /> )}
-                </Masonry>}
+                <Typography variant="h4" align="center">
+                    Reservations
+                </Typography>
+
+                {loading && <Box align="center">
+                    <CircularProgress />
+                </Box>}
+
+                {!loading && reservations.length > 0 && <>
+                    <Typography variant="h5" sx={{ paddingLeft: 2 }}>
+                        Today
+                    </Typography>
+                    <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
+                        {reservations.filter(item => dayjs(item.start_date_time, 'DD MMM YYYY HH:mm').isToday()).map((item) => <Item item={item} key={item.id} /> )}
+                    </Masonry>
+
+                    <Divider width="100%" />
+
+                    <Typography variant="h5" sx={{ paddingLeft: 2 }}>
+                        Later
+                    </Typography>
+                    <Masonry columns={3} spacing={1} sx={{ paddingLeft: 2, paddingRight: 2 }}>
+                        {reservations.filter(item => !dayjs(item.start_date_time, 'DD MMM YYYY HH:mm').isToday()).map((item) => <Item item={item} key={item.id} /> )}
+                    </Masonry>
+                </>}
+
                 {!loading && reservations.length === 0 && <Typography variant="h5">There are no reservations</Typography>}
             </Stack>
             <Paper
@@ -131,9 +151,10 @@ export default function Collect() {
                     <Button
                         onClick={() => navigate('/')}
                         variant="outlined"
+                        color="error"
                         size="large"
                     >
-                        Start again
+                        Cancel
                     </Button>
                 </Stack>
             </Paper>

@@ -34,7 +34,7 @@ export default function BarcodeScanner() {
         try {
             const loan = await scanIn({ tag: code.join('') });
             (new Audio('/pos-static/notify.wav')).play();
-            enqueueSnackbar(`Scanned in ${code.join('')}`, {
+            enqueueSnackbar(`Returned ${code.join('')}`, {
                 variant: 'success',
                 autoHideDuration: 5000
             });
@@ -50,7 +50,7 @@ export default function BarcodeScanner() {
 
         } catch (e) {
             if (e.error === 'NO_OPEN_LOANS') {
-                enqueueSnackbar(`Asset ${code.join('')} has no open loans`, {
+                enqueueSnackbar(`Asset ${code.join('')} has already been returned`, {
                     variant: 'warning',
                     autoHideDuration: 7000
                 });

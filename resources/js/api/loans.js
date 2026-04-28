@@ -31,11 +31,12 @@ export async function get(id) {
  *  assets: Array<{id: number, returned: boolean}>,
  *  groups: Array<{id: number, quantity: number}>,
  *  details: string,
+ *  authorisedBy: number,
  *  reservation: boolean
  * }} data
  */
 export async function create(data) {
-    const { startDateTime, endDateTime, user, assets = [], groups = [], details, reservation } = data;
+    const { startDateTime, endDateTime, user, assets = [], groups = [], details, authorisedBy, reservation } = data;
 
     return await request('/api/loans', {
         method: 'POST',
@@ -46,6 +47,7 @@ export async function create(data) {
             assets,
             groups,
             details,
+            authorisedBy,
             reservation
         })
     });
@@ -60,11 +62,12 @@ export async function create(data) {
  *  assets: Array<{id: number, returned: boolean}>,
  *  groups: Array<{id: number, quantity: number}>,
  *  details: string,
+ *  authorisedBy: number,
  *  reservation: boolean
  * }} data
  */
 export async function update(id, data) {
-    const { startDateTime, endDateTime, user, assets, groups, details, reservation } = data;
+    const { startDateTime, endDateTime, user, assets, groups, details, authorisedBy, reservation } = data;
 
     return await request('/api/loans/'+id, {
         method: 'PUT',
@@ -75,6 +78,7 @@ export async function update(id, data) {
             assets,
             groups,
             details,
+            authorisedBy,
             reservation
         })
     });

@@ -26,9 +26,10 @@ export default function Home() {
                 >
                     <ButtonSelect
                         click={navigate}
-                        sx={{ transform: 'scale(1.6)' }}
+                        sx={{ transform: 'scale(1.75)' }}
                         buttons={[
-                            { value: 'book', label: 'Borrow Equipment' }
+                            { value: 'book', label: 'New Student Loan' },
+                            { value: 'staff-booking', label: 'New Staff Loan', color: 'success' }
                         ]}
                     />
                     <Alert severity="info" variant="outlined">
@@ -40,8 +41,7 @@ export default function Home() {
                     size="large"
                     variant="outlined"
                     buttons={[
-                        { value: 'collect', label: 'Collect Reservation', color: 'warning' },
-                        { value: 'staff-booking', label: 'New Staff Loan', color: 'success' }
+                        { value: 'collect', label: 'Collect Reservation', color: 'warning' }
                     ]}
                 />
             </Stack>

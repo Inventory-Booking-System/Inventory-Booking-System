@@ -13,7 +13,7 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
-    protected $fillable = ['forename', 'surname', 'email', 'has_account', 'password_set', 'pos_access', 'booking_authoriser_user_id'];
+    protected $fillable = ['forename', 'surname', 'email', 'description', 'has_account', 'password_set', 'booking_authoriser_user_id'];
 
     protected $attributes = ['has_account' => false];
 
@@ -34,7 +34,7 @@ class User extends Authenticatable
      */
     public function distributionGroups()
     {
-        return $this->belongsToMany(DistributionGroup::class, 'distribution_groups_user', 'user_id', 'distribution_group_id');
+        return $this->belongsToMany(DistributionGroup::class, 'distribution_group_user', 'user_id', 'distribution_group_id');
     }
     
     /**

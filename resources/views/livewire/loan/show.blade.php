@@ -29,6 +29,9 @@
                             <strong>End Date:</strong><p class="card-text">{{ $loan->end_date_time }}</p>
                             <strong>Status:</strong><p class="card-text">{{ $loan->status }}</p>
                             <strong>Details:</strong><p class="card-text">{{ $loan->details }}</p>
+                            @if($loan->authorised_by_user)
+                            <strong>Authorised By:</strong><p class="card-text"><x-link route="users" id="{{ $loan->authorised_by_user->id }}" value="{{ $loan->authorised_by_user->forename }} {{ $loan->authorised_by_user->surname }}"></x-link></p>
+                            @endif
                             <strong>Created Date:</strong><p class="card-text">{{ $loan->humanFormat($loan->created_at) }}</p>
                             <strong>Last Updated:</strong><p class="card-text">{{ $loan->humanFormat($loan->updated_at) }}</p>
                             <strong>Created By:</strong><p class="card-text"><x-link route="users" id="{{ $loan->user->id }}" value="{{ $loan->user_created_by->forename }} {{ $loan->user_created_by->surname }}"></x-link></p>

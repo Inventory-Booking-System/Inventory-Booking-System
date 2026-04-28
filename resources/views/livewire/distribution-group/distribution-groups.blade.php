@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="Distribution Group" perPage="{{ $perPage }}" />
+    <x-table.controls name="User Group" perPage="{{ $perPage }}" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -9,8 +9,10 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('name')" :direction="$sorts['name'] ?? null" class="col-2">Name</x-table.heading>
-                        <x-table.heading class="col-2">Users</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('name')" :direction="$sorts['name'] ?? null" class="col-3">Name</x-table.heading>
+                        <x-table.heading class="col-2">Staff Checkout</x-table.heading>
+                        <x-table.heading class="col-2">Student Checkout</x-table.heading>
+                        <x-table.heading class="col-1">Members</x-table.heading>
                         <x-table.heading class="col"/>
                     </x-table.row>
 
@@ -19,8 +21,10 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.name" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.users" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.name" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null" />
+                            <x-table.heading class="col-2" direction="null" />
+                            <x-table.heading class="col-1" direction="null" />
                             <x-table.heading class="col" direction="null"/>
                         </x-table.row>
                     @endif
@@ -33,11 +37,11 @@
                                 <div class="d-flex justify-content-center">
                                     @unless($selectAll)
                                         <div>
-                                            <span>You selected <strong> {{ $distributionGroups->count() }} </strong> distribution groups, do you want to select all <strong> {{ $distributionGroups->total() }} </strong>?</span>
+                                            <span>You selected <strong> {{ $distributionGroups->count() }} </strong> user groups, do you want to select all <strong> {{ $distributionGroups->total() }} </strong>?</span>
                                             <x-button.link wire:click="selectAll">Select All</x-button.link>
                                         </div>
                                     @else
-                                        <span>You have selected all <strong> {{ $distributionGroups->total() }} </strong> distribution groups.</span>
+                                        <span>You have selected all <strong> {{ $distributionGroups->total() }} </strong> user groups.</span>
                                     @endif
                                 </div>
                             </x-table.cell>
@@ -49,12 +53,10 @@
                             <x-table.cell>
                                 <x-input.checkbox wire:model="selected" value="{{ $distributionGroup->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-2"><x-link route="distributionGroups" id="{{ $distributionGroup->id }}" value="{{ $distributionGroup->name }}"></x-link></x-table.cell>
-                            <x-table.cell class="col-2">
-                                @foreach($distributionGroup->users as $user)
-                                    <x-link route="users" id="{{ $user->id }}" value="{{ $user->forename }} {{ $user->surname }}"></x-link><br>
-                                @endforeach
-                            </x-table.cell>
+                            <x-table.cell class="col-3"><x-link route="user-groups" id="{{ $distributionGroup->id }}" value="{{ $distributionGroup->name }}"></x-link></x-table.cell>
+                            <x-table.cell class="col-2">{{ $this->getAccessStateLabel($distributionGroup->pos_staff_screen_access) }}</x-table.cell>
+                            <x-table.cell class="col-2">{{ $this->getAccessStateLabel($distributionGroup->pos_student_screen_access) }}</x-table.cell>
+                            <x-table.cell class="col-1">{{ $distributionGroup->users_count }}</x-table.cell>
                             <x-table.cell class="col">
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <x-button.primary wire:click="edit({{ $distributionGroup->id }})" ><x-loading wire:target="edit({{ $distributionGroup->id }})" />Edit</x-button.primary>
@@ -65,7 +67,7 @@
                         <x-table.row>
                             <x-table.cell width="12">
                                 <div class="d-flex justify-content-center">
-                                    No distribution groups found
+                                    No user groups found
                                 </div>
                             </x-table.cell>
                         </x-table.row>
@@ -83,7 +85,7 @@
             <x-slot name="title">Delete Loans</x-slot>
 
             <x-slot name="content">
-                Are you sure you want to delete these distribution groups? This action is irreversible.
+                Are you sure you want to delete these user groups? This action is irreversible.
             </x-slot>
 
             <x-slot name="footer">
@@ -96,7 +98,7 @@
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
         <x-modal.dialog type="editModal" class="modal-xl">
-            <x-slot name="title">{{ $modalType }} Distribution Group</x-slot>
+            <x-slot name="title">{{ $modalType }} User Group</x-slot>
 
             <x-slot name="content">
                 <div class="row">
@@ -104,6 +106,22 @@
                         <!-- Name -->
                         <x-input.group label="Name" for="name" :error="$errors->first('editing.name')">
                             <x-input.text wire:model.defer="editing.name" id="name" rows="8" />
+                        </x-input.group>
+
+                        <x-input.group for="pos_staff_screen_access" label="Staff Checkout Access" :error="$errors->first('editing.pos_staff_screen_access')">
+                            <select wire:model.defer="editing.pos_staff_screen_access" id="pos_staff_screen_access" class="form-control">
+                                <option value="1">Enabled</option>
+                                <option value="-1">Disabled (overwrites enabled groups)</option>
+                                <option value="0">Not Configured</option>
+                            </select>
+                        </x-input.group>
+
+                        <x-input.group for="pos_student_screen_access" label="Student Checkout Access" :error="$errors->first('editing.pos_student_screen_access')">
+                            <select wire:model.defer="editing.pos_student_screen_access" id="pos_student_screen_access" class="form-control">
+                                <option value="1">Enabled</option>
+                                <option value="-1">Disabled (overwrites enabled groups)</option>
+                                <option value="0">Not Configured</option>
+                            </select>
                         </x-input.group>
 
                         <!-- Users -->

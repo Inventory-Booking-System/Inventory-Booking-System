@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="User" perPage="{{ $perPage }}" />
+    <x-table.controls name="User" perPage="{{ $perPage }}" deleteLabel="Archive" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -9,10 +9,11 @@
                         <x-table.heading direction="null">
                             <x-input.checkbox wire:model="selectPage" />
                         </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('user_full_name')" :direction="$sorts['user_full_name'] ?? null" class="col-3">User</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('email')" :direction="$sorts['email'] ?? null" class="col-3">Email</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('pos_access')" :direction="$sorts['pos_access'] ?? null" class="col-1" title="Show user on Point Of Sale Screen">Show on POS</x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('booking_authoriser_user_id')" :direction="$sorts['booking_authoriser_user_id'] ?? null" class="col-3" title="Point Of Sale Booking Authoriser">POS Booking Authoriser</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('user_full_name')" :direction="$sorts['user_full_name'] ?? null" class="col-2">User</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('email')" :direction="$sorts['email'] ?? null" class="col-2">Email</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('description')" :direction="$sorts['description'] ?? null" class="col-3">Description</x-table.heading>
+                        <x-table.heading class="col-2">Groups</x-table.heading>
+                        <x-table.heading sortable wire:click="sortBy('booking_authoriser_user_id')" :direction="$sorts['booking_authoriser_user_id'] ?? null" class="col-2" title="Checkout Authoriser">Checkout Authoriser</x-table.heading>
                         <x-table.heading class="col"/>
                     </x-table.row>
 
@@ -21,10 +22,11 @@
                             <x-table.heading direction="null">
                                 <x-input.checkbox />
                             </x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.email" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.pos_access" class="form-control-sm p-0" /></x-table.heading>
-                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.booking_authoriser_user_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.email" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-3" direction="null"><x-input.text wire:model="filters.description" class="form-control-sm p-0" /></x-table.heading>
+                            <x-table.heading class="col-2" direction="null" />
+                            <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.booking_authoriser_user_id" class="form-control-sm p-0" /></x-table.heading>
                             <x-table.heading class="col" direction="null"/>
                         </x-table.row>
                     @endif
@@ -53,10 +55,17 @@
                             <x-table.cell >
                                 <x-input.checkbox wire:model="selected" value="{{ $user->id }}"></x-input.checkbox>
                             </x-table.cell>
-                            <x-table.cell class="col-3"><x-link route="users" id="{{ $user->id }}" value="{{ $user->forename }} {{ $user->surname }}"></x-link></x-table.cell>
-                            <x-table.cell class="col-3">{{ $user->email }}</x-table.cell>
-                            <x-table.cell class="col-1">{{ $user->pos_access ? 'Yes' : 'No' }}</x-table.cell>
-                            <x-table.cell class="col-3"><x-link route="users" id="{{ $user->bookingAuthoriser->id ?? '' }}" value="{{ $user->bookingAuthoriser->forename ?? '' }} {{ $user->bookingAuthoriser->surname ?? '' }}"></x-link></x-table.cell>
+                            <x-table.cell class="col-2"><x-link route="users" id="{{ $user->id }}" value="{{ $user->forename }} {{ $user->surname }}"></x-link></x-table.cell>
+                            <x-table.cell class="col-2">{{ $user->email }}</x-table.cell>
+                            <x-table.cell class="col-3">{{ $user->description ?: '-' }}</x-table.cell>
+                            <x-table.cell class="col-2">
+                                @forelse ($user->distributionGroups as $group)
+                                    <x-link route="user-groups" id="{{ $group->id }}" value="{{ $group->name }}"></x-link><br>
+                                @empty
+                                    -
+                                @endforelse
+                            </x-table.cell>
+                            <x-table.cell class="col-2"><x-link route="users" id="{{ $user->bookingAuthoriser->id ?? '' }}" value="{{ $user->bookingAuthoriser->forename ?? '' }} {{ $user->bookingAuthoriser->surname ?? '' }}"></x-link></x-table.cell>
                             <x-table.cell class="col">
                                 <x-button.primary wire:click="edit({{ $user->id }})" ><x-loading wire:target="edit({{ $user->id }})" />Edit</x-button.primary>
                                 @if($user->has_account)
@@ -80,60 +89,79 @@
         </div>
     </div>
 
-    <!-- Delete Modal -->
+    <!-- Archive Modal -->
     <form wire:submit.prevent="deleteSelected">
         <x-modal.dialog type="confirmModal">
-            <x-slot name="title">Delete Users</x-slot>
+            <x-slot name="title">Archive Users</x-slot>
 
             <x-slot name="content">
-                Are you sure you want to delete these users? This action is irreversible.
+                Are you sure you want to archive these users? They can be restored from the Settings page.
             </x-slot>
 
             <x-slot name="footer">
                 <x-button.secondary wire:click="$emit('hideModal','confirm')">Cancel</x-button.secondary>
-                <x-button.danger type="submit">Delete</x-button.primary>
+                <x-button.danger type="submit">Archive</x-button.primary>
             </x-slot>
         </x-modal.dialog>
     </form>
 
     <!-- Create/Edit Modal -->
     <form wire:submit.prevent="save">
-        <x-modal.dialog type="editModal">
+        <x-modal.dialog type="editModal" class="modal-xl">
             <x-slot name="title">{{ $modalType }} User</x-slot>
 
             <x-slot name="content">
-                <x-input.group for="forename" label="Forename" :error="$errors->first('editing.forename')">
-                    <x-input.text wire:model.defer="editing.forename" id="forename" />
-                </x-input.group>
+                <div class="row">
+                    <div class="col-md-7">
+                        <x-input.group for="forename" label="Forename" :error="$errors->first('editing.forename')">
+                            <x-input.text wire:model.defer="editing.forename" id="forename" />
+                        </x-input.group>
 
-                <x-input.group for="surname" label="Surname" :error="$errors->first('editing.surname')">
-                    <x-input.text wire:model.defer="editing.surname" id="surname" />
-                </x-input.group>
+                        <x-input.group for="surname" label="Surname" :error="$errors->first('editing.surname')">
+                            <x-input.text wire:model.defer="editing.surname" id="surname" />
+                        </x-input.group>
 
-                <x-input.group for="email" label="Email" :error="$errors->first('editing.email')">
-                    <x-input.text wire:model.defer="editing.email" id="email" />
-                </x-input.group>
+                        <x-input.group for="email" label="Email" :error="$errors->first('editing.email')">
+                            <x-input.text wire:model.defer="editing.email" id="email" />
+                        </x-input.group>
 
-                <x-input.group for="has_account" label="Enable Dashboard Access" :error="$errors->first('editing.has_account')">
-                    <x-input.checkbox wire:model.defer="editing.has_account" id="has_account" />
-                </x-input.group>
+                        <x-input.group for="description" label="Description" :error="$errors->first('editing.description')">
+                            <x-input.textarea wire:model.defer="editing.description" id="description" rows="6" />
+                        </x-input.group>
 
-                <x-input.group for="pos_access" label="Show on POS Screen" :error="$errors->first('editing.pos_access')">
-                    <x-input.checkbox wire:model.defer="editing.pos_access" id="pos_access" />
-                </x-input.group>
-                
-                <x-input.group label="POS Booking Authoriser" for="booking_authoriser_user_id" :error="$errors->first('editing.booking_authoriser_user_id')">
-                    <x-input.select wire:model="editing.booking_authoriser_user_id" id="booking_authoriser_user_id" iteration="{{ $key }}">
-                        @foreach ($allUsers as $user)
-                            <option
-                                value="{{ $user['id'] }}"
-                                @if (isset($editing->bookingAuthoriser->id) && $user['id'] === $editing->bookingAuthoriser->id) selected @endif
-                            >
-                                {{ $user['forename'] }} {{ $user['surname'] }}
-                            </option>
-                        @endforeach
-                    </x-input.select>
-                </x-input.group>
+                        <x-input.group for="has_account" label="Enable Dashboard Access" :error="$errors->first('editing.has_account')">
+                            <x-input.checkbox wire:model.defer="editing.has_account" id="has_account" />
+                        </x-input.group>
+                        
+                        <x-input.group label="Checkout Screen Authoriser" for="booking_authoriser_user_id" :error="$errors->first('editing.booking_authoriser_user_id')">
+                            <x-input.select wire:model="editing.booking_authoriser_user_id" id="booking_authoriser_user_id" iteration="{{ $key }}">
+                                @foreach ($allUsers as $user)
+                                    <option
+                                        value="{{ $user['id'] }}"
+                                        @if (isset($editing->bookingAuthoriser->id) && $user['id'] === $editing->bookingAuthoriser->id) selected @endif
+                                    >
+                                        {{ $user['forename'] }} {{ $user['surname'] }}
+                                    </option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
+                    </div>
+
+                    <div class="col-md-5">
+                        <x-input.group for="selected_group_ids" label="User Groups" :error="$errors->first('selectedGroupIds') ?: $errors->first('selectedGroupIds.*')">
+                            <div class="border rounded p-2" style="max-height: 280px; overflow-y: auto;">
+                                @forelse ($allGroups as $group)
+                                    <div class="form-check mb-2">
+                                        <x-input.checkbox wire:model="selectedGroupIds" id="modal_group_{{ $group->id }}" value="{{ $group->id }}" class="form-check-input" />
+                                        <label class="form-check-label" for="modal_group_{{ $group->id }}">{{ $group->name }}</label>
+                                    </div>
+                                @empty
+                                    <p class="mb-0">No user groups found.</p>
+                                @endforelse
+                            </div>
+                        </x-input.group>
+                    </div>
+                </div>
             </x-slot>
 
             <x-slot name="footer">

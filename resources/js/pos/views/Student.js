@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import Keyboard from '../components/Keyboard';
 import * as api from '../../api';
 import NameSearch from '../components/NameSearch';
@@ -26,7 +27,8 @@ export default function Student() {
         api.users.getUsersWithPosAccess()
             .then(users => {
                 setUsers(users.map(user => ({
-                    userId: user.booking_authoriser_user_id,
+                    userId: user.id,
+                    authorisedByUserId: user.booking_authoriser_user_id,
                     label: `${user.forename} ${user.surname}`
                 })));
             })
@@ -41,10 +43,13 @@ export default function Student() {
                 justifyContent="space-between"
                 sx={{ height: '100%' }}
             >
+                <Typography variant="h4">
+                    New Student Loan
+                </Typography>
                 <NameSearch
                     sx={{ zoom: 1.6 }}
                     name="Enter your Name"
-                    onSelect={(user) => navigate(user.label, { state: { user } })}
+                    onSelect={(user) => navigate(`${user.userId}`, { state: { user } })}
                     options={users}
                     loading={loading}
                     value={search}
@@ -69,9 +74,10 @@ export default function Student() {
                     <Button
                         onClick={() => navigate('/')}
                         variant="outlined"
+                        color="error"
                         size="large"
                     >
-                        Start again
+                        Cancel
                     </Button>
                 </Stack>
             </Paper>

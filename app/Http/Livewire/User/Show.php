@@ -7,6 +7,7 @@ use Livewire\Component;
 use Carbon\Carbon;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithDetailsPerPagePagination;
+use App\Models\DistributionGroup;
 use App\Models\User;
 use App\Models\Loan;
 use App\Models\Setup;
@@ -17,6 +18,7 @@ class Show extends Component
     use WithDetailsPerPagePagination, WithSorting;
 
     public $user;
+    public $selectedGroupIds = [];
 
     protected $paginationTheme = 'bootstrap';
 
@@ -173,11 +175,51 @@ class Show extends Component
     {
         return view('livewire.user.show', [
             'loans' => $this->rows,
+            'groups' => DistributionGroup::orderBy('name')->get(),
         ]);
     }
 
     public function mount($user)
     {
-        $this->user = User::find($user);
+        $this->user = User::with(['distributionGroups', 'bookingAuthoriser'])->find($user);
+        $this->selectedGroupIds = $this->user->distributionGroups()->pluck('distribution_group_id')->map(fn($id) => (string) $id)->toArray();
+    }
+
+    public function saveGroups()
+    {
+        $this->user->distributionGroups()->sync($this->selectedGroupIds);
+        $this->user->load('distributionGroups');
+    }
+
+    public function getStaffCheckoutAccessProperty()
+    {
+        return $this->getCheckoutAccessLabel('pos_staff_screen_access');
+    }
+
+    public function getStudentCheckoutAccessProperty()
+    {
+        return $this->getCheckoutAccessLabel('pos_student_screen_access');
+    }
+
+    public function getCheckoutAuthoriserProperty()
+    {
+        $authoriser = $this->user->bookingAuthoriser ?? $this->user;
+
+        return trim(($authoriser->forename ?? '') . ' ' . ($authoriser->surname ?? '')) ?: '-';
+    }
+
+    private function getCheckoutAccessLabel($column)
+    {
+        $groups = $this->user->distributionGroups;
+
+        if ($groups->contains($column, DistributionGroup::POS_ACCESS_DISABLED)) {
+            return 'No';
+        }
+
+        if ($groups->contains($column, DistributionGroup::POS_ACCESS_ENABLED)) {
+            return 'Yes';
+        }
+
+        return 'No';
     }
 }

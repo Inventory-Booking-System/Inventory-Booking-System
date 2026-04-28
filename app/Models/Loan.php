@@ -10,9 +10,9 @@ class Loan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details', 'created_by'];
+    protected $fillable = ['user_id', 'status_id', 'start_date_time', 'end_date_time', 'details', 'authorised_by', 'created_by'];
 
-    protected $with = ['assets', 'user', 'user_created_by', 'assetGroups'];
+    protected $with = ['assets', 'user', 'user_created_by', 'authorised_by_user', 'assetGroups'];
 
     /**
      * An asset can belong to many loan
@@ -41,6 +41,14 @@ class Loan extends Model
     public function user_created_by()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the user who authorised the loan.
+     */
+    public function authorised_by_user()
+    {
+        return $this->belongsTo(User::class, 'authorised_by');
     }
 
     /**

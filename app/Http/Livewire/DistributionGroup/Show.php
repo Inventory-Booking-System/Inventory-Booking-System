@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithDetailsPerPagePagination;
 use App\Models\DistributionGroup;
-use App\Models\Incident;
+use App\Models\Loan;
 use App\Helpers\SQL;
 use Carbon\Carbon;
 
@@ -24,12 +24,12 @@ class Show extends Component
     public $filters = [
         'search' => '',
         'id' => null,
+        'user_id' => null,
         'status_id' => null,
         'start_date_time' => null,
-        'location_id' => null,
-        'equipment_id' => null,
-        'evidence' => null,
+        'end_date_time' => null,
         'details' => null,
+        'assets' => null,
     ];
 
     protected $queryString = [];
@@ -42,20 +42,29 @@ class Show extends Component
     private function searchById($query, $search, $orWhere = false) {
         $search = SQL::escapeLikeString($search);
         if ($orWhere) {
-            $query->orWhere('incidents.id', 'like', '%'.str_replace('#', '', $search).'%');
-        } else {            
-            $query->where('incidents.id', 'like', '%'.str_replace('#', '', $search).'%');
+            $query->orWhere('loans.id', 'like', '%'.str_replace('#', '', $search).'%');
+        } else {
+            $query->where('loans.id', 'like', '%'.str_replace('#', '', $search).'%');
+        }
+    }
+
+    private function searchByUser($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%');
+        } else {
+            $query->where(DB::raw("CONCAT(users.forename, ' ', users.surname)"), 'like', '%'.$search.'%');
         }
     }
 
     private function searchByStatus($query, $search, $orWhere = false) {
         $search = SQL::escapeLikeString($search);
-        foreach (Incident::getStatusIds() as $id => $status) {
+        foreach (Loan::getStatusIds() as $id => $status) {
             if (str_contains(strtolower($status), strtolower($search))) {
                 if ($orWhere) {
-                    $query->orWhere('incidents.status_id', $id);
+                    $query->orWhere('loans.status_id', $id);
                 } else {
-                    $query->where('incidents.status_id', $id);
+                    $query->where('loans.status_id', $id);
                 }
             }
         }
@@ -68,54 +77,54 @@ class Show extends Component
             $dateString = explode(' ', $dateTimeString)[0];
             $timeString = explode(' ', $dateTimeString)[1];
             if ($orWhere) {
-                $query->orWhere('incidents.start_date_time', 'like', '%'.$dateString.'%');
-                $query->orWhere('incidents.start_date_time', 'like', '%'.$timeString.'%');
+                $query->orWhere('loans.start_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.start_date_time', 'like', '%'.$timeString.'%');
             } else {
-                $query->where('incidents.start_date_time', 'like', '%'.$dateString.'%');
-                $query->orWhere('incidents.start_date_time', 'like', '%'.$timeString.'%');
+                $query->where('loans.start_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.start_date_time', 'like', '%'.$timeString.'%');
             }
         } catch(\Throwable $e) {
             // Search string is not a date
         }
     }
 
-    private function searchByLocation($query, $search, $orWhere = false) {
+    private function searchByEndDate($query, $search, $orWhere = false) {
         $search = SQL::escapeLikeString($search);
-        if ($orWhere) {
-            $query->orWhere('locations.name', 'like', '%'.$search.'%');
-        } else {
-            $query->where('locations.name', 'like', '%'.$search.'%');
-        }
-    }
-
-    private function searchByEquipmentIssues($query, $search, $orWhere = false) {
-        $search = SQL::escapeLikeString($search);
-        if ($orWhere) {
-            $query->orWhereHas('issues', function ($query) use ($search) {
-                $query->where(DB::raw("CONCAT('x', equipment_issue_incident.quantity, ' ', equipment_issues.title)"), 'like', '%'.$search.'%');
-            });
-        } else {
-            $query->whereHas('issues', function ($query) use ($search) {
-                $query->where(DB::raw("CONCAT('x', equipment_issue_incident.quantity, ' ', equipment_issues.title)"), 'like', '%'.$search.'%');
-            });
-        }
-    }
-
-    private function searchByEvidence($query, $search, $orWhere = false) {
-        $search = SQL::escapeLikeString($search);
-        if ($orWhere) {
-            $query->orWhere('incidents.evidence', 'like', '%'.$search.'%');
-        } else {
-            $query->where('incidents.evidence', 'like', '%'.$search.'%');
+        try {
+            $dateTimeString = Carbon::parse($search);
+            $dateString = explode(' ', $dateTimeString)[0];
+            $timeString = explode(' ', $dateTimeString)[1];
+            if ($orWhere) {
+                $query->orWhere('loans.end_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.end_date_time', 'like', '%'.$timeString.'%');
+            } else {
+                $query->where('loans.end_date_time', 'like', '%'.$dateString.'%');
+                $query->orWhere('loans.end_date_time', 'like', '%'.$timeString.'%');
+            }
+        } catch(\Throwable $e) {
+            // Search string is not a date
         }
     }
 
     private function searchByDetails($query, $search, $orWhere = false) {
         $search = SQL::escapeLikeString($search);
         if ($orWhere) {
-            $query->orWhere('incidents.details', 'like', '%'.$search.'%');
+            $query->orWhere('loans.details', 'like', '%'.$search.'%');
         } else {
-            $query->where('incidents.details', 'like', '%'.$search.'%');
+            $query->where('loans.details', 'like', '%'.$search.'%');
+        }
+    }
+
+    private function searchByAssets($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhereHas('assets', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT(name, ' ', '(', tag, ')')"), 'like', '%'.$search.'%');
+            });
+        } else {
+            $query->whereHas('assets', function ($query) use ($search) {
+                $query->where(DB::raw("CONCAT(name, ' ', '(', tag, ')')"), 'like', '%'.$search.'%');
+            });
         }
     }
 
@@ -123,30 +132,32 @@ class Show extends Component
     {
         $distributionGroup = $this->distributionGroup;
 
-        $query = Incident::query()
-            ->select('incidents.*')
-            ->whereHas('group', function($query) use($distributionGroup){
-                $query->where('distribution_id', '=', $distributionGroup->id);
+        $query = Loan::query()
+            ->select('loans.*')
+            ->join('users', 'loans.user_id', '=', 'users.id')
+            ->whereHas('user', function($query) use($distributionGroup){
+                $query->whereHas('distributionGroups', function($query) use($distributionGroup) {
+                    $query->where('distribution_group_id', '=', $distributionGroup->id);
+                });
             })
-            ->join('locations', 'incidents.location_id', '=', 'locations.id') // Join locations table so we can search by location name
             ->when($this->filters['id'], fn($query, $search) => $this->searchById($query, $search))
+            ->when($this->filters['user_id'], fn($query, $search) => $this->searchByUser($query, $search))
             ->when($this->filters['status_id'], fn($query, $search) => $this->searchByStatus($query, $search))
             ->when($this->filters['start_date_time'], fn($query, $search) => $this->searchByStartDate($query, $search))
-            ->when($this->filters['location_id'], fn($query, $search) => $this->searchByLocation($query, $search))
-            ->when($this->filters['equipment_id'], fn($query, $search) => $this->searchByEquipmentIssues($query, $search))
-            ->when($this->filters['evidence'], fn($query, $search) => $this->searchByEvidence($query, $search))
+            ->when($this->filters['end_date_time'], fn($query, $search) => $this->searchByEndDate($query, $search))
             ->when($this->filters['details'], fn($query, $search) => $this->searchByDetails($query, $search))
+            ->when($this->filters['assets'], fn($query, $search) => $this->searchByAssets($query, $search))
             ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
                 $this->searchById($query, $search);
+                $this->searchByUser($query, $search, true);
                 $this->searchByStatus($query, $search, true);
                 $this->searchByStartDate($query, $search, true);
-                $this->searchByLocation($query, $search, true);
-                $this->searchByEquipmentIssues($query, $search, true);
-                $this->searchByEvidence($query, $search, true);
+                $this->searchByEndDate($query, $search, true);
                 $this->searchByDetails($query, $search, true);
+                $this->searchByAssets($query, $search, true);
             }));
 
-        return $this->applySorting($query);
+        return $this->applySorting($query, 'start_date_time');
     }
 
     public function updatedFilters($filed)
@@ -162,7 +173,7 @@ class Show extends Component
     public function render()
     {
         return view('livewire.distribution-group.show', [
-            'incidents' => $this->rows,
+            'loans' => $this->rows,
         ]);
     }
 

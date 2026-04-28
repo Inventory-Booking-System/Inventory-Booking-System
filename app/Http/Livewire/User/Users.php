@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Mail\Auth\NewUser;
 use App\Models\User;
 use App\Helpers\SQL;
+use App\Models\DistributionGroup;
 
 class Users extends Component
 {
@@ -26,6 +27,7 @@ class Users extends Component
         'search' => '',
         'user_id' => null,
         'email' => null,
+        'description' => null,
     ];
 
     public $counter = 0;
@@ -33,6 +35,8 @@ class Users extends Component
     public $modalType;
     public $key = 0;
     public $allUsers = [];
+    public $allGroups = [];
+    public $selectedGroupIds = [];
 
     protected $queryString = [];
 
@@ -42,9 +46,11 @@ class Users extends Component
             'editing.forename' => 'required|string',
             'editing.surname' => 'required|string',
             'editing.email' => 'required|email|unique:users,email,'.$this->editing->id,
+            'editing.description' => 'nullable|string',
             'editing.has_account' => 'required|boolean',
-            'editing.pos_access' => 'required|boolean',
             'editing.booking_authoriser_user_id' => 'nullable|exists:users,id',
+            'selectedGroupIds' => 'nullable|array',
+            'selectedGroupIds.*' => 'exists:distribution_groups,id',
         ];
     }
 
@@ -66,6 +72,7 @@ class Users extends Component
     public function makeBlankUser()
     {
         $this->editing = User::make();
+        $this->selectedGroupIds = [];
     }
 
     public function deleteSelected()
@@ -92,6 +99,8 @@ class Users extends Component
         }
 
         $this->populateAllUsers();
+        $this->populateAllGroups();
+        $this->selectedGroupIds = [];
         $this->key = rand();
 
         $this->emit('showModal', 'edit');
@@ -100,6 +109,11 @@ class Users extends Component
     private function populateAllUsers()
     {
         $this->allUsers = User::get();
+    }
+
+    private function populateAllGroups()
+    {
+        $this->allGroups = DistributionGroup::orderBy('name')->get();
     }
 
     public function edit(User $user)
@@ -111,6 +125,12 @@ class Users extends Component
         }
 
         $this->populateAllUsers();
+        $this->populateAllGroups();
+        $this->selectedGroupIds = $this->editing
+            ->distributionGroups()
+            ->pluck('distribution_group_id')
+            ->map(fn($id) => (string) $id)
+            ->toArray();
         $this->key = rand();
 
         $this->emit('showModal', 'edit');
@@ -130,6 +150,7 @@ class Users extends Component
         }
 
         $this->editing->save();
+        $this->editing->distributionGroups()->sync($this->selectedGroupIds);
 
         $this->emit('hideModal', 'edit');
     }
@@ -164,14 +185,26 @@ class Users extends Component
         }
     }
 
+    private function searchByDescription($query, $search, $orWhere = false) {
+        $search = SQL::escapeLikeString($search);
+        if ($orWhere) {
+            $query->orWhere('description', 'like', '%'.$search.'%');
+        } else {
+            $query->where('description', 'like', '%'.$search.'%');
+        }
+    }
+
     public function getRowsQueryProperty()
     {
         $query = User::query()
+            ->with(['distributionGroups', 'bookingAuthoriser'])
             ->when($this->filters['user_id'], fn($query, $search) => $this->searchByUser($query, $search))
             ->when($this->filters['email'], fn($query, $search) => $this->searchByEmail($query, $search))
+            ->when($this->filters['description'], fn($query, $search) => $this->searchByDescription($query, $search))
             ->when($this->filters['search'], fn($query, $search) => $query->where(function($query) use ($search) {
                 $this->searchByUser($query, $search);
                 $this->searchByEmail($query, $search, true);
+                $this->searchByDescription($query, $search, true);
             }));
 
         return $this->applySorting($query);

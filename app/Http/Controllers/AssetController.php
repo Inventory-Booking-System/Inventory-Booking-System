@@ -168,46 +168,44 @@ class AssetController extends Controller
      */
     public function scanIn(Request $request, $id)
     {
-        $loans = Loan::query()
+        $loan = Loan::query()
             ->with(['assets', 'user']) // Eager load relationships
             ->whereHas('assets', function($query) use($id) {
                 $query->where('tag', '=', $id);
             })
             /**
-             * Only 'booked' or 'overdue'. We can't easily do setups as we don't
-             * know which setup is being completed.
+             * Only 'Booked', 'Overdue' or 'Setup'
              */
-            ->whereIn('status_id', [0, 2])
-            ->get();
+            ->whereIn('status_id', [0, 2, 3])
+            ->orderBy('start_date_time', 'asc')
+            ->first();
 
-        if ($loans->isEmpty()) {
+        if (!$loan) {
             return response()->json([
                 'error' => 'NO_OPEN_LOANS',
-                'description' => 'There are no \'booked\' or \'overdue\' loans to scan in for asset.'
+                'description' => 'There are no \'booked\', \'overdue\' or \'setup\' loans to scan in for asset.'
             ], 400);
         }
 
-        foreach ($loans as $loan) {
-            $asset = $loan->assets->firstWhere('tag', $id);
-            $loan->assets()->updateExistingPivot($asset->id, ['returned' => 1]);
+        $asset = $loan->assets->firstWhere('tag', $id);
+        $loan->assets()->updateExistingPivot($asset->id, ['returned' => 1]);
 
-            // Check if all assets for this loan are returned
-            $totalAssets = $loan->assets->count();
-            $returnedAssets = $loan->assets()->wherePivot('returned', 1)->count();
+        // Check if all assets for this loan are returned
+        $totalAssets = $loan->assets->count();
+        $returnedAssets = $loan->assets()->wherePivot('returned', 1)->count();
 
-            if ($totalAssets === $returnedAssets) {
-                // All assets are returned, update loan status
-                $loan->status_id = 5;
-                $loan->save();
+        if ($totalAssets === $returnedAssets) {
+            // All assets are returned, update loan status
+            $loan->status_id = 5;
+            $loan->save();
 
-                if (Config::get('mail.cc.address')) {
-                    Mail::to($loan->user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
-                } else {
-                    Mail::to($loan->user->email)->queue(new LoanOrder($loan, false));
-                }
+            if (Config::get('mail.cc.address')) {
+                Mail::to($loan->user->email)->cc(Config::get('mail.cc.address'))->queue(new LoanOrder($loan, false));
+            } else {
+                Mail::to($loan->user->email)->queue(new LoanOrder($loan, false));
             }
         }
 
-        return response()->json($loans[0], 200);
+        return response()->json($loan, 200);
     }
 }
