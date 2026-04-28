@@ -1,5 +1,5 @@
 <div>
-    <x-table.controls name="User" perPage="{{ $perPage }}" />
+    <x-table.controls name="User" perPage="{{ $perPage }}" deleteLabel="Archive" />
 
     <div class="row">
         <div wire:poll.10s class="col-lg-12">
@@ -89,18 +89,18 @@
         </div>
     </div>
 
-    <!-- Delete Modal -->
+    <!-- Archive Modal -->
     <form wire:submit.prevent="deleteSelected">
         <x-modal.dialog type="confirmModal">
-            <x-slot name="title">Delete Users</x-slot>
+            <x-slot name="title">Archive Users</x-slot>
 
             <x-slot name="content">
-                Are you sure you want to delete these users? This action is irreversible.
+                Are you sure you want to archive these users? They can be restored from the Settings page.
             </x-slot>
 
             <x-slot name="footer">
                 <x-button.secondary wire:click="$emit('hideModal','confirm')">Cancel</x-button.secondary>
-                <x-button.danger type="submit">Delete</x-button.primary>
+                <x-button.danger type="submit">Archive</x-button.primary>
             </x-slot>
         </x-modal.dialog>
     </form>
