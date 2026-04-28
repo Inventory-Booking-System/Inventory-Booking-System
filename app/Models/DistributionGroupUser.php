@@ -11,4 +11,9 @@ class DistributionGroupUser extends Model
 
     protected $table = 'distribution_group_user';
     public $timestamps = false;
+
+    protected $fillable = [
+        'distribution_group_id',
+        'user_id',
+    ];
 }
