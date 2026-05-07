@@ -278,7 +278,7 @@ export default function StaffBooking() {
                                         >
                                             <DateCalendar
                                                 value={dateTime}
-                                                onChange={(newValue) => setDateTime(prev => prev.set('date', newValue.date()))}
+                                                onChange={(newValue) => setDateTime(prev => newValue.hour(prev.hour()).minute(prev.minute()).second(prev.second()))}
                                                 disablePast
                                                 sx={{ overflow: 'visible' }}
                                             />
