@@ -40,9 +40,9 @@ class AssetController extends Controller
         ]);
     }
 
-    public function get(Request $request, $id)
+    public function getAvailability(Request $request, $id)
     {
-        $asset = Asset::with('loans')->where('tag', $id)->first();
+        $asset = Asset::where('tag', $id)->first();
         if ($asset === null) {
             return response()->json([
                 'error' => 'ASSET_NOT_FOUND',
@@ -51,7 +51,71 @@ class AssetController extends Controller
             ], 404);
         }
 
-        return response()->json($asset, 200);
+        $now = Carbon::now();
+
+        $previousLoanNotReturned = $asset->loans()
+            ->where('loans.start_date_time', '<=', $now)
+            ->whereNotIn('loans.status_id', [4, 5])
+            ->wherePivot('returned', 0)
+            ->exists();
+
+        if ($previousLoanNotReturned) {
+            return response()->json([
+                'id' => $asset->id,
+                'name' => $asset->name,
+                'tag' => $asset->tag,
+                'description' => $asset->description,
+                'availability' => [
+                    'status' => 'unavailable_not_returned',
+                    'mustReturnBefore' => null,
+                ],
+            ]);
+        }
+
+        $nextLoan = $asset->loans()
+            ->where('loans.start_date_time', '>', $now)
+            ->whereNotIn('loans.status_id', [4, 5])
+            ->orderBy('loans.start_date_time', 'asc')
+            ->first();
+
+        if (!$nextLoan) {
+            return response()->json([
+                'id' => $asset->id,
+                'name' => $asset->name,
+                'tag' => $asset->tag,
+                'description' => $asset->description,
+                'availability' => [
+                    'status' => 'available',
+                    'mustReturnBefore' => null,
+                ],
+            ]);
+        }
+
+        $nextLoanDateTime = Carbon::parse($nextLoan->getRawOriginal('start_date_time'));
+
+        if ($nextLoanDateTime->gt($now->copy()->addHour())) {
+            return response()->json([
+                'id' => $asset->id,
+                'name' => $asset->name,
+                'tag' => $asset->tag,
+                'description' => $asset->description,
+                'availability' => [
+                    'status' => 'must_return_before',
+                    'mustReturnBefore' => $nextLoanDateTime->toIso8601String(),
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'id' => $asset->id,
+            'name' => $asset->name,
+            'tag' => $asset->tag,
+            'description' => $asset->description,
+            'availability' => [
+                'status' => 'unavailable',
+                'mustReturnBefore' => null,
+            ],
+        ]);
     }
 
     /**

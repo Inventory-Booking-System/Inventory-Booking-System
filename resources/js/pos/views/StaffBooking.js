@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import moment from 'moment';
 import { useSnackbar } from 'notistack';
 import dayjs from 'dayjs';
 
@@ -10,15 +9,19 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -46,57 +49,14 @@ const Clock = styled(MultiSectionDigitalClock)(() => ({
 
 function Asset({ asset, onDelete }) {
 
-    const nextLoanDate = useMemo(() => {
-        if (!asset || !asset.loans) {
-            return;
-        }
-
-        asset.loans.sort((a, b) => moment(a.start_date_time, 'DD MMM YYYY HH:mm').diff(moment(b.start_date_time, 'DD MMM YYYY HH:mm')));
-        console.log(asset.loans);
-
-        for (const loan of asset.loans) {
-            if (moment().isBefore(moment(loan.start_date_time, 'DD MMM YYYY HH:mm'))) {
-                return moment(loan.start_date_time, 'DD MMM YYYY HH:mm');
-            }
-        }
-    }, [asset]);
-
-    const previousLoanReturned = useMemo(() => {
-        if (!asset || !asset.loans) {
-            return;
-        }
-
-        asset.loans.sort((a, b) => moment(b.start_date_time, 'DD MMM YYYY HH:mm').diff(moment(a.start_date_time, 'DD MMM YYYY HH:mm')));
-
-        for (const loan of asset.loans) {
-            if (moment().isAfter(moment(loan.start_date_time, 'DD MMM YYYY HH:mm'))) {
-                // status_id 5 is Completed, status_id 4 is Cancelled
-                if (!loan.pivot.returned && loan.status_id !== 5 && loan.status_id !== 4) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }, [asset]);
-
     const status = useMemo(() => {
-        if (!asset) {
-            return;
-        }
-        if (!previousLoanReturned) {
-            console.log('previous loan not returned');
-            return 'Unavailable - previous loan not returned';
-        }
-        if (previousLoanReturned && !nextLoanDate) {
-            console.log('previousLoanReturned, no next loan');
-            return 'Available';
-        }
-        if (previousLoanReturned && nextLoanDate.isAfter(moment().add(1, 'hour'))) {
-            console.log('previousLoanReturned, next loan after 1 hour');
-            return `Must be returned before ${nextLoanDate.format('ddd DD MMM YYYY HH:mm')}`;
-        }
+        if (!asset?.availability) return;
+        const { status: availStatus, mustReturnBefore } = asset.availability;
+        if (availStatus === 'unavailable_not_returned') return 'Unavailable - previous loan not returned';
+        if (availStatus === 'available') return 'Available';
+        if (availStatus === 'must_return_before') return `Must be returned before ${dayjs(mustReturnBefore).format('ddd DD MMM YYYY HH:mm')}`;
         return 'Unavailable';
-    }, [asset, previousLoanReturned, nextLoanDate]);
+    }, [asset]);
 
     return (
         <BookingAssetCard
@@ -120,13 +80,10 @@ Asset.propTypes = {
         name: PropTypes.string.isRequired,
         tag: PropTypes.number.isRequired,
         description: PropTypes.string,
-        loans: PropTypes.arrayOf(PropTypes.shape({
-            start_date_time: PropTypes.string.isRequired,
-            pivot: PropTypes.shape({
-                returned: PropTypes.number.isRequired,
-            }).isRequired,
-            status_id: PropTypes.number.isRequired,
-        })),
+        availability: PropTypes.shape({
+            status: PropTypes.oneOf(['available', 'must_return_before', 'unavailable_not_returned', 'unavailable']).isRequired,
+            mustReturnBefore: PropTypes.string,
+        }).isRequired,
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
 };
@@ -135,12 +92,14 @@ export default function StaffBooking() {
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
     const [users, setUsers] = useState([]);
     const [usersLoading, setUsersLoading] = useState(false);
     const [search, setSearch] = useState('');
     const [user, setUser] = useState();
     const [cart, setCart] = useState([]);
     const [dateTime, setDateTime] = useState(dayjs().add(1, 'hour').minute(0).second(0));
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
     useEffect(() => {
         setUsersLoading(true);
@@ -160,7 +119,7 @@ export default function StaffBooking() {
             if (cart.find(item => item.tag === code)) {
                 throw new Error(`Asset ${code} already in cart`);
             }
-            const asset = await api.assets.get(code);
+            const asset = await api.assets.getAvailability(code);
             if (!asset || asset.error) {
                 throw new Error(`Asset ${code} not found`);
             }
@@ -188,6 +147,53 @@ export default function StaffBooking() {
     };
 
     useBarcodeScanner(handleScanComplete);
+
+    const handleCancel = () => {
+        setCancelDialogOpen(true);
+    };
+
+    const handleConfirmCancel = () => {
+        setCancelDialogOpen(false);
+        navigate('/');
+    };
+
+    const handleCloseCancelDialog = () => {
+        setCancelDialogOpen(false);
+    };
+
+    const handleSaveLoan = async () => {
+        setSubmitLoading(true);
+        try {
+            const startDateTime = dayjs().unix();
+            const endDateTime = dateTime.unix();
+            const resp = await api.loans.create({
+                user: user.userId,
+                assets: cart.map(asset => ({
+                    id: asset.id,
+                    returned: false
+                })),
+                startDateTime: startDateTime,
+                endDateTime: endDateTime,
+                details: '',
+                reservation: false
+            });
+            if (!resp.ok) {
+                throw new Error('Failed to create loan');
+            }
+            enqueueSnackbar('Loan created', {
+                variant: 'success',
+                autoHideDuration: 5000
+            });
+            navigate('/');
+        } catch (err) {
+            enqueueSnackbar(err.message, {
+                variant: 'error',
+                autoHideDuration: 5000
+            });
+        } finally {
+            setSubmitLoading(false);
+        }
+    };
 
     return (
         <Box sx={{ paddingTop: 5, paddingLeft: 5, paddingRight: 5, height: '100vh' }}>
@@ -246,7 +252,7 @@ export default function StaffBooking() {
                     {user && <Grid item xs={7}>
                         <Stack
                             direction="column"
-                            spacing={4}
+                            spacing={8}
                             alignItems="center"
                         >
                             <Stack
@@ -255,7 +261,7 @@ export default function StaffBooking() {
                                 sx={{ width: '100%' }}
                             >
                                 <Button
-                                    variant='contained'
+                                    variant='outlined'
                                     startIcon={<ArrowBackIosIcon />}
                                     onClick={() => {
                                         setUser();
@@ -266,76 +272,47 @@ export default function StaffBooking() {
                                 <Typography variant="h5">{user.label}</Typography>
                                 <Box />
                             </Stack>
-                            <Card sx={{ zoom: 1.4 }}>
-                                <CardHeader
-                                    subheader="Loan End Time"
-                                />
-                                <CardContent>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <Stack
-                                            direction="row"
-                                            spacing={6}
-                                        >
+                            <Stack
+                                direction="row"
+                                spacing={6}
+                            >
+                                <Card sx={{ zoom: 1.4 }} elevation={0} variant="outlined">
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            Select End Date
+                                        </Typography>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                                             <DateCalendar
                                                 value={dateTime}
                                                 onChange={(newValue) => setDateTime(prev => newValue.hour(prev.hour()).minute(prev.minute()).second(prev.second()))}
                                                 disablePast
                                                 sx={{ overflow: 'visible' }}
                                             />
+                                        </LocalizationProvider>
+                                    </CardContent>
+                                </Card>
+                                <Card sx={{ zoom: 1.4 }} elevation={0} variant="outlined">
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            Select End Time
+                                        </Typography>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                                             <Clock
                                                 value={dateTime}
                                                 onChange={(newValue) => setDateTime(prev => prev.set('hour', newValue.hour()).set('minute', newValue.minute()))}
                                                 ampm={false}
-                                                sx={{ height: 232 }}
+                                                sx={{ height: 232, marginTop: 4 }}
                                             />
-                                        </Stack>
-                                    </LocalizationProvider>
-                                </CardContent>
-                                <CardActions disableSpacing>
-                                    <Button
-                                        variant="contained"
-                                        disabled={loading || !cart.length}
-                                        onClick={async () => {
-                                            setLoading(true);
-                                            try {
-                                                const startDateTime = dayjs().unix();
-                                                const endDateTime = dateTime.unix();
-                                                const resp = await api.loans.create({
-                                                    user: user.userId,
-                                                    assets: cart.map(asset => ({
-                                                        id: asset.id,
-                                                        returned: false
-                                                    })),
-                                                    startDateTime: startDateTime,
-                                                    endDateTime: endDateTime,
-                                                    details: '',
-                                                    reservation: false
-                                                });
-                                                if (!resp.ok) {
-                                                    throw new Error('Failed to create loan');
-                                                }
-                                                enqueueSnackbar('Loan created', {
-                                                    variant: 'success',
-                                                    autoHideDuration: 5000
-                                                });
-                                                navigate('/');
-                                            } catch (err) {
-                                                enqueueSnackbar(err.message, {
-                                                    variant: 'error',
-                                                    autoHideDuration: 5000
-                                                });
-                                            } finally {
-                                                setLoading(false);
-                                            }
-                                        }}
-                                    >
-                                        Begin Loan
-                                    </Button>
-                                </CardActions>
-                            </Card>
+                                        </LocalizationProvider>
+                                    </CardContent>
+                                </Card>
+                            </Stack>
                         </Stack>
                     </Grid>}
                 </Grid>
+                {!!cart.length && <Alert severity="warning" variant="outlined">
+                    You have unsaved changes.
+                </Alert>}
             </Stack>
             <Paper
                 elevation={3}
@@ -343,19 +320,48 @@ export default function StaffBooking() {
             >
                 <Stack
                     direction="row"
-                    spacing={2}
+                    spacing={4}
                     justifyContent="center"
                 >
                     <Button
-                        onClick={() => navigate('/')}
+                        onClick={handleCancel}
                         variant="outlined"
                         color="error"
                         size="large"
                     >
                         Cancel
                     </Button>
+                    <LoadingButton
+                        onClick={handleSaveLoan}
+                        variant="contained"
+                        color="success"
+                        size="large"
+                        disabled={loading || !cart.length}
+                        loading={submitLoading}
+                    >
+                        Save Loan
+                    </LoadingButton>
                 </Stack>
             </Paper>
+            <Dialog
+                open={cancelDialogOpen}
+                onClose={handleCloseCancelDialog}
+                aria-labelledby="cancel-dialog-title"
+                aria-describedby="cancel-dialog-description"
+            >
+                <DialogTitle id="cancel-dialog-title">Confirm Cancel</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="cancel-dialog-description">
+                        Are you sure you want to cancel? Any scanned items will be lost.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseCancelDialog}>No</Button>
+                    <Button onClick={handleConfirmCancel} color="error" autoFocus>
+                        Yes, cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

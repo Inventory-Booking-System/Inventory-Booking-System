@@ -11,11 +11,11 @@ export const ASSET_STATUS = {
 };
 
 /**
- * Gets the asset with the specified id
+ * Get the availability of the asset with the specified id
  * @param {*} id
  */
-export async function get(id) {
-    const resp = await request(`/api/assets/${id}`);
+export async function getAvailability(id) {
+    const resp = await request(`/api/assets/${id}/availability`);
     return await resp.json();
 }
 
