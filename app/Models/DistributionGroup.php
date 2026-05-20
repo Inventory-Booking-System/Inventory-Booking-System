@@ -12,11 +12,9 @@ class DistributionGroup extends Model
     use HasFactory, SoftDeletes;
 
     public const POS_ACCESS_DISABLED = -1;
-    public const POS_ACCESS_NOT_CONFIGURED = 0;
     public const POS_ACCESS_ENABLED = 1;
 
     protected $casts = [
-        'pos_staff_screen_access' => 'integer',
         'pos_student_screen_access' => 'integer',
     ];
 
