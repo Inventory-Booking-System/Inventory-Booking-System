@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('booking:send-overdue-emails')->weekdays()->dailyAt('12:00');
         $schedule->command('booking:send-setup-emails')->cron('* * * * 1-5');
         $schedule->command('booking:update-overdue-bookings')->cron('* * * * 1-5');
+        $schedule->command('groups:remove-expired')->daily();
     }
 
     /**
