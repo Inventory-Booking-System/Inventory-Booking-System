@@ -1,4 +1,4 @@
-<div class="row" >
+<div class="row">
     <div class="col-lg-4">
         <div class="row">
             <div class="card w-100 mr-3">
@@ -7,32 +7,12 @@
                 </div>
                 <div class="card-body">
                     <strong>Email: </strong><p class="card-text">{{ $user->email }}</p>
-                    <strong>Description: </strong><p class="card-text">{{ $user->description ?: '-' }}</p>
-                    <strong>Student Checkout Screen Access:</strong><p class="card-text">{{ $this->studentCheckoutAccess }}</p>
-                    <strong>Checkout Authoriser:</strong><p class="card-text">{{ $this->checkoutAuthoriser }}</p>
+                    <strong>Dashboard Access: </strong><p class="card-text">{{ $user->has_account ? 'Yes' : 'No' }}</p>
+                    @if($user->has_account)
+                        <strong>Password Set: </strong><p class="card-text">{{ $user->password_set ? 'Yes' : 'No' }}</p>
+                    @endif
                     <strong>Created Date:</strong><p class="card-text">{{ $user->humanFormat($user->created_at) }}</p>
                     <strong>Last Updated:</strong><p class="card-text">{{ $user->humanFormat($user->updated_at) }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="card w-100 mr-3">
-                <div class="card-header bg-dark text-center">
-                    <h4>User Groups</h4>
-                </div>
-                <div class="card-body">
-                    @forelse ($groups as $group)
-                        <div class="form-check mb-2">
-                            <x-input.checkbox wire:model="selectedGroupIds" id="group_{{ $group->id }}" value="{{ $group->id }}" class="form-check-input" />
-                            <label class="form-check-label" for="group_{{ $group->id }}">{{ $group->name }}</label>
-                        </div>
-                    @empty
-                        <p class="card-text mb-0">No user groups have been created yet.</p>
-                    @endforelse
-                </div>
-                <div class="card-footer">
-                    <x-button.primary wire:click="saveGroups"><x-loading wire:target="saveGroups" />Save Groups</x-button.primary>
                 </div>
             </div>
         </div>
@@ -48,7 +28,7 @@
                 <x-button.primary wire:loading.style.delay='"' class="" wire:click="$toggle('showFilters')">Toggle Filters</x-button.primary>
             </div>
 
-            <div class="col-lg-2" >
+            <div class="col-lg-2">
                 <x-input.select wire:model="perPage" id="perPage" label="Per Page">
                     <option value="10" @if($perPage === 10) selected @endif>10</option>
                     <option value="25" @if($perPage === 25) selected @endif>25</option>
@@ -72,7 +52,7 @@
                 @if($showFilters)
                     <x-table.row>
                         <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.id" class="form-control-sm p-0" /></x-table.heading>
-                        <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.user_id" class="form-control-sm p-0" /></x-table.heading>
+                        <x-table.heading class="col-2" direction="null"></x-table.heading>
                         <x-table.heading class="col-1" direction="null"><x-input.text wire:model="filters.status_id" class="form-control-sm p-0" /></x-table.heading>
                         <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.start_date_time" class="form-control-sm p-0" /></x-table.heading>
                         <x-table.heading class="col-2" direction="null"><x-input.text wire:model="filters.end_date_time" class="form-control-sm p-0" /></x-table.heading>

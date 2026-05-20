@@ -6,7 +6,6 @@
                     <h1>{{ $distributionGroup->name }}</h1>
                 </div>
                 <div class="card-body">
-                    <strong>Staff Checkout Screen Access:</strong><p class="card-text">{{ \App\Models\DistributionGroup::posAccessLabel($distributionGroup->pos_staff_screen_access) }}</p>
                     <strong>Student Checkout Screen Access:</strong><p class="card-text">{{ \App\Models\DistributionGroup::posAccessLabel($distributionGroup->pos_student_screen_access) }}</p>
                     <strong>Members:</strong>
                     <p class="card-text">
