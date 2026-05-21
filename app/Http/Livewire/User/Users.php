@@ -35,6 +35,7 @@ class Users extends Component
     public $allGroups = [];
     public $selectedGroupIds = [];
     public $groupExpiries = [];  // keyed by group id => expires_at string or null
+    public $groupExpiryEnabled = [];  // keyed by group id => bool
 
     protected $queryString = [];
 
@@ -73,6 +74,7 @@ class Users extends Component
         $this->editing = Student::make();
         $this->selectedGroupIds = [];
         $this->groupExpiries = [];
+        $this->groupExpiryEnabled = [];
     }
 
     public function deleteSelected()
@@ -102,6 +104,7 @@ class Users extends Component
         $this->populateAllGroups();
         $this->selectedGroupIds = [];
         $this->groupExpiries = [];
+        $this->groupExpiryEnabled = [];
         $this->key = rand();
 
         $this->emit('showModal', 'edit');
@@ -135,10 +138,13 @@ class Users extends Component
 
         // Load existing expiry dates keyed by group id
         $this->groupExpiries = [];
+        $this->groupExpiryEnabled = [];
         foreach ($this->editing->distributionGroups()->withPivot('expires_at')->get() as $group) {
-            $this->groupExpiries[(string) $group->id] = $group->pivot->expires_at
-                ? \Carbon\Carbon::parse($group->pivot->expires_at)->format('Y-m-d')
+            $expiresAt = $group->pivot->expires_at;
+            $this->groupExpiries[(string) $group->id] = $expiresAt
+                ? \Carbon\Carbon::parse($expiresAt)->format('Y-m-d')
                 : null;
+            $this->groupExpiryEnabled[(string) $group->id] = !empty($expiresAt);
         }
 
         $this->key = rand();
@@ -155,7 +161,8 @@ class Users extends Component
         // Sync groups with expiry dates
         $syncData = [];
         foreach ($this->selectedGroupIds as $groupId) {
-            $expires = $this->groupExpiries[(string) $groupId] ?? null;
+            $enabled = $this->groupExpiryEnabled[(string) $groupId] ?? false;
+            $expires = $enabled ? ($this->groupExpiries[(string) $groupId] ?? null) : null;
             $syncData[$groupId] = ['expires_at' => $expires ?: null];
         }
         $this->editing->distributionGroups()->sync($syncData);

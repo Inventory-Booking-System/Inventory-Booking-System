@@ -109,7 +109,7 @@
 
             <x-slot name="content">
                 <div class="row">
-                    <div class="col-md-7">
+                    <div class="col-md-6">
                         <x-input.group for="forename" label="Forename" :error="$errors->first('editing.forename')">
                             <x-input.text wire:model.defer="editing.forename" id="forename" />
                         </x-input.group>
@@ -141,16 +141,34 @@
                         </x-input.group>
                     </div>
 
-                    <div class="col-md-5">
+                    <div class="col-md-6">
                         <x-input.group for="selected_group_ids" label="User Groups" :error="$errors->first('selectedGroupIds') ?: $errors->first('selectedGroupIds.*')">
-                            <div class="border rounded p-2" style="max-height: 280px; overflow-y: auto;">
+                            <div class="border rounded p-2 ps-3" style="max-height: 280px; overflow-y: auto;">
                                 @forelse ($allGroups as $group)
-                                    <div class="form-check mb-2 d-flex align-items-center gap-2">
-                                        <x-input.checkbox wire:model="selectedGroupIds" id="modal_group_{{ $group->id }}" value="{{ $group->id }}" class="form-check-input" />
-                                        <label class="form-check-label me-2" for="modal_group_{{ $group->id }}">{{ $group->name }}</label>
-                                        @if(in_array($group->id, $selectedGroupIds ?? []))
-                                            <x-input.text wire:model.defer="groupExpiries.{{ $group->id }}" type="date" class="form-control-sm" placeholder="Expiry (optional)" style="max-width:160px;" />
-                                        @endif
+                                    @php
+                                        $groupSelected = in_array((string) $group->id, array_map('strval', $selectedGroupIds ?? []));
+                                        $expiryEnabled = $groupSelected && ($groupExpiryEnabled[(string) $group->id] ?? false);
+                                    @endphp
+                                    <div class="mb-2 d-flex align-items-center gap-2">
+                                        <div class="d-flex align-items-center" style="flex:1; min-width:0;">
+                                            <x-input.checkbox wire:model="selectedGroupIds" id="modal_group_{{ $group->id }}" value="{{ $group->id }}" style="margin-right: 0.5rem;" />
+                                            <label class="form-check-label mb-0 text-truncate" for="modal_group_{{ $group->id }}" title="{{ $group->name }}">{{ $group->name }}</label>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1 flex-shrink-0" style="width:225px; {{ $groupSelected ? '' : 'opacity:0.35;' }}; justify-content: flex-end;">
+                                            <input
+                                                type="checkbox"
+                                                wire:model="groupExpiryEnabled.{{ $group->id }}"
+                                                id="expiry_toggle_{{ $group->id }}"
+                                                style="margin-right: 0.5rem;"
+                                                @unless($groupSelected) disabled @endunless
+                                            />
+                                            <label class="mb-0 text-muted small text-nowrap" for="expiry_toggle_{{ $group->id }}" style="margin-right: 0.5rem;">Expires</label>
+                                            <x-input.text
+                                                wire:model.defer="groupExpiries.{{ $group->id }}"
+                                                type="date"
+                                                class="form-control-sm"
+                                            />
+                                        </div>
                                     </div>
                                 @empty
                                     <p class="mb-0">No user groups found.</p>
