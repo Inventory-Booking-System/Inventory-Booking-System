@@ -14,15 +14,12 @@ class RemoveExpiredGroupMemberships extends Command
 
     public function handle(): int
     {
-        $expired = DistributionGroupUser::whereNotNull('expires_at')
-            ->where('expires_at', '<=', now())
-            ->get();
+        $query = DistributionGroupUser::whereNotNull('expires_at')
+            ->where('expires_at', '<=', now());
 
-        $count = $expired->count();
+        $count = $query->count();
 
-        $expired->each(function ($membership) {
-            $membership->delete();
-        });
+        $query->delete();
 
         Log::info("Removed {$count} expired group membership(s).");
         $this->info("Removed {$count} expired group membership(s).");
