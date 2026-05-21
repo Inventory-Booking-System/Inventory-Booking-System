@@ -13,13 +13,16 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
-    protected $fillable = ['forename', 'surname', 'email', 'description', 'has_account', 'password_set', 'booking_authoriser_user_id'];
+    protected $fillable = ['type', 'forename', 'surname', 'email', 'description', 'has_account', 'password_set', 'booking_authoriser_user_id'];
 
     protected $attributes = ['has_account' => false];
 
     protected $hidden = ['password', 'remember_token'];
 
-    protected $casts = ['email_verified_at' => 'datetime'];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'has_account' => 'boolean',
+    ];
 
     /**
      * A user can have many loans.

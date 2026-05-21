@@ -13,6 +13,7 @@ use App\Http\Controllers\AssetGroupController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\LocationController;
@@ -69,6 +70,7 @@ Route::middleware(['auth', 'checkpassword'])->group(function () {
     Route::get('distributionGroups/{distributionGroup}', fn($distributionGroup) => redirect()->route('user-groups.show', ['user_group' => $distributionGroup]))->name('distributionGroups.show');
     Route::resource('equipmentIssues', EquipmentIssueController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('users', UserController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
+    Route::resource('staff', StaffController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
     Route::resource('incidents', IncidentController::class)->except(['store', 'update', 'destroy', 'edit', 'create']);
 
     Route::get('logout', [LogoutController::class, 'index'])->name('logout');

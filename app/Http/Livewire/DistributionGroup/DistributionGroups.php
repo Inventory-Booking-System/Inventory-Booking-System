@@ -42,7 +42,6 @@ class DistributionGroups extends Component
     {
         return [
             'editing.name' => 'nullable|string',
-            'editing.pos_staff_screen_access' => 'required|integer|in:-1,0,1',
             'editing.pos_student_screen_access' => 'required|integer|in:-1,0,1',
             'user_id' => 'nullable|numeric|exists:assets,id',
         ];
@@ -68,7 +67,6 @@ class DistributionGroups extends Component
     public function makeBlankDistributionGroup()
     {
         $this->editing = DistributionGroup::make();
-        $this->editing->pos_staff_screen_access = self::ACCESS_NOT_CONFIGURED;
         $this->editing->pos_student_screen_access = self::ACCESS_NOT_CONFIGURED;
         $user_id = null;
         $this->emptyCart();

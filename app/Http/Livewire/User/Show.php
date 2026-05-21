@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithDetailsPerPagePagination;
 use App\Models\DistributionGroup;
-use App\Models\User;
+use App\Models\Student;
 use App\Models\Loan;
 use App\Models\Setup;
 use App\Helpers\SQL;
@@ -181,19 +181,23 @@ class Show extends Component
 
     public function mount($user)
     {
-        $this->user = User::with(['distributionGroups', 'bookingAuthoriser'])->find($user);
+        $this->user = Student::with(['distributionGroups', 'bookingAuthoriser'])->findOrFail($user);
         $this->selectedGroupIds = $this->user->distributionGroups()->pluck('distribution_group_id')->map(fn($id) => (string) $id)->toArray();
     }
 
     public function saveGroups()
     {
-        $this->user->distributionGroups()->sync($this->selectedGroupIds);
+        // Sync groups preserving existing expiry dates, adding nulls for new memberships
+        $existing = $this->user->distributionGroups()->withPivot('expires_at')
+            ->get()->keyBy('id');
+        $syncData = [];
+        foreach ($this->selectedGroupIds as $groupId) {
+            $syncData[$groupId] = [
+                'expires_at' => $existing->get($groupId)?->pivot->expires_at ?? null,
+            ];
+        }
+        $this->user->distributionGroups()->sync($syncData);
         $this->user->load('distributionGroups');
-    }
-
-    public function getStaffCheckoutAccessProperty()
-    {
-        return $this->getCheckoutAccessLabel('pos_staff_screen_access');
     }
 
     public function getStudentCheckoutAccessProperty()

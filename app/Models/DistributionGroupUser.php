@@ -10,5 +10,15 @@ class DistributionGroupUser extends Model
     use HasFactory;
 
     protected $table = 'distribution_group_user';
-    public $timestamps = false;
+    public $timestamps = true;
+
+    protected $fillable = [
+        'distribution_group_id',
+        'user_id',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
+    ];
 }

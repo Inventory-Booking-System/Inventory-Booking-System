@@ -6,12 +6,9 @@ use Livewire\Component;
 use App\Http\Livewire\DataTable\WithSorting;
 use App\Http\Livewire\DataTable\WithBulkActions;
 use App\Http\Livewire\DataTable\WithPerPagePagination;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use App\Mail\Auth\NewUser;
-use App\Models\User;
+use App\Models\Student;
+use App\Models\Staff;
 use App\Helpers\SQL;
 use App\Models\DistributionGroup;
 
@@ -31,12 +28,14 @@ class Users extends Component
     ];
 
     public $counter = 0;
-    public User $editing;
+    public Student $editing;
     public $modalType;
     public $key = 0;
-    public $allUsers = [];
+    public $allStaff = [];
     public $allGroups = [];
     public $selectedGroupIds = [];
+    public $groupExpiries = [];  // keyed by group id => expires_at string or null
+    public $groupExpiryEnabled = [];  // keyed by group id => bool
 
     protected $queryString = [];
 
@@ -45,12 +44,13 @@ class Users extends Component
         return [
             'editing.forename' => 'required|string',
             'editing.surname' => 'required|string',
-            'editing.email' => 'required|email|unique:users,email,'.$this->editing->id,
+            'editing.email' => 'required|email|unique:users,email,' . $this->editing->id,
             'editing.description' => 'nullable|string',
-            'editing.has_account' => 'required|boolean',
-            'editing.booking_authoriser_user_id' => 'nullable|exists:users,id',
+            'editing.booking_authoriser_user_id' => ['nullable', \Illuminate\Validation\Rule::exists('users', 'id')->where('type', 'staff')],
             'selectedGroupIds' => 'nullable|array',
             'selectedGroupIds.*' => 'exists:distribution_groups,id',
+            'groupExpiries' => 'nullable|array',
+            'groupExpiries.*' => 'nullable|date',
         ];
     }
 
@@ -71,8 +71,10 @@ class Users extends Component
 
     public function makeBlankUser()
     {
-        $this->editing = User::make();
+        $this->editing = Student::make();
         $this->selectedGroupIds = [];
+        $this->groupExpiries = [];
+        $this->groupExpiryEnabled = [];
     }
 
     public function deleteSelected()
@@ -98,17 +100,19 @@ class Users extends Component
             $this->makeBlankUser();
         }
 
-        $this->populateAllUsers();
+        $this->populateAllStaff();
         $this->populateAllGroups();
         $this->selectedGroupIds = [];
+        $this->groupExpiries = [];
+        $this->groupExpiryEnabled = [];
         $this->key = rand();
 
         $this->emit('showModal', 'edit');
     }
 
-    private function populateAllUsers()
+    private function populateAllStaff()
     {
-        $this->allUsers = User::get();
+        $this->allStaff = Staff::orderBy('forename')->orderBy('surname')->get();
     }
 
     private function populateAllGroups()
@@ -116,21 +120,33 @@ class Users extends Component
         $this->allGroups = DistributionGroup::orderBy('name')->get();
     }
 
-    public function edit(User $user)
+    public function edit(Student $student)
     {
         $this->modalType = 'Edit';
 
-        if($this->editing->isNot($user)){
-            $this->editing = $user;
+        if($this->editing->isNot($student)){
+            $this->editing = $student;
         }
 
-        $this->populateAllUsers();
+        $this->populateAllStaff();
         $this->populateAllGroups();
         $this->selectedGroupIds = $this->editing
             ->distributionGroups()
             ->pluck('distribution_group_id')
             ->map(fn($id) => (string) $id)
             ->toArray();
+
+        // Load existing expiry dates keyed by group id
+        $this->groupExpiries = [];
+        $this->groupExpiryEnabled = [];
+        foreach ($this->editing->distributionGroups()->withPivot('expires_at')->get() as $group) {
+            $expiresAt = $group->pivot->expires_at;
+            $this->groupExpiries[(string) $group->id] = $expiresAt
+                ? \Carbon\Carbon::parse($expiresAt)->format('Y-m-d')
+                : null;
+            $this->groupExpiryEnabled[(string) $group->id] = !empty($expiresAt);
+        }
+
         $this->key = rand();
 
         $this->emit('showModal', 'edit');
@@ -140,26 +156,18 @@ class Users extends Component
     {
         $this->validate();
 
-        //If value has been updated to true, we need to generate a one time password and email to user
-        if($this->editing->has_account and $this->editing->isDirty('has_account')){
-            $password = Str::random(8);
-            $this->editing->password = Hash::make($password);
-
-            //Send Email Code
-            Mail::to($this->editing->email)->queue(new NewUser($this->editing, $password));
-        }
-
         $this->editing->save();
-        $this->editing->distributionGroups()->sync($this->selectedGroupIds);
+
+        // Sync groups with expiry dates
+        $syncData = [];
+        foreach ($this->selectedGroupIds as $groupId) {
+            $enabled = $this->groupExpiryEnabled[(string) $groupId] ?? false;
+            $expires = $enabled ? ($this->groupExpiries[(string) $groupId] ?? null) : null;
+            $syncData[$groupId] = ['expires_at' => $expires ?: null];
+        }
+        $this->editing->distributionGroups()->sync($syncData);
 
         $this->emit('hideModal', 'edit');
-    }
-
-    public function resetPassword($id)
-    {
-        $user = User::find($id);
-        $user->password_set = false;
-        $user->save();
     }
 
     public function resetFilters()
@@ -196,7 +204,7 @@ class Users extends Component
 
     public function getRowsQueryProperty()
     {
-        $query = User::query()
+        $query = Student::query()
             ->with(['distributionGroups', 'bookingAuthoriser'])
             ->when($this->filters['user_id'], fn($query, $search) => $this->searchByUser($query, $search))
             ->when($this->filters['email'], fn($query, $search) => $this->searchByEmail($query, $search))
@@ -222,7 +230,7 @@ class Users extends Component
         }
 
         return view('livewire.user.users', [
-            'users' => $this->rows,
+            'students' => $this->rows,
         ]);
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Response;
 use App\Models\DistributionGroup;
+use App\Models\Staff;
+use App\Models\Student;
 use App\Models\User;
 
 class UserController extends Controller
@@ -16,8 +18,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        //Render rest of the page
-        return view('user.users');
+        return view('student.students');
     }
 
     /**
@@ -28,51 +29,38 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return view('user.show',[
-            'user' => $id
+        return view('student.show', [
+            'user' => $id,
         ]);
     }
 
     /**
-     * Get all users that should appear on the POS staff screen.
-     * 
-     * @return \Illuminate\Http\Response
+     * Get all staff members for the POS staff screen.
+     * Staff always appear regardless of group membership.
+     *
+     * @return array
      */
     public function getAll()
     {
-        $users = User::query()
-            ->whereNull('booking_authoriser_user_id')
-            ->whereHas('distributionGroups', function ($query) {
-                $query->where('pos_staff_screen_access', DistributionGroup::POS_ACCESS_ENABLED);
-            })
-            ->whereDoesntHave('distributionGroups', function ($query) {
-                $query->where('pos_staff_screen_access', DistributionGroup::POS_ACCESS_DISABLED);
-            })
-            ->orderBy('forename')
+        return Staff::orderBy('forename')
             ->orderBy('surname')
-            ->distinct()
-            ->get();
-
-        $data = [];
-        foreach($users as $key => $user) {
-            $data[] = [
-                'id' => $user['id'],
-                'forename' => $user['forename'],
-                'surname' => $user['surname']
-            ];
-        }
-        return $data;
+            ->get()
+            ->map(fn ($staff) => [
+                'id' => $staff->id,
+                'forename' => $staff->forename,
+                'surname' => $staff->surname,
+            ]);
     }
 
     /**
-     * Get all users that should appear on the POS student screen.
+     * Get all students that should appear on the POS student screen.
+     * Access is managed by group membership.
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function getUsersWithPosAccess()
     {
-        $users = User::query()
-            ->with('bookingAuthoriser')
+        return Student::with('bookingAuthoriser')
             ->whereHas('distributionGroups', function ($query) {
                 $query->where('pos_student_screen_access', DistributionGroup::POS_ACCESS_ENABLED);
             })
@@ -82,19 +70,12 @@ class UserController extends Controller
             ->orderBy('forename')
             ->orderBy('surname')
             ->distinct()
-            ->get();
-
-        $data = [];
-        foreach($users as $user) {
-            $authoriser = $user->bookingAuthoriser ?? $user;
-            $data[] = [
-                'id' => $user['id'],
-                'forename' => $user['forename'],
-                'surname' => $user['surname'],
-                'booking_authoriser_user_id' => $user['booking_authoriser_user_id'] ?? $user['id']
-            ];
-        }
-
-        return $data;
+            ->get()
+            ->map(fn ($student) => [
+                'id' => $student->id,
+                'forename' => $student->forename,
+                'surname' => $student->surname,
+                'booking_authoriser_user_id' => $student->booking_authoriser_user_id ?? $student->id,
+            ]);
     }
 }
